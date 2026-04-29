@@ -17,9 +17,6 @@
     {{-- Main Wrapper --}}
     <div class="main">
 
-        {{-- Navbar / Topbar --}}
-        @include('layouts.partials.navbar')
-
         {{-- Page Content --}}
         <main class="page">
 

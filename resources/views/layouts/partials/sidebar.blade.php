@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <!-- User (STATIC) -->
+    <!-- User -->
     <div class="sb-user">
         <div class="sb-avatar">AC</div>
         <div>
@@ -31,6 +31,8 @@
 
     <!-- Navigation -->
     <nav class="sb-nav">
+
+        <!-- ── UTAMA ── -->
         <div class="sb-section-label">Utama</div>
 
         <a href="#" class="sb-item active">
@@ -43,43 +45,54 @@
             <span>Dashboard</span>
         </a>
 
-        <a href="#" class="sb-item">
+        <a href="{{ route('admin.roles.index') }}"
+            class="sb-item {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 3" />
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                <path d="M16 4l2 2 4-4" />
             </svg>
-            <span>Riwayat Parkir</span>
-            <span class="sb-badge-count">3</span>
-        </a>
-
-        <a href="#" class="sb-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="7" width="20" height="13" rx="2" />
-                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-                <line x1="12" y1="12" x2="12" y2="16" />
-                <line x1="10" y1="14" x2="14" y2="14" />
-            </svg>
-            <span>Manajemen Slot</span>
-        </a>
-
-        <a href="#" class="sb-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            <span>Data Pengguna</span>
+            <span>Master Role</span>
         </a>
 
         <a href="#" class="sb-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="M9 12l2 2 4-4" />
             </svg>
-            <span>Petugas Jaga</span>
+            <span>Petugas</span>
         </a>
 
-        <div class="sb-section-label" style="margin-top:16px">Laporan</div>
+        <a href="#" class="sb-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 10L12 4 2 10l10 6 10-6z" />
+                <path d="M6 12v5c0 2 2.7 4 6 4s6-2 6-4v-5" />
+                <line x1="22" y1="10" x2="22" y2="16" />
+            </svg>
+            <span>Mahasiswa</span>
+        </a>
+
+        <a href="#" class="sb-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" />
+                <path d="M16 7V5a2 2 0 0 0-4 0v2" />
+                <line x1="8" y1="14" x2="16" y2="14" />
+            </svg>
+            <span>Jurusan</span>
+        </a>
+
+        <a href="#" class="sb-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                <line x1="9" y1="9" x2="15" y2="9" />
+                <line x1="9" y1="13" x2="13" y2="13" />
+            </svg>
+            <span>Program Studi</span>
+        </a>
+
+        <!-- ── LAPORAN ── -->
+        <div class="sb-section-label" style="margin-top: 16px">Laporan</div>
 
         <a href="#" class="sb-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -100,18 +113,20 @@
             <span>Ekspor Laporan</span>
         </a>
 
-        <div class="sb-section-label" style="margin-top:16px">Sistem</div>
+        <!-- ── SISTEM ── -->
+        <div class="sb-section-label" style="margin-top: 16px">Sistem</div>
 
         <a href="#" class="sb-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82..." />
+                <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
             <span>Pengaturan</span>
         </a>
 
-        <!-- Logout static -->
-        <button class="sb-item" style="width:100%;background:none;border:none;cursor:pointer;text-align:left;">
+        <button class="sb-item"
+            style="width: 100%; background: none; border: none; cursor: pointer; text-align: left;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <polyline points="16 17 21 12 16 7" />
@@ -119,13 +134,14 @@
             </svg>
             <span>Keluar</span>
         </button>
+
     </nav>
 
     <!-- Footer -->
     <div class="sb-footer">
         <div class="status-dot">
             <div class="dot-live"></div>
-            <span>Sistem aktif — Senin, 29 Apr 2026</span>
+            <span>Sistem aktif — Rabu, 29 Apr 2026</span>
         </div>
     </div>
 </aside>
