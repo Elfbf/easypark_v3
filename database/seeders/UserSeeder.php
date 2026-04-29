@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\Department;
 use App\Models\StudyProgram;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class UserSeeder extends Seeder
 {
@@ -44,15 +45,16 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $data) {
-            // 🔐 ambil role
+
+            // 🔐 Ambil role
             $role = Role::firstWhere('name', $data['role']);
 
-            // 🎓 ambil jurusan
+            // 🎓 Ambil jurusan
             $department = $data['department']
                 ? Department::firstWhere('name', $data['department'])
                 : null;
 
-            // 📘 ambil prodi
+            // 📘 Ambil prodi
             $studyProgram = $data['study_program']
                 ? StudyProgram::firstWhere('name', $data['study_program'])
                 : null;
@@ -61,6 +63,10 @@ class UserSeeder extends Seeder
                 $this->command?->warn("Role tidak ditemukan: {$data['role']}");
                 continue;
             }
+
+            // ⏰ waktu random biar realistis
+            $createdAt = Carbon::now()->subDays(rand(1, 30));
+            $updatedAt = Carbon::now();
 
             User::firstOrCreate(
                 ['email' => $data['email']], // unik
@@ -73,6 +79,10 @@ class UserSeeder extends Seeder
                     'study_program_id' => $studyProgram?->id,
                     'is_active' => true,
                     'password' => Hash::make('password'),
+
+                    // ⏰ timestamp manual
+                    'created_at' => $createdAt,
+                    'updated_at' => $updatedAt,
                 ]
             );
         }

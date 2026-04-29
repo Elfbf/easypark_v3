@@ -55,7 +55,8 @@
             <span>Master Role</span>
         </a>
 
-        <a href="#" class="sb-item">
+        <a href="{{ route('admin.petugas.index') }}"
+            class="sb-item {{ request()->routeIs('admin.petugas.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 <path d="M9 12l2 2 4-4" />
@@ -72,7 +73,8 @@
             <span>Mahasiswa</span>
         </a>
 
-        <a href="#" class="sb-item">
+        <a href="{{ route('admin.departments.index') }}"
+            class="sb-item {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="7" width="20" height="14" rx="2" />
                 <path d="M16 7V5a2 2 0 0 0-4 0v2" />
@@ -81,7 +83,8 @@
             <span>Jurusan</span>
         </a>
 
-        <a href="#" class="sb-item">
+        <a href="{{ route('admin.study-programs.index') }}"
+            class="sb-item {{ request()->routeIs('admin.study-programs.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />

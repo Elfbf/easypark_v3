@@ -15,17 +15,13 @@ class DepartmentController extends Controller
         $search = $request->query('search');
 
         $departments = Department::when($search, function ($query, $search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('admin.departments.index', compact('departments'));
-    }
-
-    public function create()
-    {
-        return view('admin.departments.create');
+        return view('admin.departments.index', compact('departments', 'search'));
     }
 
     public function store(Request $request)
@@ -39,8 +35,7 @@ class DepartmentController extends Controller
                 'name' => $request->name
             ]);
 
-            return redirect()->route('admin.departments.index')
-                ->with('success', 'Jurusan berhasil ditambahkan.');
+            return back()->with('success', 'Jurusan berhasil ditambahkan.');
         } catch (QueryException $e) {
             Log::error('Department store failed: ' . $e->getMessage());
 
@@ -48,16 +43,6 @@ class DepartmentController extends Controller
                 ->withInput()
                 ->with('error', 'Gagal menambahkan jurusan.');
         }
-    }
-
-    public function show(Department $department)
-    {
-        return view('admin.departments.show', compact('department'));
-    }
-
-    public function edit(Department $department)
-    {
-        return view('admin.departments.edit', compact('department'));
     }
 
     public function update(Request $request, Department $department)
@@ -71,8 +56,7 @@ class DepartmentController extends Controller
                 'name' => $request->name
             ]);
 
-            return redirect()->route('admin.departments.index')
-                ->with('success', 'Jurusan berhasil diperbarui.');
+            return back()->with('success', 'Jurusan berhasil diperbarui.');
         } catch (QueryException $e) {
             Log::error('Department update failed: ' . $e->getMessage());
 
@@ -101,13 +85,11 @@ class DepartmentController extends Controller
 
             $department->delete();
 
-            return redirect()->route('admin.departments.index')
-                ->with('success', 'Jurusan berhasil dihapus.');
+            return back()->with('success', 'Jurusan berhasil dihapus.');
         } catch (QueryException $e) {
             Log::error('Department delete failed: ' . $e->getMessage());
 
-            return back()
-                ->with('error', 'Gagal menghapus jurusan.');
+            return back()->with('error', 'Gagal menghapus jurusan.');
         }
     }
 }

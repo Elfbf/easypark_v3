@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\StudyProgram;
 use App\Models\Department;
+use Carbon\Carbon;
 
 class StudyProgramSeeder extends Seeder
 {
@@ -13,7 +14,7 @@ class StudyProgramSeeder extends Seeder
         $data = [
             'Produksi Pertanian' => [
                 'Produksi Tanaman Hortikultura',
-                'Produksi Tanaman Perkenbunan',
+                'Produksi Tanaman Perkebunan',
                 'Teknik Produksi Benih',
                 'Teknologi Produksi Tanaman Pangan',
                 'Budidaya Tanaman Perkebunan',
@@ -30,10 +31,10 @@ class StudyProgramSeeder extends Seeder
                 'Manajemen Bisnis Unggas',
                 'Teknologi Pangan Ternak',
             ],
-            'Manajemen Agribinis' => [
-                'Manajemen Agribinis',
-                'Manajemen Agroinbinis',
-                'Pascasarjana Agribinis',
+            'Manajemen Agribisnis' => [
+                'Manajemen Agribisnis',
+                'Manajemen Agroindustri',
+                'Pascasarjana Agribisnis',
             ],
             'Teknologi Informasi' => [
                 'Manajemen Informatika',
@@ -64,15 +65,29 @@ class StudyProgramSeeder extends Seeder
         ];
 
         foreach ($data as $departmentName => $programs) {
+
             $department = Department::where('name', $departmentName)->first();
 
-            if (!$department) continue; // biar aman kalau tidak ditemukan
+            if (!$department) {
+                $this->command?->warn("Department tidak ditemukan: {$departmentName}");
+                continue;
+            }
 
             foreach ($programs as $program) {
-                StudyProgram::create([
-                    'department_id' => $department->id,
-                    'name' => $program,
-                ]);
+
+                $createdAt = Carbon::now()->subDays(rand(1, 30));
+                $updatedAt = Carbon::now();
+
+                StudyProgram::firstOrCreate(
+                    [
+                        'name' => $program,
+                        'department_id' => $department->id,
+                    ],
+                    [
+                        'created_at' => $createdAt,
+                        'updated_at' => $updatedAt,
+                    ]
+                );
             }
         }
     }

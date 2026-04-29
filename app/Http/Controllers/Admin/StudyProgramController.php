@@ -15,21 +15,14 @@ class StudyProgramController extends Controller
     {
         $search = $request->query('search');
 
-        $studyPrograms = StudyProgram::with('department')
-            ->when($search, function ($query, $search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $studyPrograms = StudyProgram::with(['department', 'users'])
+            ->latest()
+            ->get();
 
-        return view('admin.study-programs.index', compact('studyPrograms'));
-    }
-
-    public function create()
-    {
+        // 🔥 WAJIB untuk dropdown modal
         $departments = Department::orderBy('name')->get();
 
-        return view('admin.study-programs.create', compact('departments'));
+        return view('admin.study-programs.index', compact('studyPrograms', 'departments', 'search'));
     }
 
     public function store(Request $request)
@@ -45,8 +38,7 @@ class StudyProgramController extends Controller
                 'name' => $request->name,
             ]);
 
-            return redirect()->route('admin.study-programs.index')
-                ->with('success', 'Program studi berhasil ditambahkan.');
+            return back()->with('success', 'Program studi berhasil ditambahkan.');
         } catch (QueryException $e) {
             Log::error('StudyProgram store failed: ' . $e->getMessage());
 
@@ -54,21 +46,6 @@ class StudyProgramController extends Controller
                 ->withInput()
                 ->with('error', 'Gagal menambahkan program studi.');
         }
-    }
-
-    public function show(StudyProgram $studyProgram)
-    {
-        return view('admin.study-programs.show', compact('studyProgram'));
-    }
-
-    public function edit(StudyProgram $studyProgram)
-    {
-        $departments = Department::orderBy('name')->get();
-
-        return view('admin.study-programs.edit', compact(
-            'studyProgram',
-            'departments'
-        ));
     }
 
     public function update(Request $request, StudyProgram $studyProgram)
@@ -84,8 +61,7 @@ class StudyProgramController extends Controller
                 'name' => $request->name,
             ]);
 
-            return redirect()->route('admin.study-programs.index')
-                ->with('success', 'Program studi berhasil diperbarui.');
+            return back()->with('success', 'Program studi berhasil diperbarui.');
         } catch (QueryException $e) {
             Log::error('StudyProgram update failed: ' . $e->getMessage());
 
@@ -100,13 +76,11 @@ class StudyProgramController extends Controller
         try {
             $studyProgram->delete();
 
-            return redirect()->route('admin.study-programs.index')
-                ->with('success', 'Program studi berhasil dihapus.');
+            return back()->with('success', 'Program studi berhasil dihapus.');
         } catch (QueryException $e) {
             Log::error('StudyProgram delete failed: ' . $e->getMessage());
 
-            return back()
-                ->with('error', 'Gagal menghapus program studi.');
+            return back()->with('error', 'Gagal menghapus program studi.');
         }
     }
 }

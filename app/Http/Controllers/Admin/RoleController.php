@@ -16,17 +16,13 @@ class RoleController extends Controller
         $search = $request->query('search');
 
         $roles = Role::when($search, function ($query, $search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('admin.roles.index', compact('roles'));
-    }
-
-    public function create()
-    {
-        return view('admin.roles.create');
+        return view('admin.roles.index', compact('roles', 'search'));
     }
 
     public function store(Request $request)
@@ -40,8 +36,7 @@ class RoleController extends Controller
                 'name' => Str::lower($request->name)
             ]);
 
-            return redirect()->route('admin.roles.index')
-                ->with('success', 'Role berhasil ditambahkan.');
+            return back()->with('success', 'Role berhasil ditambahkan.');
         } catch (QueryException $e) {
             Log::error('Role store failed: ' . $e->getMessage());
 
@@ -49,16 +44,6 @@ class RoleController extends Controller
                 ->withInput()
                 ->with('error', 'Gagal menambahkan role.');
         }
-    }
-
-    public function show(Role $role)
-    {
-        return view('admin.roles.show', compact('role'));
-    }
-
-    public function edit(Role $role)
-    {
-        return view('admin.roles.edit', compact('role'));
     }
 
     public function update(Request $request, Role $role)
@@ -72,8 +57,7 @@ class RoleController extends Controller
                 'name' => Str::lower($request->name)
             ]);
 
-            return redirect()->route('admin.roles.index')
-                ->with('success', 'Role berhasil diperbarui.');
+            return back()->with('success', 'Role berhasil diperbarui.');
         } catch (QueryException $e) {
             Log::error('Role update failed: ' . $e->getMessage());
 
@@ -92,13 +76,11 @@ class RoleController extends Controller
 
             $role->delete();
 
-            return redirect()->route('admin.roles.index')
-                ->with('success', 'Role berhasil dihapus.');
+            return back()->with('success', 'Role berhasil dihapus.');
         } catch (QueryException $e) {
             Log::error('Role delete failed: ' . $e->getMessage());
 
-            return back()
-                ->with('error', 'Gagal menghapus role.');
+            return back()->with('error', 'Gagal menghapus role.');
         }
     }
 }

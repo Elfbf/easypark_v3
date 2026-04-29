@@ -7,35 +7,30 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
 
 class PetugasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->query('search');
+
         $petugas = User::with('role')
             ->whereHas('role', function ($query) {
                 $query->where('name', 'petugas');
             })
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('nim_nip', 'like', '%' . $search . '%');
+            })
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('admin.petugas.index', compact('petugas'));
+        return view('admin.petugas.index', compact('petugas', 'search'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('admin.petugas.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -46,34 +41,29 @@ class PetugasController extends Controller
             'password'  => 'required|string|min:6',
         ]);
 
-        $role = Role::where('name', 'petugas')->firstOrFail();
+        try {
+            $role = Role::where('name', 'petugas')->firstOrFail();
 
-        User::create([
-            'role_id'   => $role->id,
-            'name'      => $request->name,
-            'nim_nip'   => $request->nim_nip,
-            'phone'     => $request->phone,
-            'email'     => $request->email,
-            'password'  => Hash::make($request->password),
-            'is_active' => $request->boolean('is_active'),
-        ]);
+            User::create([
+                'role_id'   => $role->id,
+                'name'      => $request->name,
+                'nim_nip'   => $request->nim_nip,
+                'phone'     => $request->phone,
+                'email'     => $request->email,
+                'password'  => Hash::make($request->password),
+                'is_active' => $request->boolean('is_active'),
+            ]);
 
-        return redirect()
-            ->route('admin.petugas.index')
-            ->with('success', 'Data petugas berhasil ditambahkan.');
+            return back()->with('success', 'Data petugas berhasil ditambahkan.');
+        } catch (QueryException $e) {
+            Log::error('Petugas store failed: ' . $e->getMessage());
+
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal menambahkan petugas.');
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $petugas)
-    {
-        return view('admin.petugas.edit', compact('petugas'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, User $petugas)
     {
         $request->validate([
@@ -83,28 +73,35 @@ class PetugasController extends Controller
             'email'     => 'nullable|email|unique:users,email,' . $petugas->id,
         ]);
 
-        $petugas->update([
-            'name'      => $request->name,
-            'nim_nip'   => $request->nim_nip,
-            'phone'     => $request->phone,
-            'email'     => $request->email,
-            'is_active' => $request->boolean('is_active'),
-        ]);
+        try {
+            $petugas->update([
+                'name'      => $request->name,
+                'nim_nip'   => $request->nim_nip,
+                'phone'     => $request->phone,
+                'email'     => $request->email,
+                'is_active' => $request->boolean('is_active'),
+            ]);
 
-        return redirect()
-            ->route('admin.petugas.index')
-            ->with('success', 'Data petugas berhasil diperbarui.');
+            return back()->with('success', 'Data petugas berhasil diperbarui.');
+        } catch (QueryException $e) {
+            Log::error('Petugas update failed: ' . $e->getMessage());
+
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal memperbarui petugas.');
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $petugas)
     {
-        $petugas->delete();
+        try {
+            $petugas->delete();
 
-        return redirect()
-            ->route('admin.petugas.index')
-            ->with('success', 'Data petugas berhasil dihapus.');
+            return back()->with('success', 'Data petugas berhasil dihapus.');
+        } catch (QueryException $e) {
+            Log::error('Petugas delete failed: ' . $e->getMessage());
+
+            return back()->with('error', 'Gagal menghapus petugas.');
+        }
     }
 }
