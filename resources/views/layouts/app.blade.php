@@ -1,31 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
-    @include('partials.head')
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Dashboard') — EasyPark Polije Bondowoso</title>
+
+    @include('layouts.partials.head')
 </head>
 
 <body>
 
-    @include('partials.sidebar')
-    @include('partials.navbar')
+    {{-- Sidebar --}}
+    @include('layouts.partials.sidebar')
 
-    <main id="main" class="main">
-        @yield('content')
-    </main>
+    {{-- Main Wrapper --}}
+    <div class="main">
 
-    <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
-        <i class="bi bi-arrow-up-short"></i>
-    </a>
+        {{-- Navbar / Topbar --}}
+        @include('layouts.partials.navbar')
 
-    {{-- Global Scripts --}}
-    @include('partials.scripts')
+        {{-- Page Content --}}
+        <main class="page">
 
-    {{-- Flash Message --}}
-    @include('partials.alert')
+            {{-- Alert (opsional, tampil jika ada session flash) --}}
+            @include('layouts.partials.alert')
 
-    {{-- Page Script --}}
-    @yield('scripts')
+            {{-- Konten halaman spesifik --}}
+            @yield('content')
+
+        </main>
+
+    </div>
+
+    {{-- Scripts --}}
+    @include('layouts.partials.scripts')
+
+    {{-- Stack untuk script tambahan per halaman --}}
+    @stack('scripts')
 
 </body>
 
