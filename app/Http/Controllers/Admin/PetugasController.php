@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class PetugasController extends Controller
 {
@@ -25,8 +26,7 @@ class PetugasController extends Controller
                       ->orWhere('nim_nip', 'like', '%' . $search . '%');
             })
             ->latest()
-            ->paginate(10)
-            ->withQueryString();
+            ->get();
 
         return view('admin.petugas.index', compact('petugas', 'search'));
     }
@@ -34,24 +34,37 @@ class PetugasController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'      => 'required|string|max:255',
-            'nim_nip'   => 'required|string|max:255|unique:users,nim_nip',
-            'phone'     => 'nullable|string|max:20',
-            'email'     => 'nullable|email|unique:users,email',
-            'password'  => 'required|string|min:6',
+            'name'       => 'required|string|max:255',
+            'nim_nip'    => 'required|string|max:255|unique:users,nim_nip',
+            'phone'      => 'nullable|string|max:20',
+            'email'      => 'nullable|email|unique:users,email',
+            'password'   => 'required|string|min:6',
+            'gender'     => 'nullable|in:L,P',
+            'birth_date' => 'nullable|date',
+            'address'    => 'nullable|string|max:500',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         try {
             $role = Role::where('name', 'petugas')->firstOrFail();
 
+            $photoPath = null;
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('photos/petugas', 'public');
+            }
+
             User::create([
-                'role_id'   => $role->id,
-                'name'      => $request->name,
-                'nim_nip'   => $request->nim_nip,
-                'phone'     => $request->phone,
-                'email'     => $request->email,
-                'password'  => Hash::make($request->password),
-                'is_active' => $request->boolean('is_active'),
+                'role_id'    => $role->id,
+                'name'       => $request->name,
+                'nim_nip'    => $request->nim_nip,
+                'phone'      => $request->phone,
+                'email'      => $request->email,
+                'password'   => Hash::make($request->password),
+                'is_active'  => $request->boolean('is_active'),
+                'gender'     => $request->gender,
+                'birth_date' => $request->birth_date,
+                'address'    => $request->address,
+                'photo'      => $photoPath,
             ]);
 
             return back()->with('success', 'Data petugas berhasil ditambahkan.');
@@ -67,20 +80,37 @@ class PetugasController extends Controller
     public function update(Request $request, User $petugas)
     {
         $request->validate([
-            'name'      => 'required|string|max:255',
-            'nim_nip'   => 'required|string|max:255|unique:users,nim_nip,' . $petugas->id,
-            'phone'     => 'nullable|string|max:20',
-            'email'     => 'nullable|email|unique:users,email,' . $petugas->id,
+            'name'       => 'required|string|max:255',
+            'nim_nip'    => 'required|string|max:255|unique:users,nim_nip,' . $petugas->id,
+            'phone'      => 'nullable|string|max:20',
+            'email'      => 'nullable|email|unique:users,email,' . $petugas->id,
+            'gender'     => 'nullable|in:L,P',
+            'birth_date' => 'nullable|date',
+            'address'    => 'nullable|string|max:500',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         try {
-            $petugas->update([
-                'name'      => $request->name,
-                'nim_nip'   => $request->nim_nip,
-                'phone'     => $request->phone,
-                'email'     => $request->email,
-                'is_active' => $request->boolean('is_active'),
-            ]);
+            $data = [
+                'name'       => $request->name,
+                'nim_nip'    => $request->nim_nip,
+                'phone'      => $request->phone,
+                'email'      => $request->email,
+                'is_active'  => $request->boolean('is_active'),
+                'gender'     => $request->gender,
+                'birth_date' => $request->birth_date,
+                'address'    => $request->address,
+            ];
+
+            if ($request->hasFile('photo')) {
+                // Hapus foto lama jika ada
+                if ($petugas->photo) {
+                    Storage::disk('public')->delete($petugas->photo);
+                }
+                $data['photo'] = $request->file('photo')->store('photos/petugas', 'public');
+            }
+
+            $petugas->update($data);
 
             return back()->with('success', 'Data petugas berhasil diperbarui.');
         } catch (QueryException $e) {
@@ -95,6 +125,11 @@ class PetugasController extends Controller
     public function destroy(User $petugas)
     {
         try {
+            // Hapus foto dari storage jika ada
+            if ($petugas->photo) {
+                Storage::disk('public')->delete($petugas->photo);
+            }
+
             $petugas->delete();
 
             return back()->with('success', 'Data petugas berhasil dihapus.');

@@ -157,15 +157,18 @@
                         {{-- Kontak --}}
                         <th style="padding:14px 16px;width:200px;">Kontak</th>
 
+                        {{-- Gender --}}
+                        <th style="padding:14px 16px;width:110px;text-align:center;">Gender</th>
+
                         {{-- Status --}}
                         <th style="padding:14px 16px;width:120px;text-align:center;">Status</th>
 
                         {{-- Sortable: Dibuat --}}
                         <th style="padding:14px 16px;width:150px;cursor:pointer;user-select:none;"
-                            onclick="sortTable(5, this)" title="Klik untuk urutkan">
+                            onclick="sortTable(6, this)" title="Klik untuk urutkan">
                             <div style="display:inline-flex;align-items:center;gap:5px;">
                                 Dibuat
-                                <span id="sort-icon-5"
+                                <span id="sort-icon-6"
                                     style="color:#D4D9E8;font-size:10px;transition:color .15s;">↕</span>
                             </div>
                         </th>
@@ -193,18 +196,24 @@
                                 </span>
                             </td>
 
-                            {{-- Nama --}}
+                            {{-- Nama + Foto --}}
                             <td style="padding:14px 16px;">
                                 <div style="display:flex;align-items:center;gap:12px;">
-                                    {{-- Avatar inisial --}}
-                                    <div
-                                        style="width:38px;height:38px;border-radius:10px;
-                                                background:#E8F0FB;border:1.5px solid #C0D3F5;
-                                                display:flex;align-items:center;justify-content:center;
-                                                flex-shrink:0;font-family:'Syne',sans-serif;
-                                                font-size:13px;font-weight:800;color:#1A4BAD;">
-                                        {{ strtoupper(substr($p->name, 0, 1)) }}
-                                    </div>
+                                    {{-- Avatar foto / inisial --}}
+                                    @if ($p->photo)
+                                        <img src="{{ Storage::url($p->photo) }}" alt="{{ $p->name }}"
+                                            style="width:38px;height:38px;border-radius:10px;
+                                                   object-fit:cover;border:1.5px solid #C0D3F5;flex-shrink:0;">
+                                    @else
+                                        <div
+                                            style="width:38px;height:38px;border-radius:10px;
+                                                    background:#E8F0FB;border:1.5px solid #C0D3F5;
+                                                    display:flex;align-items:center;justify-content:center;
+                                                    flex-shrink:0;font-family:'Syne',sans-serif;
+                                                    font-size:13px;font-weight:800;color:#1A4BAD;">
+                                            {{ strtoupper(substr($p->name, 0, 1)) }}
+                                        </div>
+                                    @endif
                                     <div>
                                         <div style="font-weight:600;font-size:13.5px;color:#181D35;">
                                             {{ $p->name }}
@@ -240,6 +249,27 @@
                                         </svg>
                                         {{ $p->phone }}
                                     </div>
+                                @else
+                                    <span style="font-size:12px;color:#D4D9E8;">—</span>
+                                @endif
+                            </td>
+
+                            {{-- Gender --}}
+                            <td style="padding:14px 16px;text-align:center;">
+                                @if ($p->gender === 'L')
+                                    <span style="display:inline-flex;align-items:center;gap:5px;
+                                                 background:#EFF8FF;border:1px solid #B2DDFF;
+                                                 color:#1849A9;font-size:12px;font-weight:600;
+                                                 padding:4px 10px;border-radius:100px;">
+                                        ♂ Laki-laki
+                                    </span>
+                                @elseif ($p->gender === 'P')
+                                    <span style="display:inline-flex;align-items:center;gap:5px;
+                                                 background:#FDF2F8;border:1px solid #F5C6E4;
+                                                 color:#9E2A6D;font-size:12px;font-weight:600;
+                                                 padding:4px 10px;border-radius:100px;">
+                                        ♀ Perempuan
+                                    </span>
                                 @else
                                     <span style="font-size:12px;color:#D4D9E8;">—</span>
                                 @endif
@@ -291,7 +321,11 @@
                                             '{{ addslashes($p->nim_nip ?? '') }}',
                                             '{{ addslashes($p->phone ?? '') }}',
                                             '{{ addslashes($p->email ?? '') }}',
-                                            {{ $p->is_active ? 'true' : 'false' }}
+                                            {{ $p->is_active ? 'true' : 'false' }},
+                                            '{{ $p->gender ?? '' }}',
+                                            '{{ $p->birth_date?->format('Y-m-d') ?? '' }}',
+                                            '{{ addslashes($p->address ?? '') }}',
+                                            '{{ $p->photo ? Storage::url($p->photo) : '' }}'
                                         )"
                                         style="width:32px;height:32px;border-radius:8px;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -372,7 +406,7 @@
                align-items:center;justify-content:center;">
         <div
             style="background:#fff;border-radius:20px;padding:32px;
-                    width:100%;max-width:480px;box-shadow:0 24px 64px rgba(7,28,82,.18);
+                    width:100%;max-width:520px;box-shadow:0 24px 64px rgba(7,28,82,.18);
                     margin:16px;max-height:90vh;overflow-y:auto;">
 
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
@@ -396,8 +430,58 @@
                 </div>
             </div>
 
-            <form action="{{ route('admin.petugas.store') }}" method="POST" onsubmit="return validateAddForm()">
+            <form action="{{ route('admin.petugas.store') }}" method="POST"
+                  enctype="multipart/form-data" onsubmit="return validateAddForm()">
                 @csrf
+
+                {{-- Foto Upload --}}
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                        Foto Profil
+                    </label>
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        {{-- Preview --}}
+                        <div id="addPhotoPreviewWrap"
+                            style="width:64px;height:64px;border-radius:12px;background:#F5F7FC;
+                                   border:1.5px dashed #D4D9E8;display:flex;align-items:center;
+                                   justify-content:center;flex-shrink:0;overflow:hidden;">
+                            <svg id="addPhotoIcon" viewBox="0 0 24 24" fill="none" stroke="#D4D9E8" stroke-width="1.5"
+                                style="width:24px;height:24px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <img id="addPhotoPreview" src="" alt="preview"
+                                style="display:none;width:100%;height:100%;object-fit:cover;">
+                        </div>
+                        <div style="flex:1;">
+                            <label for="addPhoto"
+                                style="display:inline-flex;align-items:center;gap:7px;
+                                       height:36px;padding:0 14px;border-radius:10px;
+                                       border:1.5px solid #D4D9E8;background:#fff;
+                                       font-size:13px;font-weight:500;color:#4A5175;cursor:pointer;
+                                       transition:border-color .2s,background .2s;"
+                                onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
+                                onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    style="width:14px;height:14px;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                Pilih Foto
+                            </label>
+                            <input type="file" name="photo" id="addPhoto" accept="image/*"
+                                style="display:none;" onchange="previewPhoto('addPhoto','addPhotoPreview','addPhotoIcon')">
+                            <div style="font-size:11.5px;color:#8A93AE;margin-top:6px;">
+                                JPG, PNG, WebP — maks. 2MB
+                            </div>
+                        </div>
+                    </div>
+                    @error('photo')
+                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
+                    @enderror
+                </div>
 
                 {{-- Nama --}}
                 <div style="margin-bottom:16px;">
@@ -414,10 +498,7 @@
                         onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                         onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
                     @error('name')
-                        <div style="margin-top:6px;font-size:12px;color:#D92D20;display:flex;align-items:center;gap:4px;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            {{ $message }}
-                        </div>
+                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -436,14 +517,11 @@
                         onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                         onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
                     @error('nim_nip')
-                        <div style="margin-top:6px;font-size:12px;color:#D92D20;display:flex;align-items:center;gap:4px;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            {{ $message }}
-                        </div>
+                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
                     @enderror
                 </div>
 
-                {{-- Email & No. HP — 2 kolom --}}
+                {{-- Email & No. HP --}}
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                     <div>
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
@@ -481,6 +559,71 @@
                     </div>
                 </div>
 
+                {{-- Gender & Tanggal Lahir --}}
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                    <div>
+                        <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                            Gender
+                        </label>
+                        <div style="position:relative;">
+                            <select name="gender" id="addGender"
+                                style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
+                                       padding:0 32px 0 14px;outline:none;appearance:none;
+                                       font-family:'DM Sans',sans-serif;font-size:13.5px;
+                                       color:#181D35;background:#fff;cursor:pointer;
+                                       transition:border-color .2s,box-shadow .2s;"
+                                onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
+                                onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+                                <option value="">— Pilih —</option>
+                                <option value="L" {{ old('gender') === 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="P" {{ old('gender') === 'P' ? 'selected' : '' }}>Perempuan</option>
+                            </select>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
+                                style="width:14px;height:14px;position:absolute;right:10px;top:50%;
+                                       transform:translateY(-50%);pointer-events:none;">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </div>
+                        @error('gender')
+                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                            Tanggal Lahir
+                        </label>
+                        <input type="date" name="birth_date" id="addBirthDate"
+                            value="{{ old('birth_date') }}"
+                            style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
+                                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
+                                   font-size:13.5px;color:#181D35;background:#fff;
+                                   transition:border-color .2s,box-shadow .2s;"
+                            onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
+                            onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+                        @error('birth_date')
+                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Alamat --}}
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                        Alamat
+                    </label>
+                    <textarea name="address" id="addAddress" rows="3"
+                        placeholder="Alamat lengkap petugas..."
+                        style="width:100%;border:1.5px solid #D4D9E8;border-radius:10px;
+                               padding:10px 14px;outline:none;font-family:'DM Sans',sans-serif;
+                               font-size:13.5px;color:#181D35;background:#fff;resize:vertical;
+                               transition:border-color .2s,box-shadow .2s;"
+                        onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
+                        onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">{{ old('address') }}</textarea>
+                    @error('address')
+                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 {{-- Password --}}
                 <div style="margin-bottom:16px;">
                     <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
@@ -506,10 +649,7 @@
                         </button>
                     </div>
                     @error('password')
-                        <div style="margin-top:6px;font-size:12px;color:#D92D20;display:flex;align-items:center;gap:4px;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            {{ $message }}
-                        </div>
+                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -535,7 +675,7 @@
                 <div id="addError"
                     style="display:none;margin-bottom:16px;padding:10px 14px;background:#FEF3F2;
                            border:1px solid #FECDCA;border-radius:10px;font-size:12.5px;
-                           color:#D92D20;display:flex;align-items:center;gap:8px;">
+                           color:#D92D20;align-items:center;gap:8px;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         style="width:14px;height:14px;flex-shrink:0;">
                         <circle cx="12" cy="12" r="10" />
@@ -567,7 +707,7 @@
                align-items:center;justify-content:center;">
         <div
             style="background:#fff;border-radius:20px;padding:32px;
-                    width:100%;max-width:480px;box-shadow:0 24px 64px rgba(7,28,82,.18);
+                    width:100%;max-width:520px;box-shadow:0 24px 64px rgba(7,28,82,.18);
                     margin:16px;max-height:90vh;overflow-y:auto;">
 
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
@@ -591,9 +731,54 @@
                 </div>
             </div>
 
-            <form id="editForm" method="POST">
+            <form id="editForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+
+                {{-- Foto Upload --}}
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                        Foto Profil
+                    </label>
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <div id="editPhotoPreviewWrap"
+                            style="width:64px;height:64px;border-radius:12px;background:#F5F7FC;
+                                   border:1.5px dashed #D4D9E8;display:flex;align-items:center;
+                                   justify-content:center;flex-shrink:0;overflow:hidden;">
+                            <svg id="editPhotoIcon" viewBox="0 0 24 24" fill="none" stroke="#D4D9E8" stroke-width="1.5"
+                                style="width:24px;height:24px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <img id="editPhotoPreview" src="" alt="preview"
+                                style="display:none;width:100%;height:100%;object-fit:cover;">
+                        </div>
+                        <div style="flex:1;">
+                            <label for="editPhoto"
+                                style="display:inline-flex;align-items:center;gap:7px;
+                                       height:36px;padding:0 14px;border-radius:10px;
+                                       border:1.5px solid #D4D9E8;background:#fff;
+                                       font-size:13px;font-weight:500;color:#4A5175;cursor:pointer;
+                                       transition:border-color .2s,background .2s;"
+                                onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
+                                onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    style="width:14px;height:14px;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                Ganti Foto
+                            </label>
+                            <input type="file" name="photo" id="editPhoto" accept="image/*"
+                                style="display:none;" onchange="previewPhoto('editPhoto','editPhotoPreview','editPhotoIcon')">
+                            <div style="font-size:11.5px;color:#8A93AE;margin-top:6px;">
+                                Kosongkan jika tidak ingin mengganti foto
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {{-- Nama --}}
                 <div style="margin-bottom:16px;">
@@ -649,6 +834,61 @@
                             onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                             onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
                     </div>
+                </div>
+
+                {{-- Gender & Tanggal Lahir --}}
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                    <div>
+                        <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                            Gender
+                        </label>
+                        <div style="position:relative;">
+                            <select name="gender" id="editGender"
+                                style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
+                                       padding:0 32px 0 14px;outline:none;appearance:none;
+                                       font-family:'DM Sans',sans-serif;font-size:13.5px;
+                                       color:#181D35;background:#fff;cursor:pointer;
+                                       transition:border-color .2s,box-shadow .2s;"
+                                onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
+                                onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+                                <option value="">— Pilih —</option>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
+                                style="width:14px;height:14px;position:absolute;right:10px;top:50%;
+                                       transform:translateY(-50%);pointer-events:none;">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                            Tanggal Lahir
+                        </label>
+                        <input type="date" name="birth_date" id="editBirthDate"
+                            style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
+                                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
+                                   font-size:13.5px;color:#181D35;background:#fff;
+                                   transition:border-color .2s,box-shadow .2s;"
+                            onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
+                            onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+                    </div>
+                </div>
+
+                {{-- Alamat --}}
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                        Alamat
+                    </label>
+                    <textarea name="address" id="editAddress" rows="3"
+                        placeholder="Alamat lengkap petugas..."
+                        style="width:100%;border:1.5px solid #D4D9E8;border-radius:10px;
+                               padding:10px 14px;outline:none;font-family:'DM Sans',sans-serif;
+                               font-size:13.5px;color:#181D35;background:#fff;resize:vertical;
+                               transition:border-color .2s,box-shadow .2s;"
+                        onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
+                        onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'"></textarea>
                 </div>
 
                 {{-- Status Aktif --}}
@@ -803,6 +1043,23 @@
         document.head.appendChild(toastStyle);
 
         // ═══════════════════════════════
+        // PREVIEW FOTO
+        // ═══════════════════════════════
+        function previewPhoto(inputId, imgId, iconId) {
+            const file = document.getElementById(inputId).files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.getElementById(imgId);
+                const icon = document.getElementById(iconId);
+                img.src = e.target.result;
+                img.style.display = 'block';
+                icon.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ═══════════════════════════════
         // TOGGLE PASSWORD VISIBILITY
         // ═══════════════════════════════
         function togglePassword(inputId, iconId) {
@@ -835,8 +1092,16 @@
             document.getElementById('addEmail').value = '';
             document.getElementById('addPhone').value = '';
             document.getElementById('addPassword').value = '';
+            document.getElementById('addGender').value = '';
+            document.getElementById('addBirthDate').value = '';
+            document.getElementById('addAddress').value = '';
             document.getElementById('addIsActive').checked = true;
             document.getElementById('addError').style.display = 'none';
+            // reset foto preview
+            document.getElementById('addPhotoPreview').style.display = 'none';
+            document.getElementById('addPhotoPreview').src = '';
+            document.getElementById('addPhotoIcon').style.display = '';
+            document.getElementById('addPhoto').value = '';
         }
 
         function validateAddForm() {
@@ -852,13 +1117,31 @@
         // ═══════════════════════════════
         // MODAL EDIT
         // ═══════════════════════════════
-        function openEditModal(id, name, nimNip, phone, email, isActive) {
+        function openEditModal(id, name, nimNip, phone, email, isActive, gender, birthDate, address, photoUrl) {
             document.getElementById('editName').value = name;
             document.getElementById('editNimNip').value = nimNip;
             document.getElementById('editPhone').value = phone;
             document.getElementById('editEmail').value = email;
             document.getElementById('editIsActive').checked = isActive;
+            document.getElementById('editGender').value = gender;
+            document.getElementById('editBirthDate').value = birthDate;
+            document.getElementById('editAddress').value = address;
             document.getElementById('editForm').action = '/admin/petugas/' + id;
+
+            // Foto preview
+            const img = document.getElementById('editPhotoPreview');
+            const icon = document.getElementById('editPhotoIcon');
+            if (photoUrl) {
+                img.src = photoUrl;
+                img.style.display = 'block';
+                icon.style.display = 'none';
+            } else {
+                img.src = '';
+                img.style.display = 'none';
+                icon.style.display = '';
+            }
+            document.getElementById('editPhoto').value = '';
+
             document.getElementById('modalEdit').style.display = 'flex';
             setTimeout(() => document.getElementById('editName').focus(), 100);
         }
@@ -962,7 +1245,7 @@
                     const vb = (b.dataset.name || '').toLowerCase();
                     return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
                 }
-                if (colIndex === 5) {
+                if (colIndex === 6) {
                     const va = parseInt(a.dataset.created || 0);
                     const vb = parseInt(b.dataset.created || 0);
                     return dir === 'asc' ? va - vb : vb - va;
