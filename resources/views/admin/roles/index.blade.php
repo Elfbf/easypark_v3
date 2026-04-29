@@ -223,7 +223,7 @@
                 width:100%;max-width:420px;box-shadow:0 24px 64px rgba(7,28,82,.18);
                 margin:16px;">
 
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;margin-bottom:24px;">
             <div style="display:flex;align-items:center;gap:12px;">
                 <div style="width:40px;height:40px;border-radius:10px;background:#E8F0FB;
                             border:1.5px solid #C0D3F5;display:flex;align-items:center;
@@ -243,16 +243,6 @@
                     </div>
                 </div>
             </div>
-            <button onclick="closeModal()"
-                    style="width:34px;height:34px;border-radius:9px;background:#F5F7FC;
-                           border:1.5px solid #D4D9E8;display:flex;align-items:center;
-                           justify-content:center;cursor:pointer;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#4A5272" stroke-width="2"
-                     style="width:15px;height:15px;">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
         </div>
 
         <form action="{{ url('admin/roles') }}" method="POST">
@@ -301,7 +291,7 @@
                 width:100%;max-width:420px;box-shadow:0 24px 64px rgba(7,28,82,.18);
                 margin:16px;">
 
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;margin-bottom:24px;">
             <div style="display:flex;align-items:center;gap:12px;">
                 <div style="width:40px;height:40px;border-radius:10px;background:#FFFAEB;
                             border:1.5px solid #FDE68A;display:flex;align-items:center;
@@ -321,16 +311,6 @@
                     </div>
                 </div>
             </div>
-            <button onclick="closeEditModal()"
-                    style="width:34px;height:34px;border-radius:9px;background:#F5F7FC;
-                           border:1.5px solid #D4D9E8;display:flex;align-items:center;
-                           justify-content:center;cursor:pointer;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#4A5272" stroke-width="2"
-                     style="width:15px;height:15px;">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
         </div>
 
         <form id="editForm" method="POST">
