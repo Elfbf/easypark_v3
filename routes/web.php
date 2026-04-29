@@ -39,7 +39,6 @@ Route::get('/dashboard', function () {
 
         default => abort(403),
     };
-
 })->middleware(['auth'])->name('dashboard');
 
 
@@ -63,11 +62,12 @@ Route::prefix('admin')
         Route::resource('/study-programs', StudyProgramController::class);
 
         // PETUGAS
-        Route::resource('/petugas', PetugasController::class);
+        Route::resource('/petugas', PetugasController::class)
+            ->parameters(['petugas' => 'petugas:id']);
 
         // MAHASISWA
-        Route::resource('/mahasiswa', MahasiswaController::class);
-
+        Route::resource('/mahasiswa', MahasiswaController::class)
+            ->parameters(['mahasiswa' => 'mahasiswa:id']);
     });
 
 
@@ -79,7 +79,6 @@ Route::prefix('petugas')
 
         Route::get('/dashboard', [PetugasDashboardController::class, 'index'])
             ->name('dashboard');
-
     });
 
 
@@ -91,7 +90,6 @@ Route::prefix('mahasiswa')
 
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])
             ->name('dashboard');
-
     });
 
 
@@ -139,7 +137,7 @@ Route::get('/form422', function () {
     return '
         <form method="POST" action="/test422">
 
-            '.csrf_field().'
+            ' . csrf_field() . '
 
             <button type="submit">
                 Submit

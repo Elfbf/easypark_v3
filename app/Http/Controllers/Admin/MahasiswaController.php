@@ -3,153 +3,162 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Department;
 use App\Models\Role;
-use App\Models\StudyProgram;
 use App\Models\User;
+use App\Models\Department;
+use App\Models\StudyProgram;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class MahasiswaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $mahasiswa = User::with([
-                'role',
-                'department',
-                'studyProgram',
-            ])
+        $search = $request->query('search');
+
+        $mahasiswa = User::with(['role', 'department', 'studyProgram'])
             ->whereHas('role', function ($query) {
                 $query->where('name', 'mahasiswa');
             })
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('nim_nip', 'like', '%' . $search . '%');
+            })
             ->latest()
-            ->paginate(10);
-
-        return view('admin.mahasiswa.index', compact('mahasiswa'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $departments = Department::orderBy('name')->get();
-
-        $studyPrograms = StudyProgram::with('department')
-            ->orderBy('name')
             ->get();
 
-        return view('admin.mahasiswa.create', compact(
+        // 🔥 untuk dropdown modal
+        $departments = Department::orderBy('name')->get();
+        $studyPrograms = StudyProgram::orderBy('name')->get();
+
+        return view('admin.mahasiswa.index', compact(
+            'mahasiswa',
             'departments',
-            'studyPrograms'
+            'studyPrograms',
+            'search'
         ));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'name'              => 'required|string|max:255',
-            'nim_nip'           => 'required|string|max:255|unique:users,nim_nip',
-            'email'             => 'nullable|email|unique:users,email',
-            'phone'             => 'nullable|string|max:20',
-            'gender'            => 'nullable|in:L,P',
-            'birth_date'        => 'nullable|date',
-            'address'           => 'nullable|string',
-            'department_id'     => 'nullable|exists:departments,id',
-            'study_program_id'  => 'nullable|exists:study_programs,id',
-            'password'          => 'required|string|min:6',
+            'name'             => 'required|string|max:255',
+            'nim_nip'          => 'required|string|max:255|unique:users,nim_nip',
+            'phone'            => 'nullable|string|max:20',
+            'email'            => 'nullable|email|unique:users,email',
+            'password'         => 'required|string|min:6',
+            'department_id'    => 'required|exists:departments,id',
+            'study_program_id' => 'required|exists:study_programs,id',
+            'gender'           => 'nullable|in:L,P',
+            'birth_date'       => 'nullable|date',
+            'address'          => 'nullable|string|max:500',
+            'photo'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $role = Role::where('name', 'mahasiswa')->firstOrFail();
+        try {
+            $role = Role::where('name', 'mahasiswa')->firstOrFail();
 
-        User::create([
-            'role_id'           => $role->id,
-            'name'              => $request->name,
-            'nim_nip'           => $request->nim_nip,
-            'email'             => $request->email,
-            'phone'             => $request->phone,
-            'gender'            => $request->gender,
-            'birth_date'        => $request->birth_date,
-            'address'           => $request->address,
-            'department_id'     => $request->department_id,
-            'study_program_id'  => $request->study_program_id,
-            'password'          => Hash::make($request->password),
-            'is_active'         => $request->boolean('is_active'),
-        ]);
+            $photoPath = null;
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('photos/mahasiswa', 'public');
+            }
 
-        return redirect()
-            ->route('admin.mahasiswa.index')
-            ->with('success', 'Data mahasiswa berhasil ditambahkan.');
+            User::create([
+                'role_id'          => $role->id,
+                'name'             => $request->name,
+                'nim_nip'          => $request->nim_nip,
+                'phone'            => $request->phone,
+                'email'            => $request->email,
+                'password'         => Hash::make($request->password),
+                'department_id'    => $request->department_id,
+                'study_program_id' => $request->study_program_id,
+                'is_active'        => $request->boolean('is_active'),
+                'gender'           => $request->gender,
+                'birth_date'       => $request->birth_date,
+                'address'          => $request->address,
+                'photo'            => $photoPath,
+            ]);
+
+            return back()->with('success', 'Data mahasiswa berhasil ditambahkan.');
+        } catch (QueryException $e) {
+            Log::error('Mahasiswa store failed: ' . $e->getMessage());
+
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal menambahkan mahasiswa.');
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $mahasiswa)
-    {
-        $departments = Department::orderBy('name')->get();
-
-        $studyPrograms = StudyProgram::with('department')
-            ->orderBy('name')
-            ->get();
-
-        return view('admin.mahasiswa.edit', compact(
-            'mahasiswa',
-            'departments',
-            'studyPrograms'
-        ));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, User $mahasiswa)
     {
         $request->validate([
-            'name'              => 'required|string|max:255',
-            'nim_nip'           => 'required|string|max:255|unique:users,nim_nip,' . $mahasiswa->id,
-            'email'             => 'nullable|email|unique:users,email,' . $mahasiswa->id,
-            'phone'             => 'nullable|string|max:20',
-            'gender'            => 'nullable|in:L,P',
-            'birth_date'        => 'nullable|date',
-            'address'           => 'nullable|string',
-            'department_id'     => 'nullable|exists:departments,id',
-            'study_program_id'  => 'nullable|exists:study_programs,id',
+            'name'             => 'required|string|max:255',
+            'nim_nip'          => 'required|string|max:255|unique:users,nim_nip,' . $mahasiswa->id,
+            'phone'            => 'nullable|string|max:20',
+            'email'            => 'nullable|email|unique:users,email,' . $mahasiswa->id,
+            'department_id'    => 'required|exists:departments,id',
+            'study_program_id' => 'required|exists:study_programs,id',
+            'gender'           => 'nullable|in:L,P',
+            'birth_date'       => 'nullable|date',
+            'address'          => 'nullable|string|max:500',
+            'photo'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $mahasiswa->update([
-            'name'              => $request->name,
-            'nim_nip'           => $request->nim_nip,
-            'email'             => $request->email,
-            'phone'             => $request->phone,
-            'gender'            => $request->gender,
-            'birth_date'        => $request->birth_date,
-            'address'           => $request->address,
-            'department_id'     => $request->department_id,
-            'study_program_id'  => $request->study_program_id,
-            'is_active'         => $request->boolean('is_active'),
-        ]);
+        try {
+            $data = [
+                'name'             => $request->name,
+                'nim_nip'          => $request->nim_nip,
+                'phone'            => $request->phone,
+                'email'            => $request->email,
+                'department_id'    => $request->department_id,
+                'study_program_id' => $request->study_program_id,
+                'is_active'        => $request->boolean('is_active'),
+                'gender'           => $request->gender,
+                'birth_date'       => $request->birth_date,
+                'address'          => $request->address,
+            ];
 
-        return redirect()
-            ->route('admin.mahasiswa.index')
-            ->with('success', 'Data mahasiswa berhasil diperbarui.');
+            if ($request->hasFile('photo')) {
+                if ($mahasiswa->photo) {
+                    Storage::disk('public')->delete($mahasiswa->photo);
+                }
+                $data['photo'] = $request->file('photo')->store('photos/mahasiswa', 'public');
+            }
+
+            $mahasiswa->update($data);
+
+            return back()->with('success', 'Data mahasiswa berhasil diperbarui.');
+        } catch (QueryException $e) {
+            Log::error('Mahasiswa update failed: ' . $e->getMessage());
+
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal memperbarui mahasiswa.');
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function show(User $mahasiswa)
+    {
+        return response()->json($mahasiswa->load(['department', 'studyProgram']));
+    }
+
     public function destroy(User $mahasiswa)
     {
-        $mahasiswa->delete();
+        try {
+            if ($mahasiswa->photo) {
+                Storage::disk('public')->delete($mahasiswa->photo);
+            }
 
-        return redirect()
-            ->route('admin.mahasiswa.index')
-            ->with('success', 'Data mahasiswa berhasil dihapus.');
+            $mahasiswa->delete();
+
+            return back()->with('success', 'Data mahasiswa berhasil dihapus.');
+        } catch (QueryException $e) {
+            Log::error('Mahasiswa delete failed: ' . $e->getMessage());
+
+            return back()->with('error', 'Gagal menghapus mahasiswa.');
+        }
     }
 }

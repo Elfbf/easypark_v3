@@ -23,7 +23,7 @@ class PetugasController extends Controller
             })
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%')
-                      ->orWhere('nim_nip', 'like', '%' . $search . '%');
+                    ->orWhere('nim_nip', 'like', '%' . $search . '%');
             })
             ->latest()
             ->get();
@@ -120,6 +120,11 @@ class PetugasController extends Controller
                 ->withInput()
                 ->with('error', 'Gagal memperbarui petugas.');
         }
+    }
+
+    public function show(User $petugas)
+    {
+        return response()->json($petugas);
     }
 
     public function destroy(User $petugas)
