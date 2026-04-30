@@ -24,11 +24,14 @@ class MahasiswaController extends Controller
                 $query->where('name', 'mahasiswa');
             })
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                      ->orWhere('nim_nip', 'like', '%' . $search . '%');
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('nim_nip', 'like', '%' . $search . '%');
+                });
             })
             ->latest()
-            ->get();
+            ->paginate(5) // 🔥 ini yang penting
+            ->withQueryString(); // biar search tidak hilang saat pindah page
 
         // 🔥 untuk dropdown modal
         $departments = Department::orderBy('name')->get();

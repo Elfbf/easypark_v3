@@ -1735,7 +1735,13 @@
                 <div class="stat-label">Total Slot Parkir</div>
             </div>
             <div class="stat-item reveal reveal-delay-1">
-                <div class="stat-num">1.2<span>rb+</span></div>
+                <div class="stat-num">
+                    @if ($activeUsers >= 1000)
+                        {{ number_format($activeUsers / 1000, 1) }}<span>rb+</span>
+                    @else
+                        {{ $activeUsers }}<span>+</span>
+                    @endif
+                </div>
                 <div class="stat-label">Pengguna Terdaftar</div>
             </div>
             <div class="stat-item reveal reveal-delay-2">
@@ -1938,7 +1944,13 @@
                             <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                         </svg></div>
-                    <div class="stat-card-num">1.2<span>rb</span></div>
+                    <div class="stat-card-num">
+                        @if ($activeUsers >= 1000)
+                            {{ number_format($activeUsers / 1000, 1) }}<span>rb</span>
+                        @else
+                            {{ $activeUsers }}
+                        @endif
+                    </div>
                     <div class="stat-card-label">Pengguna Aktif</div>
                 </div>
                 <div class="stat-card reveal reveal-delay-3">
@@ -2077,8 +2089,11 @@
         <div class="cta-band-orb"></div>
         <div class="cta-inner reveal">
             <h2 class="cta-title">Siap parkir lebih <em>tertib & digital?</em></h2>
-            <p class="cta-sub">Bergabung dengan lebih dari 1.200 pengguna aktif Polije Bondowoso yang sudah merasakan
-                kemudahan EasyPark.</p>
+            <p class="cta-sub">
+                Bergabung dengan lebih dari
+                <strong>{{ number_format($activeUsers) }}</strong>
+                pengguna aktif Polije Bondowoso yang sudah merasakan kemudahan EasyPark.
+            </p>
             <div class="cta-btns">
                 <a href="/login" class="btn-cta-primary">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -2201,7 +2216,8 @@
 
         /* Mobile menu stub */
         function toggleMenu() {
-            /* extend as needed */ }
+            /* extend as needed */
+        }
 
         /* Animate stat numbers on scroll */
         function animateNum(el, target, suffix) {

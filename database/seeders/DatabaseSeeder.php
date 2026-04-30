@@ -19,6 +19,11 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             StudyProgramSeeder::class,
             UserSeeder::class,
+            VehicleTypeSeeder::class,
+            VehicleBrandSeeder::class,
+            VehicleSeeder::class,
+            ParkingAreaSeeder::class,
+            ParkingSlotSeeder::class,
         ]);
     }
 }

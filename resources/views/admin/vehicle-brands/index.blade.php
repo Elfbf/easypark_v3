@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Master Program Studi')
-@section('page_title', 'Master Program Studi')
+@section('title', 'Brand Kendaraan')
+@section('page_title', 'Brand Kendaraan')
 
 @section('content')
 
@@ -16,14 +16,14 @@
         <span style="color:#D4D9E8;">/</span>
         <a href="{{ route('admin.dashboard') }}" style="color:#8A93AE;text-decoration:none;">Admin</a>
         <span style="color:#D4D9E8;">/</span>
-        <span style="color:#181D35;font-weight:600;">Master Program Studi</span>
+        <span style="color:#181D35;font-weight:600;">Brand Kendaraan</span>
     </nav>
 
     {{-- ── Page Header ── --}}
     <div class="page-head">
         <div>
-            <div class="page-title">Master Program Studi</div>
-            <div class="page-sub">Kelola data program studi yang terdaftar dalam sistem</div>
+            <div class="page-title">Brand Kendaraan</div>
+            <div class="page-sub">Kelola data brand kendaraan yang terdaftar dalam sistem</div>
         </div>
     </div>
 
@@ -54,45 +54,27 @@
         </script>
     @endif
 
-    {{-- ── Tabel Program Studi ── --}}
+    {{-- ── Tabel Tipe Kendaraan ── --}}
     <div class="card">
         <div class="card-header">
             <div>
-                <div class="card-title">Daftar Program Studi</div>
-                <div class="card-sub">{{ $studyPrograms->total() }} program studi terdaftar dalam sistem</div>
+                <div class="card-title">Daftar Brand Kendaraan</div>
+                <div class="card-sub">{{ $vehicleBrands->total() }} brand kendaraan terdaftar dalam sistem</div>
             </div>
 
             <div style="display:flex;align-items:center;gap:10px;">
-                {{-- Filter Jurusan --}}
-                <div style="position:relative;">
-                    <select id="filterDept" onchange="filterTable()"
-                        style="height:36px;border:1.5px solid #D4D9E8;border-radius:10px;
-                               padding:0 32px 0 12px;outline:none;appearance:none;
-                               font-family:'DM Sans',sans-serif;font-size:13px;
-                               color:#181D35;background:#fff;cursor:pointer;
-                               transition:border-color .2s,box-shadow .2s;"
-                        onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
-                        onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                        <option value="">Semua Jurusan</option>
-                        @foreach ($departments as $dept)
-                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
-                        @endforeach
-                    </select>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
-                        style="width:14px;height:14px;position:absolute;right:10px;top:50%;
-                               transform:translateY(-50%);pointer-events:none;">
-                        <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                </div>
-
                 {{-- Search --}}
-                <div class="tb-search" style="width:220px;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="M21 21l-4.35-4.35" />
-                    </svg>
-                    <input type="text" id="searchProdi" placeholder="Cari program studi..." oninput="filterTable()">
-                </div>
+                <form method="GET" action="{{ route('admin.vehicle-brands.index') }}" style="display:flex;">
+                    <div class="tb-search" style="width:220px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="M21 21l-4.35-4.35" />
+                        </svg>
+                        <input type="text" name="search" placeholder="Cari brand kendaraan..."
+                            value="{{ $search }}"
+                            onchange="this.form.submit()">
+                    </div>
+                </form>
 
                 {{-- Tombol Tambah --}}
                 <button class="btn-primary" onclick="openModal()">
@@ -100,12 +82,12 @@
                         <line x1="12" y1="5" x2="12" y2="19" />
                         <line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
-                    Tambah Prodi
+                    Tambah Brand
                 </button>
             </div>
         </div>
 
-        @if ($studyPrograms->isEmpty())
+        @if ($vehicleBrands->isEmpty())
             {{-- ── Empty state ── --}}
             <div style="padding:64px 24px;text-align:center;">
                 <div
@@ -113,87 +95,81 @@
                             display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="2"
                         style="width:28px;height:28px;">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                        <rect x="1" y="3" width="15" height="13" rx="2"/>
+                        <path d="M16 8h4l3 3v5h-7V8z"/>
+                        <circle cx="5.5" cy="18.5" r="2.5"/>
+                        <circle cx="18.5" cy="18.5" r="2.5"/>
                     </svg>
                 </div>
                 <div
                     style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
                             color:#181D35;margin-bottom:6px;">
-                    Belum ada program studi
+                    @if ($search)
+                        Tidak ada brand kendaraan yang cocok
+                    @else
+                        Belum ada brand kendaraan
+                    @endif
                 </div>
                 <div style="font-size:13px;color:#8A93AE;margin-bottom:22px;line-height:1.6;">
-                    Tambahkan program studi pertama untuk mulai mengelola data akademik
+                    @if ($search)
+                        Coba kata kunci lain atau
+                        <a href="{{ route('admin.vehicle-brands.index') }}"
+                            style="color:#1A4BAD;font-weight:500;text-decoration:underline;">
+                            reset pencarian
+                        </a>
+                    @else
+                        Tambahkan brand kendaraan pertama untuk mulai mengelola data parkir
+                    @endif
                 </div>
-                <button class="btn-primary" onclick="openModal()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                    Tambah Prodi
-                </button>
+                @if (!$search)
+                    <button class="btn-primary" onclick="openModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Tambah <Brand>Kendaraan</Brand> 
+                    </button>
+                @endif
             </div>
         @else
-            <table class="data-table" id="prodiTable">
+            <table class="data-table" id="vehicleTypeTable">
                 <thead>
                     <tr>
                         <th style="padding:14px 16px 14px 24px;width:60px;">#</th>
 
-                        {{-- Sortable: Nama Prodi --}}
-                        <th style="padding:14px 16px;cursor:pointer;user-select:none;" onclick="sortTable(1, this)"
-                            title="Klik untuk urutkan">
-                            <div style="display:inline-flex;align-items:center;gap:5px;">
-                                Nama Program Studi
-                                <span id="sort-icon-1" style="color:#D4D9E8;font-size:10px;transition:color .15s;">↕</span>
-                            </div>
-                        </th>
+                        {{-- Nama Brand --}}
+                        <th style="padding:14px 16px;">Nama Brand Kendaraan</th>
 
-                        {{-- Jurusan --}}
-                        <th style="padding:14px 16px;width:200px;">
-                            Jurusan
-                        </th>
+                        {{-- Jumlah Kendaraan --}}
+                        <th style="padding:14px 16px;width:180px;text-align:center;">Jumlah Kendaraan</th>
 
-                        {{-- Mahasiswa --}}
-                        <th style="padding:14px 16px;width:130px;text-align:center;">
-                            Mahasiswa
-                        </th>
-
-                        {{-- Sortable: Dibuat --}}
-                        <th style="padding:14px 16px;width:150px;cursor:pointer;user-select:none;"
-                            onclick="sortTable(4, this)" title="Klik untuk urutkan">
-                            <div style="display:inline-flex;align-items:center;gap:5px;">
-                                Dibuat
-                                <span id="sort-icon-4"
-                                    style="color:#D4D9E8;font-size:10px;transition:color .15s;">↕</span>
-                            </div>
-                        </th>
+                        {{-- Dibuat --}}
+                        <th style="padding:14px 16px;width:150px;">Dibuat</th>
 
                         <th style="padding:14px 16px;width:110px;text-align:center;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($studyPrograms as $index => $prodi)
+                    @forelse($vehicleBrands as $index => $brand)
                         @php
-                            $userCount = $prodi->users->count();
-                            $isProtected = $userCount > 0;
+                            $vehicleCount = $brand->vehicles()->count();
+                            $isProtected  = $vehicleCount > 0;
                         @endphp
-                        <tr id="row-{{ $prodi->id }}" data-name="{{ strtolower($prodi->name) }}"
-                            data-dept="{{ $prodi->department_id }}"
-                            data-created="{{ $prodi->created_at?->timestamp ?? 0 }}">
+                        <tr id="row-{{ $brand->id }}">
 
                             {{-- No --}}
                             <td style="padding:14px 16px 14px 24px;">
                                 <span
                                     style="font-size:12px;font-weight:600;color:#8A93AE;
-                                             background:#F5F7FC;border:1px solid #EBEEF5;
-                                             border-radius:6px;padding:3px 8px;
-                                             display:inline-block;min-width:28px;text-align:center;"
+                                           background:#F5F7FC;border:1px solid #EBEEF5;
+                                           border-radius:6px;padding:3px 8px;
+                                           display:inline-block;min-width:28px;text-align:center;"
                                     class="row-num">
-                                    {{ $index + 1 }}
+                                    {{ $vehicleBrands->firstItem() + $index }}
                                 </span>
                             </td>
 
-                            {{-- Nama Prodi --}}
+                            {{-- Nama Brand --}}
                             <td style="padding:14px 16px;">
                                 <div style="display:flex;align-items:center;gap:12px;">
                                     <div
@@ -203,47 +179,34 @@
                                                 flex-shrink:0;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="2"
                                             style="width:17px;height:17px;">
-                                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                                            <rect x="1" y="3" width="15" height="13" rx="2"/>
+                                            <path d="M16 8h4l3 3v5h-7V8z"/>
+                                            <circle cx="5.5" cy="18.5" r="2.5"/>
+                                            <circle cx="18.5" cy="18.5" r="2.5"/>
                                         </svg>
                                     </div>
-                                    <span style="font-weight:600;font-size:13.5px;color:#181D35;">
-                                        {{ $prodi->name }}
+                                    <span style="font-weight:600;font-size:13.5px;color:#181D35;text-transform:capitalize;">
+                                        {{ $brand->name }}
                                     </span>
                                 </div>
                             </td>
 
-                            <td style="padding:14px 16px;">
-                                <span
-                                    style="display:inline-flex;align-items:center;gap:6px;
-                                                background:#F5F7FC;border:1px solid #EBEEF5;
-                                                color:#4A5175;font-size:12px;font-weight:600;
-                                                padding:6px 14px;border-radius:100px;
-                                                white-space:nowrap;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        style="width:12px;height:12px;">
-                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                                        <polyline points="9 22 9 12 15 12 15 22" />
-                                    </svg>
-                                    {{ $prodi->department->name ?? '-' }}
-                                </span>
-                            </td>
-
-                            {{-- Mahasiswa --}}
+                            {{-- Jumlah Kendaraan --}}
                             <td style="padding:14px 16px;text-align:center;">
-                                @if ($userCount > 0)
+                                @if ($vehicleCount > 0)
                                     <span
                                         style="display:inline-flex;align-items:center;gap:5px;
                                                 background:#ECFDF3;border:1px solid #6CE9A6;
                                                 color:#027A48;font-size:12px;font-weight:600;
-                                                padding:6px 14px;border-radius:100px;
-                                                white-space:nowrap;">
+                                                padding:4px 12px;border-radius:100px;white-space:nowrap;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             style="width:12px;height:12px;">
-                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                            <circle cx="9" cy="7" r="4" />
+                                            <rect x="1" y="3" width="15" height="13" rx="2"/>
+                                            <path d="M16 8h4l3 3v5h-7V8z"/>
+                                            <circle cx="5.5" cy="18.5" r="2.5"/>
+                                            <circle cx="18.5" cy="18.5" r="2.5"/>
                                         </svg>
-                                        {{ $userCount }} mahasiswa
+                                        {{ $vehicleCount }} kendaraan
                                     </span>
                                 @else
                                     <span style="font-size:12px;color:#D4D9E8;">—</span>
@@ -252,7 +215,7 @@
 
                             {{-- Dibuat --}}
                             <td style="padding:14px 16px;color:#8A93AE;font-size:12.5px;">
-                                {{ $prodi->created_at?->format('d M Y') ?? '-' }}
+                                {{ $brand->created_at?->format('d M Y') ?? '-' }}
                             </td>
 
                             {{-- Aksi --}}
@@ -260,8 +223,8 @@
                                 <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
 
                                     {{-- Edit --}}
-                                    <button class="tb-btn" title="Edit program studi"
-                                        onclick="openEditModal({{ $prodi->id }}, '{{ addslashes($prodi->name) }}', {{ $prodi->department_id }})"
+                                    <button class="tb-btn" title="Edit brand kendaraan"
+                                        onclick="openEditModal({{ $brand->id }}, '{{ addslashes($brand->name) }}')"
                                         style="width:32px;height:32px;border-radius:8px;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             style="width:14px;height:14px;">
@@ -270,10 +233,10 @@
                                         </svg>
                                     </button>
 
-                                    {{-- Hapus — disabled jika masih ada mahasiswa --}}
+                                    {{-- Hapus — disabled jika masih dipakai --}}
                                     @if ($isProtected)
-                                        <button class="tb-btn" title="Masih memiliki {{ $userCount }} mahasiswa"
-                                            onclick="showToast('warning', 'Program studi &quot;{{ addslashes($prodi->name) }}&quot; masih memiliki {{ $userCount }} mahasiswa. Hapus atau pindahkan data terlebih dahulu.')"
+                                        <button class="tb-btn" title="Masih digunakan {{ $vehicleCount }} kendaraan"
+                                            onclick="showToast('warning', 'Brand &quot;{{ addslashes($brand->name) }}&quot; masih digunakan oleh {{ $vehicleCount }} kendaraan. Hapus atau pindahkan data terlebih dahulu.')"
                                             style="width:32px;height:32px;border-radius:8px;
                                                    opacity:.45;cursor:not-allowed;border-color:#FECDCA;">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="#D92D20" stroke-width="2"
@@ -285,8 +248,8 @@
                                             </svg>
                                         </button>
                                     @else
-                                        <button class="tb-btn" title="Hapus program studi"
-                                            onclick="confirmDelete({{ $prodi->id }}, '{{ addslashes($prodi->name) }}')"
+                                        <button class="tb-btn" title="Hapus brand kendaraan"
+                                            onclick="confirmDelete({{ $brand->id }}, '{{ addslashes($brand->name) }}')"
                                             style="width:32px;height:32px;border-radius:8px;border-color:#FECDCA;">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="#D92D20" stroke-width="2"
                                                 style="width:14px;height:14px;">
@@ -307,71 +270,44 @@
                 </tbody>
             </table>
 
-            {{-- ── Empty search state ── --}}
-            <div id="emptySearch" style="display:none;padding:48px 24px;text-align:center;border-top:1px solid #EBEEF5;">
-                <div
-                    style="width:48px;height:48px;background:#F5F7FC;border-radius:12px;
-                            display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
-                        style="width:22px;height:22px;">
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="M21 21l-4.35-4.35" />
-                    </svg>
-                </div>
-                <div style="font-size:14px;font-weight:600;color:#181D35;margin-bottom:4px;">
-                    Tidak ada program studi yang cocok
-                </div>
-                <div style="font-size:13px;color:#8A93AE;">
-                    Coba kata kunci lain atau
-                    <span onclick="clearSearch()"
-                        style="color:#1A4BAD;cursor:pointer;font-weight:500;text-decoration:underline;">
-                        reset pencarian
-                    </span>
-                </div>
-            </div>
-
             {{-- Footer tabel + Pagination --}}
             <div
                 style="padding:14px 24px;border-top:1px solid #EBEEF5;
                         display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                 <span style="font-size:12.5px;color:#8A93AE;">
-                    Menampilkan {{ $studyPrograms->firstItem() }}–{{ $studyPrograms->lastItem() }}
-                    dari {{ $studyPrograms->total() }} program studi
+                    Menampilkan {{ $vehicleBrands->firstItem() }}–{{ $vehicleBrands->lastItem() }}
+                    dari {{ $vehicleBrands->total() }} brand kendaraan
                 </span>
 
                 {{-- Pagination --}}
-                @if ($studyPrograms->hasPages())
+                @if ($vehicleBrands->hasPages())
                     <div style="display:flex;align-items:center;gap:6px;">
                         {{-- Prev --}}
-                        @if ($studyPrograms->onFirstPage())
-                            <span
-                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
+                        @if ($vehicleBrands->onFirstPage())
+                            <span style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
                                          display:flex;align-items:center;justify-content:center;
                                          opacity:.4;cursor:not-allowed;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
-                                    style="width:14px;height:14px;">
-                                    <polyline points="15 18 9 12 15 6" />
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2" style="width:14px;height:14px;">
+                                    <polyline points="15 18 9 12 15 6"/>
                                 </svg>
                             </span>
                         @else
-                            <a href="{{ $studyPrograms->previousPageUrl() }}"
-                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
+                            <a href="{{ $vehicleBrands->previousPageUrl() }}"
+                               style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
                                       display:flex;align-items:center;justify-content:center;
                                       text-decoration:none;transition:border-color .2s,background .2s;"
-                                onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
-                                onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2"
-                                    style="width:14px;height:14px;">
-                                    <polyline points="15 18 9 12 15 6" />
+                               onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
+                               onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2" style="width:14px;height:14px;">
+                                    <polyline points="15 18 9 12 15 6"/>
                                 </svg>
                             </a>
                         @endif
 
                         {{-- Page numbers --}}
-                        @foreach ($studyPrograms->getUrlRange(1, $studyPrograms->lastPage()) as $page => $url)
-                            @if ($page == $studyPrograms->currentPage())
-                                <span
-                                    style="width:32px;height:32px;border-radius:8px;
+                        @foreach ($vehicleBrands->getUrlRange(1, $vehicleBrands->lastPage()) as $page => $url)
+                            @if ($page == $vehicleBrands->currentPage())
+                                <span style="width:32px;height:32px;border-radius:8px;
                                              background:#1A4BAD;color:#fff;
                                              display:flex;align-items:center;justify-content:center;
                                              font-size:12.5px;font-weight:600;">
@@ -379,38 +315,35 @@
                                 </span>
                             @else
                                 <a href="{{ $url }}"
-                                    style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
+                                   style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
                                           display:flex;align-items:center;justify-content:center;
                                           font-size:12.5px;color:#4A5175;text-decoration:none;
                                           transition:border-color .2s,background .2s;"
-                                    onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
-                                    onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
+                                   onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
+                                   onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
                                     {{ $page }}
                                 </a>
                             @endif
                         @endforeach
 
                         {{-- Next --}}
-                        @if ($studyPrograms->hasMorePages())
-                            <a href="{{ $studyPrograms->nextPageUrl() }}"
-                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
+                        @if ($vehicleBrands->hasMorePages())
+                            <a href="{{ $vehicleBrands->nextPageUrl() }}"
+                               style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
                                       display:flex;align-items:center;justify-content:center;
                                       text-decoration:none;transition:border-color .2s,background .2s;"
-                                onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
-                                onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2"
-                                    style="width:14px;height:14px;">
-                                    <polyline points="9 18 15 12 9 6" />
+                               onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
+                               onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2" style="width:14px;height:14px;">
+                                    <polyline points="9 18 15 12 9 6"/>
                                 </svg>
                             </a>
                         @else
-                            <span
-                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
+                            <span style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
                                          display:flex;align-items:center;justify-content:center;
                                          opacity:.4;cursor:not-allowed;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
-                                    style="width:14px;height:14px;">
-                                    <polyline points="9 18 15 12 9 6" />
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2" style="width:14px;height:14px;">
+                                    <polyline points="9 18 15 12 9 6"/>
                                 </svg>
                             </span>
                         @endif
@@ -423,7 +356,7 @@
 
 
     {{-- ══════════════════════════════════════
-         MODAL — Tambah Prodi
+         MODAL — Tambah Brand Kendaraan
     ══════════════════════════════════════ --}}
     <div id="modalAdd"
         style="display:none;position:fixed;inset:0;z-index:200;
@@ -431,7 +364,7 @@
                align-items:center;justify-content:center;">
         <div
             style="background:#fff;border-radius:20px;padding:32px;
-                    width:100%;max-width:440px;box-shadow:0 24px 64px rgba(7,28,82,.18);
+                    width:100%;max-width:420px;box-shadow:0 24px 64px rgba(7,28,82,.18);
                     margin:16px;">
 
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
@@ -447,66 +380,31 @@
                 </div>
                 <div>
                     <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:#181D35;">
-                        Tambah Program Studi
+                        Tambah Brand Kendaraan
                     </div>
                     <div style="font-size:12px;color:#8A93AE;margin-top:2px;">
-                        Buat program studi baru dalam sistem
+                        Buat brand kendaraan baru dalam sistem
                     </div>
                 </div>
             </div>
 
-            <form action="{{ route('admin.study-programs.store') }}" method="POST" onsubmit="return validateAddForm()">
+            <form action="{{ route('admin.vehicle-brands.store') }}" method="POST" onsubmit="return validateAddForm()">
                 @csrf
 
-                {{-- Pilih Jurusan --}}
-                <div style="margin-bottom:16px;">
-                    <label
-                        style="display:block;font-size:13px;font-weight:600;
-                                  color:#181D35;margin-bottom:8px;">
-                        Jurusan <span style="color:#D92D20;">*</span>
-                    </label>
-                    <div style="position:relative;">
-                        <select name="department_id" id="addDeptId" required
-                            style="width:100%;height:42px;border:1.5px solid #D4D9E8;
-                                   border-radius:10px;padding:0 36px 0 14px;outline:none;appearance:none;
-                                   font-family:'DM Sans',sans-serif;font-size:13.5px;
-                                   color:#181D35;background:#fff;cursor:pointer;
-                                   transition:border-color .2s,box-shadow .2s;"
-                            onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
-                            onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'"
-                            onchange="clearAddError()">
-                            <option value="">— Pilih jurusan —</option>
-                            @foreach ($departments as $dept)
-                                <option value="{{ $dept->id }}"
-                                    {{ old('department_id') == $dept->id ? 'selected' : '' }}>
-                                    {{ $dept->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
-                            style="width:14px;height:14px;position:absolute;right:12px;top:50%;
-                                   transform:translateY(-50%);pointer-events:none;">
-                            <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                    </div>
-                </div>
-
-                {{-- Nama Prodi --}}
                 <div style="margin-bottom:20px;">
-                    <label
-                        style="display:block;font-size:13px;font-weight:600;
-                                  color:#181D35;margin-bottom:8px;">
-                        Nama Program Studi <span style="color:#D92D20;">*</span>
+                    <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                        Nama Brand <span style="color:#D92D20;">*</span>
                     </label>
-                    <input type="text" name="name" id="addProdiName"
-                        placeholder="Contoh: Teknik Informatika, Sistem Informasi..." autocomplete="off" required
+                    <input type="text" name="name" id="addBrandName"
+                        placeholder="Contoh: Toyota, Honda, Ford..." autocomplete="off" required
                         style="width:100%;height:42px;border:1.5px solid #D4D9E8;
                                border-radius:10px;padding:0 14px;outline:none;
                                font-family:'DM Sans',sans-serif;font-size:13.5px;
                                color:#181D35;background:#fff;
                                transition:border-color .2s,box-shadow .2s;"
                         onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
-                        onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'" oninput="clearAddError()">
+                        onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'"
+                        oninput="clearAddError()">
 
                     <div id="addError"
                         style="display:none;margin-top:7px;font-size:12px;color:#D92D20;
@@ -521,8 +419,7 @@
                     </div>
 
                     @error('name')
-                        <div
-                            style="margin-top:7px;font-size:12px;color:#D92D20;
+                        <div style="margin-top:7px;font-size:12px;color:#D92D20;
                                     display:flex;align-items:center;gap:5px;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 style="width:13px;height:13px;flex-shrink:0;">
@@ -540,15 +437,16 @@
                         Batal
                     </button>
                     <button type="submit" class="btn-primary" style="flex:1;justify-content:center;">
-                        Simpan Prodi
+                        Simpan Brand
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
+
     {{-- ══════════════════════════════════════
-         MODAL — Edit Prodi
+         MODAL — Edit Brand Kendaraan
     ══════════════════════════════════════ --}}
     <div id="modalEdit"
         style="display:none;position:fixed;inset:0;z-index:200;
@@ -556,7 +454,7 @@
                align-items:center;justify-content:center;">
         <div
             style="background:#fff;border-radius:20px;padding:32px;
-                    width:100%;max-width:440px;box-shadow:0 24px 64px rgba(7,28,82,.18);
+                    width:100%;max-width:420px;box-shadow:0 24px 64px rgba(7,28,82,.18);
                     margin:16px;">
 
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
@@ -572,10 +470,10 @@
                 </div>
                 <div>
                     <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:#181D35;">
-                        Edit Program Studi
+                        Edit Brand Kendaraan
                     </div>
                     <div style="font-size:12px;color:#8A93AE;margin-top:2px;">
-                        Ubah data program studi yang dipilih
+                        Ubah nama brand kendaraan yang dipilih
                     </div>
                 </div>
             </div>
@@ -584,50 +482,19 @@
                 @csrf
                 @method('PUT')
 
-                {{-- Pilih Jurusan --}}
-                <div style="margin-bottom:16px;">
-                    <label
-                        style="display:block;font-size:13px;font-weight:600;
-                                  color:#181D35;margin-bottom:8px;">
-                        Jurusan <span style="color:#D92D20;">*</span>
-                    </label>
-                    <div style="position:relative;">
-                        <select name="department_id" id="editDeptId" required
-                            style="width:100%;height:42px;border:1.5px solid #D4D9E8;
-                                   border-radius:10px;padding:0 36px 0 14px;outline:none;appearance:none;
-                                   font-family:'DM Sans',sans-serif;font-size:13.5px;
-                                   color:#181D35;background:#fff;cursor:pointer;
-                                   transition:border-color .2s,box-shadow .2s;"
-                            onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
-                            onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                            <option value="">— Pilih jurusan —</option>
-                            @foreach ($departments as $dept)
-                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
-                            @endforeach
-                        </select>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
-                            style="width:14px;height:14px;position:absolute;right:12px;top:50%;
-                                   transform:translateY(-50%);pointer-events:none;">
-                            <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                    </div>
-                </div>
-
-                {{-- Nama Prodi --}}
                 <div style="margin-bottom:20px;">
-                    <label
-                        style="display:block;font-size:13px;font-weight:600;
-                                  color:#181D35;margin-bottom:8px;">
-                        Nama Program Studi <span style="color:#D92D20;">*</span>
+                    <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                        Nama Brand <span style="color:#D92D20;">*</span>
                     </label>
-                    <input type="text" name="name" id="editProdiName" required autocomplete="off"
+                    <input type="text" name="name" id="editBrandName" required autocomplete="off"
                         style="width:100%;height:42px;border:1.5px solid #D4D9E8;
                                border-radius:10px;padding:0 14px;outline:none;
                                font-family:'DM Sans',sans-serif;font-size:13.5px;
                                color:#181D35;background:#fff;
                                transition:border-color .2s,box-shadow .2s;"
                         onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
-                        onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'" oninput="clearEditError()">
+                        onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'"
+                        oninput="clearEditError()">
 
                     <div id="editError"
                         style="display:none;margin-top:7px;font-size:12px;color:#D92D20;
@@ -682,10 +549,10 @@
             <div
                 style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;
                         color:#181D35;margin-bottom:8px;">
-                Hapus Program Studi?
+                Hapus Brand Kendaraan?
             </div>
             <div style="font-size:13px;color:#8A93AE;margin-bottom:6px;line-height:1.6;">
-                Program studi <strong id="deleteProdiName"
+                Brand <strong id="deleteBrandName"
                     style="color:#181D35;background:#F5F7FC;padding:1px 8px;
                            border-radius:6px;border:1px solid #D4D9E8;"></strong>
                 akan dihapus permanen.
@@ -721,39 +588,26 @@
 @push('scripts')
     <script>
         // ═══════════════════════════════
-        // DATA PRODI UNTUK VALIDASI DUPLIKAT
+        // DATA BRAND UNTUK VALIDASI DUPLIKAT
         // ═══════════════════════════════
-        // Format: { id: { name, department_id } }
-        const existingProdi = @json(
-            $studyPrograms->mapWithKeys(fn($p) => [
-                    $p->id => ['name' => $p->name, 'department_id' => $p->department_id],
-                ]));
+        const existingBrands = @json($vehicleBrands->pluck('name', 'id'));
         let currentEditId = null;
 
         // ═══════════════════════════════
         // TOAST NOTIFICATION
-        // ═══════════════════════════════
+        // ══════════════════════════════
         function showToast(type, message) {
             const configs = {
                 success: {
-                    bg: '#ECFDF3',
-                    border: '#6CE9A6',
-                    icon: '#12B76A',
-                    text: '#027A48',
+                    bg: '#ECFDF3', border: '#6CE9A6', icon: '#12B76A', text: '#027A48',
                     svg: '<polyline points="20 6 9 17 4 12"/>'
                 },
                 error: {
-                    bg: '#FEF3F2',
-                    border: '#FECDCA',
-                    icon: '#D92D20',
-                    text: '#912018',
+                    bg: '#FEF3F2', border: '#FECDCA', icon: '#D92D20', text: '#912018',
                     svg: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
                 },
                 warning: {
-                    bg: '#FFFAEB',
-                    border: '#FDE68A',
-                    icon: '#F79009',
-                    text: '#B54708',
+                    bg: '#FFFAEB', border: '#FDE68A', icon: '#F79009', text: '#B54708',
                     svg: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
                 },
             };
@@ -798,39 +652,34 @@
         // ═══════════════════════════════
         function openModal() {
             document.getElementById('modalAdd').style.display = 'flex';
-            setTimeout(() => document.getElementById('addDeptId').focus(), 100);
+            setTimeout(() => document.getElementById('addTypeName').focus(), 100);
         }
 
         function closeModal() {
             document.getElementById('modalAdd').style.display = 'none';
-            document.getElementById('addProdiName').value = '';
-            document.getElementById('addDeptId').value = '';
+            document.getElementById('addTypeName').value = '';
             clearAddError();
         }
 
         function clearAddError() {
             document.getElementById('addError').style.display = 'none';
-            document.getElementById('addProdiName').style.borderColor = '#D4D9E8';
-            document.getElementById('addProdiName').style.boxShadow = 'none';
+            document.getElementById('addTypeName').style.borderColor = '#D4D9E8';
+            document.getElementById('addTypeName').style.boxShadow = 'none';
         }
 
         function validateAddForm() {
-            const name = document.getElementById('addProdiName').value.trim().toLowerCase();
-            const deptId = parseInt(document.getElementById('addDeptId').value);
-            if (!name || !deptId) return true;
-
-            const duplicate = Object.values(existingProdi).some(
-                p => p.name.toLowerCase() === name && p.department_id === deptId
-            );
+            const val = document.getElementById('addTypeName').value.trim().toLowerCase();
+            if (!val) return true;
+            const duplicate = Object.values(existingBrands).some(n => n.toLowerCase() === val);
             if (duplicate) {
-                showAddError('Program studi dengan nama ini sudah ada di jurusan tersebut.');
+                showAddError('Brand kendaraan dengan nama ini sudah ada.');
                 return false;
             }
             return true;
         }
 
         function showAddError(msg) {
-            const input = document.getElementById('addProdiName');
+            const input = document.getElementById('addTypeName');
             input.style.borderColor = '#D92D20';
             input.style.boxShadow = '0 0 0 4px rgba(217,45,32,.10)';
             document.getElementById('addErrorText').textContent = msg;
@@ -840,14 +689,13 @@
         // ═══════════════════════════════
         // MODAL EDIT
         // ═══════════════════════════════
-        function openEditModal(id, name, deptId) {
+        function openEditModal(id, name) {
             currentEditId = id;
-            document.getElementById('editProdiName').value = name;
-            document.getElementById('editDeptId').value = deptId;
-            document.getElementById('editForm').action = '/admin/study-programs/' + id;
+            document.getElementById('editBrandName').value = name;
+            document.getElementById('editForm').action = '/admin/vehicle-brands/' + id;
             document.getElementById('modalEdit').style.display = 'flex';
             clearEditError();
-            setTimeout(() => document.getElementById('editProdiName').focus(), 100);
+            setTimeout(() => document.getElementById('editBrandName').focus(), 100);
         }
 
         function closeEditModal() {
@@ -857,29 +705,24 @@
 
         function clearEditError() {
             document.getElementById('editError').style.display = 'none';
-            document.getElementById('editProdiName').style.borderColor = '#D4D9E8';
-            document.getElementById('editProdiName').style.boxShadow = 'none';
+            document.getElementById('editBrandName').style.borderColor = '#D4D9E8';
+            document.getElementById('editBrandName').style.boxShadow = 'none';
         }
 
         function validateEditForm() {
-            const name = document.getElementById('editProdiName').value.trim().toLowerCase();
-            const deptId = parseInt(document.getElementById('editDeptId').value);
-            if (!name || !deptId) return true;
-
-            const duplicate = Object.entries(existingProdi).some(
-                ([id, p]) => parseInt(id) !== currentEditId &&
-                p.name.toLowerCase() === name &&
-                p.department_id === deptId
-            );
+            const val = document.getElementById('editBrandName').value.trim().toLowerCase();
+            if (!val) return true;
+            const duplicate = Object.entries(existingBrands)
+                .some(([id, name]) => parseInt(id) !== currentEditId && name.toLowerCase() === val);
             if (duplicate) {
-                showEditError('Program studi dengan nama ini sudah ada di jurusan tersebut.');
+                showEditError('Brand kendaraan dengan nama ini sudah ada.');
                 return false;
             }
             return true;
         }
 
         function showEditError(msg) {
-            const input = document.getElementById('editProdiName');
+            const input = document.getElementById('editBrandName');
             input.style.borderColor = '#D92D20';
             input.style.boxShadow = '0 0 0 4px rgba(217,45,32,.10)';
             document.getElementById('editErrorText').textContent = msg;
@@ -890,8 +733,8 @@
         // MODAL HAPUS
         // ═══════════════════════════════
         function confirmDelete(id, name) {
-            document.getElementById('deleteProdiName').textContent = name;
-            document.getElementById('deleteForm').action = '/admin/study-programs/' + id;
+            document.getElementById('deleteTypeName').textContent = name;
+            document.getElementById('deleteForm').action = '/admin/vehicle-types/' + id;
             document.getElementById('modalDelete').style.display = 'flex';
         }
 
@@ -911,88 +754,5 @@
                 ['modalAdd', 'modalEdit', 'modalDelete'].forEach(id =>
                     document.getElementById(id).style.display = 'none');
         });
-
-        // ═══════════════════════════════
-        // FILTER / SEARCH (nama + jurusan)
-        // ═══════════════════════════════
-        function filterTable() {
-            const keyword = document.getElementById('searchProdi').value.toLowerCase().trim();
-            const deptFilter = document.getElementById('filterDept').value;
-            const rows = document.querySelectorAll('#prodiTable tbody tr');
-            let visible = 0;
-
-            rows.forEach(row => {
-                const nameMatch = (row.dataset.name ?? '').includes(keyword);
-                const deptMatch = !deptFilter || row.dataset.dept === deptFilter;
-                const show = nameMatch && deptMatch;
-                row.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-
-            const total = rows.length;
-            document.getElementById('tableCount').textContent =
-                (keyword || deptFilter) ?
-                `Menampilkan ${visible} dari ${total} program studi` :
-                `Menampilkan ${total} program studi`;
-
-            document.getElementById('emptySearch').style.display = visible === 0 ? 'block' : 'none';
-
-            let num = 1;
-            rows.forEach(row => {
-                if (row.style.display !== 'none') {
-                    const span = row.querySelector('.row-num');
-                    if (span) span.textContent = num++;
-                }
-            });
-        }
-
-        function clearSearch() {
-            document.getElementById('searchProdi').value = '';
-            document.getElementById('filterDept').value = '';
-            filterTable();
-        }
-
-        // ═══════════════════════════════
-        // SORT KOLOM
-        // ═══════════════════════════════
-        const sortState = {};
-
-        function sortTable(colIndex, thEl) {
-            const tbody = document.querySelector('#prodiTable tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            const current = sortState[colIndex] || 'none';
-            const dir = current === 'asc' ? 'desc' : 'asc';
-            sortState[colIndex] = dir;
-
-            document.querySelectorAll('[id^="sort-icon-"]').forEach(el => {
-                el.textContent = '↕';
-                el.style.color = '#D4D9E8';
-            });
-            const icon = document.getElementById('sort-icon-' + colIndex);
-            if (icon) {
-                icon.textContent = dir === 'asc' ? '↑' : '↓';
-                icon.style.color = '#1A4BAD';
-            }
-
-            rows.sort((a, b) => {
-                if (colIndex === 1) {
-                    const va = (a.dataset.name || '').toLowerCase();
-                    const vb = (b.dataset.name || '').toLowerCase();
-                    return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
-                }
-                if (colIndex === 4) {
-                    const va = parseInt(a.dataset.created || 0);
-                    const vb = parseInt(b.dataset.created || 0);
-                    return dir === 'asc' ? va - vb : vb - va;
-                }
-                return 0;
-            });
-
-            rows.forEach((row, i) => {
-                tbody.appendChild(row);
-                const span = row.querySelector('.row-num');
-                if (span) span.textContent = i + 1;
-            });
-        }
     </script>
 @endpush

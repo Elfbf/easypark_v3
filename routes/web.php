@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LandingController;
 
 // Dashboard Controllers
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -14,12 +15,14 @@ use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\StudyProgramController;
 use App\Http\Controllers\Admin\PetugasController;
 use App\Http\Controllers\Admin\MahasiswaController;
-
+use App\Http\Controllers\Admin\VehicleTypeController;
+use App\Http\Controllers\Admin\VehicleBrandController;
+use App\Http\Controllers\Admin\ParkingAreaController;
+use App\Http\Controllers\Admin\ParkingSlotController;
+use App\Http\Controllers\Admin\VehicleController;
 
 // LANDING
-Route::get('/', function () {
-    return view('landing.index');
-});
+Route::get('/', [LandingController::class, 'index']);
 
 
 // 🔥 REDIRECT DASHBOARD
@@ -39,6 +42,7 @@ Route::get('/dashboard', function () {
 
         default => abort(403),
     };
+
 })->middleware(['auth'])->name('dashboard');
 
 
@@ -68,6 +72,25 @@ Route::prefix('admin')
         // MAHASISWA
         Route::resource('/mahasiswa', MahasiswaController::class)
             ->parameters(['mahasiswa' => 'mahasiswa:id']);
+
+        // 🔥 TIPE KENDARAAN
+        Route::resource('/vehicle-types', VehicleTypeController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+
+        // 🔥 BRAND KENDARAAN
+        Route::resource('/vehicle-brands', VehicleBrandController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+
+        // 🔥 AREA PARKIR
+        Route::resource('/parking-areas', ParkingAreaController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+
+        // 🔥 SLOT PARKIR
+        Route::resource('/parking-slots', ParkingSlotController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+
+        // 🔥 KENDARAAN
+        Route::resource('/vehicles', VehicleController::class);
     });
 
 

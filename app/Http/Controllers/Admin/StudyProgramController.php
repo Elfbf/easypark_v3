@@ -16,13 +16,21 @@ class StudyProgramController extends Controller
         $search = $request->query('search');
 
         $studyPrograms = StudyProgram::with(['department', 'users'])
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
             ->latest()
-            ->get();
+            ->paginate(5) // 🔥 ganti get()
+            ->withQueryString(); // biar search tetap saat pindah page
 
         // 🔥 WAJIB untuk dropdown modal
         $departments = Department::orderBy('name')->get();
 
-        return view('admin.study-programs.index', compact('studyPrograms', 'departments', 'search'));
+        return view('admin.study-programs.index', compact(
+            'studyPrograms',
+            'departments',
+            'search'
+        ));
     }
 
     public function store(Request $request)

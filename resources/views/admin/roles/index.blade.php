@@ -60,7 +60,7 @@
         <div class="card-header">
             <div>
                 <div class="card-title">Daftar Role</div>
-                <div class="card-sub">{{ $roles->count() }} role terdaftar dalam sistem</div>
+                <div class="card-sub">{{ $roles->total() }} role terdaftar dalam sistem</div>
             </div>
 
             <div style="display:flex;align-items:center;gap:10px;">
@@ -285,15 +285,92 @@
                 </div>
             </div>
 
-            {{-- Footer tabel --}}
-            <div style="padding:14px 24px;border-top:1px solid #EBEEF5;
-                        display:flex;align-items:center;justify-content:space-between;">
-                <span id="tableCount" style="font-size:12.5px;color:#8A93AE;">
-                    Menampilkan {{ $roles->count() }} role
+            {{-- Footer tabel + Pagination --}}
+            <div
+                style="padding:14px 24px;border-top:1px solid #EBEEF5;
+                        display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                <span style="font-size:12.5px;color:#8A93AE;">
+                    Menampilkan {{ $roles->firstItem() }}–{{ $roles->lastItem() }}
+                    dari {{ $roles->total() }} role
                 </span>
-                <span style="font-size:12px;color:#D4D9E8;">
-                    Terakhir diperbarui: {{ now()->format('d M Y, H:i') }} WIB
-                </span>
+
+                {{-- Pagination --}}
+                @if ($roles->hasPages())
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        {{-- Prev --}}
+                        @if ($roles->onFirstPage())
+                            <span
+                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
+                                         display:flex;align-items:center;justify-content:center;
+                                         opacity:.4;cursor:not-allowed;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
+                                    style="width:14px;height:14px;">
+                                    <polyline points="15 18 9 12 15 6" />
+                                </svg>
+                            </span>
+                        @else
+                            <a href="{{ $roles->previousPageUrl() }}"
+                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
+                                      display:flex;align-items:center;justify-content:center;
+                                      text-decoration:none;transition:border-color .2s,background .2s;"
+                                onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
+                                onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2"
+                                    style="width:14px;height:14px;">
+                                    <polyline points="15 18 9 12 15 6" />
+                                </svg>
+                            </a>
+                        @endif
+
+                        {{-- Page numbers --}}
+                        @foreach ($roles->getUrlRange(1, $roles->lastPage()) as $page => $url)
+                            @if ($page == $roles->currentPage())
+                                <span
+                                    style="width:32px;height:32px;border-radius:8px;
+                                             background:#1A4BAD;color:#fff;
+                                             display:flex;align-items:center;justify-content:center;
+                                             font-size:12.5px;font-weight:600;">
+                                    {{ $page }}
+                                </span>
+                            @else
+                                <a href="{{ $url }}"
+                                    style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
+                                          display:flex;align-items:center;justify-content:center;
+                                          font-size:12.5px;color:#4A5175;text-decoration:none;
+                                          transition:border-color .2s,background .2s;"
+                                    onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
+                                    onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
+                                    {{ $page }}
+                                </a>
+                            @endif
+                        @endforeach
+
+                        {{-- Next --}}
+                        @if ($roles->hasMorePages())
+                            <a href="{{ $roles->nextPageUrl() }}"
+                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
+                                      display:flex;align-items:center;justify-content:center;
+                                      text-decoration:none;transition:border-color .2s,background .2s;"
+                                onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
+                                onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2"
+                                    style="width:14px;height:14px;">
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                            </a>
+                        @else
+                            <span
+                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
+                                         display:flex;align-items:center;justify-content:center;
+                                         opacity:.4;cursor:not-allowed;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
+                                    style="width:14px;height:14px;">
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                            </span>
+                        @endif
+                    </div>
+                @endif
             </div>
 
         @endif

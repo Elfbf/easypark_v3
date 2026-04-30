@@ -22,11 +22,14 @@ class PetugasController extends Controller
                 $query->where('name', 'petugas');
             })
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('nim_nip', 'like', '%' . $search . '%');
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('nim_nip', 'like', '%' . $search . '%');
+                });
             })
             ->latest()
-            ->get();
+            ->paginate(5) // 🔥 pagination
+            ->withQueryString(); // biar search tetap
 
         return view('admin.petugas.index', compact('petugas', 'search'));
     }

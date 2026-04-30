@@ -340,6 +340,125 @@
     .btn-outline:hover { background: var(--n-50); border-color: var(--n-400); }
     .btn-outline svg   { width: 15px; height: 15px; }
 
+    .sb-logout-btn{
+        width:100%;
+        border:none;
+        background:transparent;
+        cursor:pointer;
+        text-align:left;
+    }
+
+    .lm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(7, 18, 52, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lm-overlay.show {
+            display: flex;
+        }
+
+        .lm-box {
+            background: #fff;
+            border-radius: 18px;
+            padding: 32px 28px 24px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(7, 18, 52, 0.18);
+            animation: lmIn .2s ease;
+        }
+
+        @keyframes lmIn {
+            from {
+                opacity: 0;
+                transform: scale(.94) translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .lm-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: var(--err-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .lm-icon svg {
+            width: 22px;
+            height: 22px;
+            color: var(--err);
+        }
+
+        .lm-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--n-900);
+            margin-bottom: 8px;
+        }
+
+        .lm-sub {
+            font-size: 13px;
+            color: var(--n-400);
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .lm-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lm-cancel {
+            flex: 1;
+            height: 40px;
+            border: 1.5px solid var(--n-200);
+            border-radius: 10px;
+            background: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--n-600);
+            cursor: pointer;
+            transition: background .18s;
+        }
+
+        .lm-cancel:hover {
+            background: var(--n-50);
+        }
+
+        .lm-confirm {
+            flex: 1;
+            height: 40px;
+            border: none;
+            border-radius: 10px;
+            background: var(--err);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: background .18s, box-shadow .18s;
+        }
+
+        .lm-confirm:hover {
+            background: #b91c1c;
+            box-shadow: 0 4px 14px rgba(217, 45, 32, .3);
+        }
+
     .btn-primary {
         height: 38px; padding: 0 18px;
         border: none; border-radius: 10px;
