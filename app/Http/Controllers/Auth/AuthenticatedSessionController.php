@@ -30,8 +30,9 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        // ✅ Cek akun aktif — redirect balik dengan pesan di session
+        // ✅ Cek akun aktif
         if (! $user->is_active) {
+
             Auth::logout();
 
             return back()
@@ -39,12 +40,27 @@ class AuthenticatedSessionController extends Controller
                 ->with('error', 'Akun Anda tidak aktif. Hubungi administrator untuk informasi lebih lanjut.');
         }
 
+        // ✅ Update last login
+        $user->update([
+            'last_login_at' => now(),
+        ]);
+
         // ✅ Redirect berdasarkan role
         return match ($user->role->name) {
-            'admin'     => redirect()->intended(route('admin.dashboard')),
-            'petugas'   => redirect()->intended(route('petugas.dashboard')),
-            'mahasiswa' => redirect()->intended(route('mahasiswa.dashboard')),
-            default     => abort(403, 'Role tidak dikenali.'),
+
+            'admin' => redirect()->intended(
+                route('admin.dashboard')
+            ),
+
+            'petugas' => redirect()->intended(
+                route('petugas.dashboard')
+            ),
+
+            'mahasiswa' => redirect()->intended(
+                route('mahasiswa.dashboard')
+            ),
+
+            default => abort(403, 'Role tidak dikenali.'),
         };
     }
 

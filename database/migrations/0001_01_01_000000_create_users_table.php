@@ -42,12 +42,18 @@ return new class extends Migration
             $table->string('nim_nip')->nullable()->unique();
 
             // Biodata
-            $table->string('gender')->nullable();
+            $table->enum('gender', ['L', 'P'])->nullable();
             $table->date('birth_date')->nullable();
             $table->text('address')->nullable();
             $table->string('photo')->nullable();
 
-            // Relasi kampus 🔥
+            // Foto wajah utama
+            $table->string('face_photo')->nullable();
+
+            // Vector AI embedding
+            $table->longText('face_embedding')->nullable();
+
+            // Relasi kampus
             $table->foreignId('department_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('study_program_id')->nullable()->constrained()->nullOnDelete();
 
@@ -78,6 +84,16 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        // PASSWORD RESET OTP
+        Schema::create('password_reset_otps', function (Blueprint $table) {
+            $table->id();
+            $table->string('email')->index();
+            $table->string('otp', 6);
+            $table->timestamp('expired_at');
+            $table->boolean('is_used')->default(false);
+            $table->timestamps();
+        });
     }
 
     public function down(): void
@@ -88,5 +104,6 @@ return new class extends Migration
         Schema::dropIfExists('study_programs');
         Schema::dropIfExists('departments');
         Schema::dropIfExists('roles');
+        Schema::dropIfExists('password_reset_otps');
     }
 };

@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\VehicleBrand;
-use Carbon\Carbon;
 
 class VehicleBrandSeeder extends Seeder
 {
@@ -28,16 +27,9 @@ class VehicleBrandSeeder extends Seeder
 
         foreach ($brands as $brand) {
 
-            $createdAt = Carbon::now()->subDays(rand(1, 30));
-            $updatedAt = Carbon::now();
-
-            VehicleBrand::firstOrCreate(
-                ['name' => $brand],
-                [
-                    'created_at' => $createdAt,
-                    'updated_at' => $updatedAt,
-                ]
-            );
+            VehicleBrand::firstOrCreate([
+                'name' => $brand,
+            ]);
         }
     }
 }

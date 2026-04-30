@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\ParkingArea;
-use Carbon\Carbon;
 
 class ParkingAreaSeeder extends Seeder
 {
@@ -39,9 +38,6 @@ class ParkingAreaSeeder extends Seeder
 
         foreach ($areas as $area) {
 
-            $createdAt = Carbon::now()->subDays(rand(1, 30));
-            $updatedAt = Carbon::now();
-
             ParkingArea::firstOrCreate(
                 [
                     'code' => $area['code'],
@@ -51,8 +47,6 @@ class ParkingAreaSeeder extends Seeder
                     'description' => $area['description'],
                     'capacity'    => $area['capacity'],
                     'is_active'   => true,
-                    'created_at'  => $createdAt,
-                    'updated_at'  => $updatedAt,
                 ]
             );
         }

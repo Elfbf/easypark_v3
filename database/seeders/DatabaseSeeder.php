@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             VehicleTypeSeeder::class,
             VehicleBrandSeeder::class,
-            VehicleSeeder::class,
             ParkingAreaSeeder::class,
             ParkingSlotSeeder::class,
         ]);

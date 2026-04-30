@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 use App\Models\ParkingArea;
 use App\Models\ParkingSlot;
 use App\Models\VehicleType;
-use Carbon\Carbon;
 
 class ParkingSlotSeeder extends Seeder
 {
@@ -27,9 +26,6 @@ class ParkingSlotSeeder extends Seeder
 
             for ($i = 1; $i <= 10; $i++) {
 
-                $createdAt = Carbon::now()->subDays(rand(1, 30));
-                $updatedAt = Carbon::now();
-
                 ParkingSlot::firstOrCreate(
                     [
                         'parking_area_id' => $area->id,
@@ -39,8 +35,6 @@ class ParkingSlotSeeder extends Seeder
                         'vehicle_type_id' => $motor?->id,
                         'status'          => 'available',
                         'is_active'       => true,
-                        'created_at'      => $createdAt,
-                        'updated_at'      => $updatedAt,
                     ]
                 );
             }
@@ -53,9 +47,6 @@ class ParkingSlotSeeder extends Seeder
 
             for ($i = 1; $i <= 5; $i++) {
 
-                $createdAt = Carbon::now()->subDays(rand(1, 30));
-                $updatedAt = Carbon::now();
-
                 ParkingSlot::firstOrCreate(
                     [
                         'parking_area_id' => $area->id,
@@ -65,8 +56,6 @@ class ParkingSlotSeeder extends Seeder
                         'vehicle_type_id' => $mobil?->id,
                         'status'          => 'available',
                         'is_active'       => true,
-                        'created_at'      => $createdAt,
-                        'updated_at'      => $updatedAt,
                     ]
                 );
             }

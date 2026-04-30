@@ -21,8 +21,30 @@ use App\Http\Controllers\Admin\ParkingAreaController;
 use App\Http\Controllers\Admin\ParkingSlotController;
 use App\Http\Controllers\Admin\VehicleController;
 
+// Auth Controllers
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
+
 // LANDING
 Route::get('/', [LandingController::class, 'index']);
+
+
+// 🔥 FORGOT PASSWORD OTP
+Route::middleware('guest')->group(function () {
+
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])
+        ->name('password.request');
+
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOtp'])
+        ->name('password.email');
+
+    Route::post('/verify-otp', [ResetPasswordController::class, 'verifyOtp'])
+        ->name('password.otp.verify');
+
+    Route::post('/reset-password-otp', [ResetPasswordController::class, 'resetPassword'])
+        ->name('password.reset.update');
+});
 
 
 // 🔥 REDIRECT DASHBOARD
@@ -42,7 +64,6 @@ Route::get('/dashboard', function () {
 
         default => abort(403),
     };
-
 })->middleware(['auth'])->name('dashboard');
 
 
@@ -110,7 +131,6 @@ Route::prefix('mahasiswa')
     ->middleware(['auth', 'role:mahasiswa'])
     ->name('mahasiswa.')
     ->group(function () {
-
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])
             ->name('dashboard');
     });

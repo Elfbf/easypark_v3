@@ -57,7 +57,7 @@
         <div class="card-header">
             <div>
                 <div class="card-title">Daftar Mahasiswa</div>
-                <div class="card-sub">{{ $mahasiswa->total() }} mahasiswa terdaftar dalam sistem</div>
+                <div class="card-sub" id="tableCount">{{ $mahasiswa->total() }} mahasiswa terdaftar dalam sistem</div>
             </div>
 
             <div style="display:flex;align-items:center;gap:10px;">
@@ -157,35 +157,26 @@
                 <thead>
                     <tr>
                         <th style="padding:14px 16px 14px 24px;width:60px;">#</th>
-
-                        <th style="padding:14px 16px;cursor:pointer;user-select:none;" onclick="sortTable(1, this)"
-                            title="Klik untuk urutkan">
+                        <th style="padding:14px 16px;cursor:pointer;user-select:none;" onclick="sortTable(1, this)">
                             <div style="display:inline-flex;align-items:center;gap:5px;">
                                 Nama Mahasiswa
                                 <span id="sort-icon-1"
                                     style="color:#D4D9E8;font-size:10px;transition:color .15s;">↕</span>
                             </div>
                         </th>
-
                         <th style="padding:14px 16px;width:160px;">NIM</th>
-
                         <th style="padding:14px 16px;width:210px;">Departemen / Prodi</th>
-
                         <th style="padding:14px 16px;width:160px;">Kontak</th>
-
                         <th style="padding:14px 16px;width:110px;text-align:center;">Gender</th>
-
                         <th style="padding:14px 16px;width:120px;text-align:center;">Status</th>
-
                         <th style="padding:14px 16px;width:150px;cursor:pointer;user-select:none;"
-                            onclick="sortTable(7, this)" title="Klik untuk urutkan">
+                            onclick="sortTable(7, this)">
                             <div style="display:inline-flex;align-items:center;gap:5px;">
                                 Dibuat
                                 <span id="sort-icon-7"
                                     style="color:#D4D9E8;font-size:10px;transition:color .15s;">↕</span>
                             </div>
                         </th>
-
                         <th style="padding:14px 16px;width:120px;text-align:center;">Aksi</th>
                     </tr>
                 </thead>
@@ -200,9 +191,9 @@
                             <td style="padding:14px 16px 14px 24px;">
                                 <span
                                     style="font-size:12px;font-weight:600;color:#8A93AE;
-                                           background:#F5F7FC;border:1px solid #EBEEF5;
-                                           border-radius:6px;padding:3px 8px;
-                                           display:inline-block;min-width:28px;text-align:center;"
+                                             background:#F5F7FC;border:1px solid #EBEEF5;
+                                             border-radius:6px;padding:3px 8px;
+                                             display:inline-block;min-width:28px;text-align:center;"
                                     class="row-num">
                                     {{ $index + 1 }}
                                 </span>
@@ -218,10 +209,10 @@
                                     @else
                                         <div
                                             style="width:38px;height:38px;border-radius:10px;
-                                                   background:#E8F0FB;border:1.5px solid #C0D3F5;
-                                                   display:flex;align-items:center;justify-content:center;
-                                                   flex-shrink:0;font-family:'Syne',sans-serif;
-                                                   font-size:13px;font-weight:800;color:#1A4BAD;">
+                                                    background:#E8F0FB;border:1.5px solid #C0D3F5;
+                                                    display:flex;align-items:center;justify-content:center;
+                                                    flex-shrink:0;font-family:'Syne',sans-serif;
+                                                    font-size:13px;font-weight:800;color:#1A4BAD;">
                                             {{ strtoupper(substr($m->name, 0, 1)) }}
                                         </div>
                                     @endif
@@ -242,9 +233,9 @@
                             <td style="padding:14px 16px;">
                                 <span
                                     style="font-family:'DM Mono',monospace;font-size:12.5px;
-                                           color:#4A5175;background:#F5F7FC;
-                                           border:1px solid #EBEEF5;border-radius:6px;
-                                           padding:3px 8px;display:inline-block;">
+                                             color:#4A5175;background:#F5F7FC;
+                                             border:1px solid #EBEEF5;border-radius:6px;
+                                             padding:3px 8px;display:inline-block;">
                                     {{ $m->nim_nip ?? '-' }}
                                 </span>
                             </td>
@@ -403,7 +394,6 @@
 
                                 </div>
                             </td>
-
                         </tr>
                     @empty
                     @endforelse
@@ -414,7 +404,7 @@
             <div id="emptySearch" style="display:none;padding:48px 24px;text-align:center;border-top:1px solid #EBEEF5;">
                 <div
                     style="width:48px;height:48px;background:#F5F7FC;border-radius:12px;
-                           display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                             display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
                         style="width:22px;height:22px;">
                         <circle cx="11" cy="11" r="8" />
@@ -442,7 +432,6 @@
                     dari {{ $mahasiswa->total() }} mahasiswa
                 </span>
 
-                {{-- Pagination --}}
                 @if ($mahasiswa->hasPages())
                     <div style="display:flex;align-items:center;gap:6px;">
                         {{-- Prev --}}
@@ -459,8 +448,8 @@
                         @else
                             <a href="{{ $mahasiswa->previousPageUrl() }}"
                                 style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
-                                      display:flex;align-items:center;justify-content:center;
-                                      text-decoration:none;transition:border-color .2s,background .2s;"
+                                       display:flex;align-items:center;justify-content:center;
+                                       text-decoration:none;transition:border-color .2s,background .2s;"
                                 onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
                                 onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2"
@@ -483,9 +472,9 @@
                             @else
                                 <a href="{{ $url }}"
                                     style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
-                                          display:flex;align-items:center;justify-content:center;
-                                          font-size:12.5px;color:#4A5175;text-decoration:none;
-                                          transition:border-color .2s,background .2s;"
+                                           display:flex;align-items:center;justify-content:center;
+                                           font-size:12.5px;color:#4A5175;text-decoration:none;
+                                           transition:border-color .2s,background .2s;"
                                     onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
                                     onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
                                     {{ $page }}
@@ -497,8 +486,8 @@
                         @if ($mahasiswa->hasMorePages())
                             <a href="{{ $mahasiswa->nextPageUrl() }}"
                                 style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
-                                      display:flex;align-items:center;justify-content:center;
-                                      text-decoration:none;transition:border-color .2s,background .2s;"
+                                       display:flex;align-items:center;justify-content:center;
+                                       text-decoration:none;transition:border-color .2s,background .2s;"
                                 onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
                                 onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2"
@@ -520,9 +509,9 @@
                     </div>
                 @endif
             </div>
-
         @endif
     </div>
+
 
     {{-- ══════════════════════════════════════
          MODAL — Tambah Mahasiswa
@@ -533,14 +522,14 @@
                align-items:center;justify-content:center;">
         <div
             style="background:#fff;border-radius:20px;padding:32px;
-                   width:100%;max-width:560px;box-shadow:0 24px 64px rgba(7,28,82,.18);
-                   margin:16px;max-height:90vh;overflow-y:auto;">
+                    width:100%;max-width:560px;box-shadow:0 24px 64px rgba(7,28,82,.18);
+                    margin:16px;max-height:90vh;overflow-y:auto;">
 
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
                 <div
                     style="width:40px;height:40px;border-radius:10px;background:#E8F0FB;
-                           border:1.5px solid #C0D3F5;display:flex;align-items:center;
-                           justify-content:center;flex-shrink:0;">
+                             border:1.5px solid #C0D3F5;display:flex;align-items:center;
+                             justify-content:center;flex-shrink:0;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="2"
                         style="width:18px;height:18px;">
                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -604,9 +593,6 @@
                             </div>
                         </div>
                     </div>
-                    @error('photo')
-                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                    @enderror
                 </div>
 
                 {{-- Nama --}}
@@ -622,9 +608,6 @@
                                transition:border-color .2s,box-shadow .2s;"
                         onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                         onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                    @error('name')
-                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                    @enderror
                 </div>
 
                 {{-- NIM --}}
@@ -640,19 +623,17 @@
                                transition:border-color .2s,box-shadow .2s;"
                         onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                         onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                    @error('nim_nip')
-                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                    @enderror
                 </div>
 
                 {{-- Departemen & Prodi --}}
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                     <div>
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
-                            Departemen <span style="color:#D92D20;">*</span>
+                            Jurusan <span style="color:#D92D20;">*</span>
                         </label>
                         <div style="position:relative;">
                             <select name="department_id" id="addDepartment" required
+                                onchange="filterStudyPrograms('addDepartment','addStudyProgram')"
                                 style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
                                        padding:0 32px 0 14px;outline:none;appearance:none;
                                        font-family:'DM Sans',sans-serif;font-size:13px;
@@ -660,7 +641,7 @@
                                        transition:border-color .2s,box-shadow .2s;"
                                 onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                                 onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                                <option value="">— Pilih —</option>
+                                <option value="">— Pilih Jurusan —</option>
                                 @foreach ($departments as $dept)
                                     <option value="{{ $dept->id }}"
                                         {{ old('department_id') == $dept->id ? 'selected' : '' }}>
@@ -674,9 +655,6 @@
                                 <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </div>
-                        @error('department_id')
-                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                        @enderror
                     </div>
                     <div>
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
@@ -691,13 +669,7 @@
                                        transition:border-color .2s,box-shadow .2s;"
                                 onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                                 onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                                <option value="">— Pilih —</option>
-                                @foreach ($studyPrograms as $sp)
-                                    <option value="{{ $sp->id }}"
-                                        {{ old('study_program_id') == $sp->id ? 'selected' : '' }}>
-                                        {{ $sp->name }}
-                                    </option>
-                                @endforeach
+                                <option value="">— Pilih Jurusan dulu —</option>
                             </select>
                             <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
                                 style="width:14px;height:14px;position:absolute;right:10px;top:50%;
@@ -705,9 +677,6 @@
                                 <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </div>
-                        @error('study_program_id')
-                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                        @enderror
                     </div>
                 </div>
 
@@ -725,9 +694,6 @@
                                    transition:border-color .2s,box-shadow .2s;"
                             onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                             onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                        @error('email')
-                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                        @enderror
                     </div>
                     <div>
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
@@ -741,9 +707,6 @@
                                    transition:border-color .2s,box-shadow .2s;"
                             onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                             onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                        @error('phone')
-                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                        @enderror
                     </div>
                 </div>
 
@@ -772,9 +735,6 @@
                                 <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </div>
-                        @error('gender')
-                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                        @enderror
                     </div>
                     <div>
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
@@ -787,9 +747,6 @@
                                    transition:border-color .2s,box-shadow .2s;"
                             onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                             onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                        @error('birth_date')
-                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                        @enderror
                     </div>
                 </div>
 
@@ -805,9 +762,6 @@
                                transition:border-color .2s,box-shadow .2s;"
                         onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                         onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">{{ old('address') }}</textarea>
-                    @error('address')
-                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                    @enderror
                 </div>
 
                 {{-- Password --}}
@@ -824,7 +778,7 @@
                                    transition:border-color .2s,box-shadow .2s;"
                             onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                             onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                        <button type="button" onclick="togglePassword('addPassword', 'eyeAdd')"
+                        <button type="button" onclick="togglePassword('addPassword','eyeAdd')"
                             style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
                                    background:none;border:none;cursor:pointer;padding:0;color:#8A93AE;">
                             <svg id="eyeAdd" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -834,17 +788,14 @@
                             </svg>
                         </button>
                     </div>
-                    @error('password')
-                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
-                    @enderror
                 </div>
 
                 {{-- Status Aktif --}}
                 <div style="margin-bottom:24px;">
                     <label
                         style="display:flex;align-items:center;gap:10px;cursor:pointer;
-                               padding:12px 14px;border:1.5px solid #D4D9E8;border-radius:10px;
-                               transition:border-color .2s,background .2s;"
+                                  padding:12px 14px;border:1.5px solid #D4D9E8;border-radius:10px;
+                                  transition:border-color .2s,background .2s;"
                         onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
                         onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
                         <input type="checkbox" name="is_active" id="addIsActive" value="1" checked
@@ -893,14 +844,14 @@
                align-items:center;justify-content:center;">
         <div
             style="background:#fff;border-radius:20px;padding:32px;
-                   width:100%;max-width:560px;box-shadow:0 24px 64px rgba(7,28,82,.18);
-                   margin:16px;max-height:90vh;overflow-y:auto;">
+                    width:100%;max-width:560px;box-shadow:0 24px 64px rgba(7,28,82,.18);
+                    margin:16px;max-height:90vh;overflow-y:auto;">
 
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
                 <div
                     style="width:40px;height:40px;border-radius:10px;background:#FFFAEB;
-                           border:1.5px solid #FDE68A;display:flex;align-items:center;
-                           justify-content:center;flex-shrink:0;">
+                             border:1.5px solid #FDE68A;display:flex;align-items:center;
+                             justify-content:center;flex-shrink:0;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#C9960F" stroke-width="2"
                         style="width:18px;height:18px;">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -998,10 +949,11 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                     <div>
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
-                            Departemen <span style="color:#D92D20;">*</span>
+                            Jurusan <span style="color:#D92D20;">*</span>
                         </label>
                         <div style="position:relative;">
                             <select name="department_id" id="editDepartment" required
+                                onchange="filterStudyPrograms('editDepartment','editStudyProgram')"
                                 style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
                                        padding:0 32px 0 14px;outline:none;appearance:none;
                                        font-family:'DM Sans',sans-serif;font-size:13px;
@@ -1009,7 +961,7 @@
                                        transition:border-color .2s,box-shadow .2s;"
                                 onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                                 onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                                <option value="">— Pilih —</option>
+                                <option value="">— Pilih Jurusan —</option>
                                 @foreach ($departments as $dept)
                                     <option value="{{ $dept->id }}">{{ $dept->name }}</option>
                                 @endforeach
@@ -1034,10 +986,7 @@
                                        transition:border-color .2s,box-shadow .2s;"
                                 onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                                 onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
-                                <option value="">— Pilih —</option>
-                                @foreach ($studyPrograms as $sp)
-                                    <option value="{{ $sp->id }}">{{ $sp->name }}</option>
-                                @endforeach
+                                <option value="">— Pilih Jurusan dulu —</option>
                             </select>
                             <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
                                 style="width:14px;height:14px;position:absolute;right:10px;top:50%;
@@ -1134,8 +1083,8 @@
                 <div style="margin-bottom:24px;">
                     <label
                         style="display:flex;align-items:center;gap:10px;cursor:pointer;
-                               padding:12px 14px;border:1.5px solid #D4D9E8;border-radius:10px;
-                               transition:border-color .2s,background .2s;"
+                                  padding:12px 14px;border:1.5px solid #D4D9E8;border-radius:10px;
+                                  transition:border-color .2s,background .2s;"
                         onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
                         onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
                         <input type="checkbox" name="is_active" id="editIsActive" value="1"
@@ -1171,14 +1120,14 @@
                align-items:center;justify-content:center;">
         <div
             style="background:#fff;border-radius:20px;padding:32px;
-                   width:100%;max-width:480px;box-shadow:0 24px 64px rgba(7,28,82,.18);
-                   margin:16px;max-height:90vh;overflow-y:auto;">
+                    width:100%;max-width:480px;box-shadow:0 24px 64px rgba(7,28,82,.18);
+                    margin:16px;max-height:90vh;overflow-y:auto;">
 
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
                 <div
                     style="width:40px;height:40px;border-radius:10px;background:#E8F0FB;
-                           border:1.5px solid #C0D3F5;display:flex;align-items:center;
-                           justify-content:center;flex-shrink:0;">
+                             border:1.5px solid #C0D3F5;display:flex;align-items:center;
+                             justify-content:center;flex-shrink:0;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="2"
                         style="width:18px;height:18px;">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -1195,7 +1144,6 @@
                 </div>
             </div>
 
-            {{-- Foto + Nama --}}
             <div
                 style="display:flex;align-items:center;gap:16px;padding:16px;
                         background:#F5F7FC;border-radius:14px;border:1px solid #EBEEF5;margin-bottom:20px;">
@@ -1221,69 +1169,53 @@
                 </div>
             </div>
 
-            {{-- Grid Info --}}
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-
                 <div style="padding:12px 14px;background:#F5F7FC;border-radius:12px;border:1px solid #EBEEF5;">
                     <div
-                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;
-                                letter-spacing:.5px;margin-bottom:4px;">
+                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">
                         NIM</div>
                     <div id="detailNimNip"
                         style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:#181D35;">—</div>
                 </div>
-
                 <div style="padding:12px 14px;background:#F5F7FC;border-radius:12px;border:1px solid #EBEEF5;">
                     <div
-                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;
-                                letter-spacing:.5px;margin-bottom:4px;">
+                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">
                         No. HP</div>
                     <div id="detailPhone" style="font-size:13px;font-weight:600;color:#181D35;">—</div>
                 </div>
-
                 <div style="padding:12px 14px;background:#F5F7FC;border-radius:12px;border:1px solid #EBEEF5;">
                     <div
-                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;
-                                letter-spacing:.5px;margin-bottom:4px;">
+                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">
                         Gender</div>
                     <div id="detailGender" style="font-size:13px;font-weight:600;color:#181D35;">—</div>
                 </div>
-
                 <div style="padding:12px 14px;background:#F5F7FC;border-radius:12px;border:1px solid #EBEEF5;">
                     <div
-                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;
-                                letter-spacing:.5px;margin-bottom:4px;">
+                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">
                         Tanggal Lahir</div>
                     <div id="detailBirthDate" style="font-size:13px;font-weight:600;color:#181D35;">—</div>
                 </div>
-
             </div>
 
-            {{-- Departemen & Prodi --}}
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
                 <div style="padding:12px 14px;background:#F5F7FC;border-radius:12px;border:1px solid #EBEEF5;">
                     <div
-                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;
-                                letter-spacing:.5px;margin-bottom:4px;">
-                        Departemen</div>
+                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">
+                        Jurusan</div>
                     <div id="detailDepartment" style="font-size:13px;font-weight:600;color:#181D35;">—</div>
                 </div>
                 <div style="padding:12px 14px;background:#F5F7FC;border-radius:12px;border:1px solid #EBEEF5;">
                     <div
-                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;
-                                letter-spacing:.5px;margin-bottom:4px;">
+                        style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">
                         Program Studi</div>
                     <div id="detailStudyProgram" style="font-size:13px;font-weight:600;color:#181D35;">—</div>
                 </div>
             </div>
 
-            {{-- Alamat --}}
             <div
-                style="padding:12px 14px;background:#F5F7FC;border-radius:12px;
-                        border:1px solid #EBEEF5;margin-bottom:12px;">
+                style="padding:12px 14px;background:#F5F7FC;border-radius:12px;border:1px solid #EBEEF5;margin-bottom:12px;">
                 <div
-                    style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;
-                            letter-spacing:.5px;margin-bottom:4px;">
+                    style="font-size:11px;font-weight:600;color:#8A93AE;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">
                     Alamat</div>
                 <div id="detailAddress" style="font-size:13px;color:#181D35;line-height:1.6;">—</div>
             </div>
@@ -1292,9 +1224,7 @@
                 Terdaftar: <span id="detailCreated" style="font-weight:600;"></span>
             </div>
 
-            <button onclick="closeDetailModal()" class="btn-outline" style="width:100%;">
-                Tutup
-            </button>
+            <button onclick="closeDetailModal()" class="btn-outline" style="width:100%;">Tutup</button>
         </div>
     </div>
 
@@ -1308,12 +1238,12 @@
                align-items:center;justify-content:center;">
         <div
             style="background:#fff;border-radius:20px;padding:32px;
-                   width:100%;max-width:400px;box-shadow:0 24px 64px rgba(7,28,82,.18);
-                   margin:16px;text-align:center;">
+                    width:100%;max-width:400px;box-shadow:0 24px 64px rgba(7,28,82,.18);
+                    margin:16px;text-align:center;">
 
             <div
                 style="width:60px;height:60px;background:#FEF3F2;border-radius:16px;
-                       display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+                        display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#D92D20" stroke-width="2"
                     style="width:28px;height:28px;">
                     <polyline points="3 6 5 6 21 6" />
@@ -1323,9 +1253,7 @@
                 </svg>
             </div>
 
-            <div
-                style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;
-                        color:#181D35;margin-bottom:8px;">
+            <div style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:#181D35;margin-bottom:8px;">
                 Hapus Mahasiswa?
             </div>
             <div style="font-size:13px;color:#8A93AE;margin-bottom:6px;line-height:1.6;">
@@ -1364,6 +1292,47 @@
 
 @push('scripts')
     <script>
+        // ═══════════════════════════════
+        // DATA PRODI — embed dari Blade
+        // ═══════════════════════════════
+        const allStudyPrograms = {!! json_encode(
+            $studyPrograms->map(fn($sp) => [
+                'id' => $sp->id,
+                'name' => $sp->name,
+                'department_id' => $sp->department_id,
+            ])->values()
+        ) !!};
+
+        /**
+         * Filter dropdown prodi berdasarkan jurusan yang dipilih.
+         */
+        function filterStudyPrograms(deptSelectId, spSelectId, selectedSpId = '') {
+            const deptId = document.getElementById(deptSelectId).value;
+            const spSelect = document.getElementById(spSelectId);
+
+            spSelect.innerHTML = '<option value="">— Pilih Prodi —</option>';
+
+            if (!deptId) {
+                spSelect.innerHTML = '<option value="">— Pilih Jurusan dulu —</option>';
+                return;
+            }
+
+            const filtered = allStudyPrograms.filter(sp => sp.department_id == deptId);
+
+            if (filtered.length === 0) {
+                spSelect.innerHTML = '<option value="">Belum ada prodi</option>';
+                return;
+            }
+
+            filtered.forEach(sp => {
+                const opt = document.createElement('option');
+                opt.value = sp.id;
+                opt.textContent = sp.name;
+                if (String(sp.id) === String(selectedSpId)) opt.selected = true;
+                spSelect.appendChild(opt);
+            });
+        }
+
         // ═══════════════════════════════
         // TOAST NOTIFICATION
         // ═══════════════════════════════
@@ -1453,12 +1422,12 @@
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>`;
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>`;
             } else {
                 input.type = 'password';
                 icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>`;
+                <circle cx="12" cy="12" r="3"/>`;
             }
         }
 
@@ -1476,7 +1445,7 @@
             .forEach(id => document.getElementById(id).value = '');
             document.getElementById('addGender').value = '';
             document.getElementById('addDepartment').value = '';
-            document.getElementById('addStudyProgram').value = '';
+            document.getElementById('addStudyProgram').innerHTML = '<option value="">— Pilih Jurusan dulu —</option>';
             document.getElementById('addIsActive').checked = true;
             document.getElementById('addError').style.display = 'none';
             document.getElementById('addPhotoPreview').style.display = 'none';
@@ -1499,7 +1468,7 @@
         // MODAL EDIT
         // ═══════════════════════════════
         function openEditModal(id, name, nimNip, phone, email, isActive, gender, birthDate, address, photoUrl, deptId,
-        spId) {
+            spId) {
             document.getElementById('editName').value = name;
             document.getElementById('editNimNip').value = nimNip;
             document.getElementById('editPhone').value = phone;
@@ -1508,9 +1477,10 @@
             document.getElementById('editGender').value = gender;
             document.getElementById('editBirthDate').value = birthDate;
             document.getElementById('editAddress').value = address;
-            document.getElementById('editDepartment').value = deptId;
-            document.getElementById('editStudyProgram').value = spId;
             document.getElementById('editForm').action = '/admin/mahasiswa/' + id;
+
+            document.getElementById('editDepartment').value = deptId;
+            filterStudyPrograms('editDepartment', 'editStudyProgram', spId);
 
             const img = document.getElementById('editPhotoPreview');
             const icon = document.getElementById('editPhotoIcon');
@@ -1555,13 +1525,13 @@
             const badge = document.getElementById('detailStatusBadge');
             badge.innerHTML = isActive ?
                 `<span style="display:inline-flex;align-items:center;gap:5px;background:#ECFDF3;
-                   border:1px solid #6CE9A6;color:#027A48;font-size:12px;font-weight:600;
-                   padding:3px 10px;border-radius:100px;">
-                   <span style="width:6px;height:6px;border-radius:50%;background:#12B76A;display:inline-block;"></span>Aktif</span>` :
+                 border:1px solid #6CE9A6;color:#027A48;font-size:12px;font-weight:600;
+                 padding:3px 10px;border-radius:100px;">
+                 <span style="width:6px;height:6px;border-radius:50%;background:#12B76A;display:inline-block;"></span>Aktif</span>` :
                 `<span style="display:inline-flex;align-items:center;gap:5px;background:#F5F7FC;
-                   border:1px solid #EBEEF5;color:#8A93AE;font-size:12px;font-weight:600;
-                   padding:3px 10px;border-radius:100px;">
-                   <span style="width:6px;height:6px;border-radius:50%;background:#D4D9E8;display:inline-block;"></span>Non-Aktif</span>`;
+                 border:1px solid #EBEEF5;color:#8A93AE;font-size:12px;font-weight:600;
+                 padding:3px 10px;border-radius:100px;">
+                 <span style="width:6px;height:6px;border-radius:50%;background:#D4D9E8;display:inline-block;"></span>Non-Aktif</span>`;
 
             document.getElementById('detailNimNip').textContent = nimNip || '—';
             document.getElementById('detailPhone').textContent = phone || '—';
@@ -1607,7 +1577,7 @@
         });
 
         // ═══════════════════════════════
-        // FILTER / SEARCH
+        // FILTER / SEARCH TABEL
         // ═══════════════════════════════
         function filterTable() {
             const keyword = document.getElementById('searchMahasiswa').value.toLowerCase().trim();
@@ -1617,8 +1587,7 @@
             let visible = 0;
 
             rows.forEach(row => {
-                const nameMatch = (row.dataset.name ?? '').includes(keyword) ||
-                    (row.dataset.nim ?? '').includes(keyword);
+                const nameMatch = (row.dataset.name ?? '').includes(keyword) || (row.dataset.nim ?? '').includes(keyword);
                 const statusMatch = statusFilter === '' || row.dataset.status === statusFilter;
                 const deptMatch = deptFilter === '' || row.dataset.dept === deptFilter;
                 const show = nameMatch && statusMatch && deptMatch;
@@ -1630,7 +1599,7 @@
             document.getElementById('tableCount').textContent =
                 (keyword || statusFilter || deptFilter) ?
                 `Menampilkan ${visible} dari ${total} mahasiswa` :
-                `Menampilkan ${total} mahasiswa`;
+                `${total} mahasiswa terdaftar dalam sistem`;
 
             document.getElementById('emptySearch').style.display = visible === 0 ? 'block' : 'none';
 
@@ -1658,8 +1627,7 @@
         function sortTable(colIndex, thEl) {
             const tbody = document.querySelector('#mahasiswaTable tbody');
             const rows = Array.from(tbody.querySelectorAll('tr'));
-            const current = sortState[colIndex] || 'none';
-            const dir = current === 'asc' ? 'desc' : 'asc';
+            const dir = (sortState[colIndex] || 'none') === 'asc' ? 'desc' : 'asc';
             sortState[colIndex] = dir;
 
             document.querySelectorAll('[id^="sort-icon-"]').forEach(el => {
@@ -1679,9 +1647,9 @@
                     return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
                 }
                 if (colIndex === 7) {
-                    const va = parseInt(a.dataset.created || 0);
-                    const vb = parseInt(b.dataset.created || 0);
-                    return dir === 'asc' ? va - vb : vb - va;
+                    return dir === 'asc' ?
+                        parseInt(a.dataset.created || 0) - parseInt(b.dataset.created || 0) :
+                        parseInt(b.dataset.created || 0) - parseInt(a.dataset.created || 0);
                 }
                 return 0;
             });

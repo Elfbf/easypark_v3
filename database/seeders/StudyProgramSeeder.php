@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\StudyProgram;
 use App\Models\Department;
-use Carbon\Carbon;
 
 class StudyProgramSeeder extends Seeder
 {
@@ -75,19 +74,10 @@ class StudyProgramSeeder extends Seeder
 
             foreach ($programs as $program) {
 
-                $createdAt = Carbon::now()->subDays(rand(1, 30));
-                $updatedAt = Carbon::now();
-
-                StudyProgram::firstOrCreate(
-                    [
-                        'name' => $program,
-                        'department_id' => $department->id,
-                    ],
-                    [
-                        'created_at' => $createdAt,
-                        'updated_at' => $updatedAt,
-                    ]
-                );
+                StudyProgram::firstOrCreate([
+                    'name' => $program,
+                    'department_id' => $department->id,
+                ]);
             }
         }
     }

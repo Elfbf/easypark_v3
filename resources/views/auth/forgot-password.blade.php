@@ -1,9 +1,9 @@
-<!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Lupa Password — EasyPark Polije Bondowoso</title>
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Syne:wght@700;800&display=swap"
@@ -35,6 +35,66 @@
             --s-50: #EAFAF3;
             --s-100: #C2F0DC;
             --s-600: #1A7A4A;
+            --e-50: #FEF2F2;
+            --e-100: #FED7D7;
+            --e-600: #DC2626;
+        }
+
+        .iw input.error {
+            border-color: var(--e-600);
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+        }
+
+        .otp-row input.error {
+            border-color: var(--e-600);
+            background: var(--e-50);
+        }
+
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            border-radius: 10px;
+            padding: 11px 14px;
+            margin-bottom: 16px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            animation: fdup .3s ease both;
+        }
+
+        .alert-error {
+            background: var(--e-50);
+            border: 1px solid var(--e-100);
+            color: var(--e-600);
+        }
+
+        .alert-success {
+            background: var(--s-50);
+            border: 1px solid var(--s-100);
+            color: var(--s-600);
+        }
+
+        .alert svg {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .spin {
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
         }
 
         body {
@@ -1098,6 +1158,7 @@
 
                 <!-- VIEW 1 -->
                 <div class="view active" id="v1">
+                    <div id="alert1"></div> {{-- ← tambah ini --}}
                     <div class="ai">
                         <h2 class="ft">Verifikasi identitas 🔑</h2>
                         <p class="fsub">Pilih peran Anda dan masukkan email atau ID yang terdaftar di sistem</p>
@@ -1132,7 +1193,7 @@
                         <p id="info1">Kode OTP akan dikirimkan ke email yang terdaftar sesuai NIM Anda di SIAKAD.
                         </p>
                     </div>
-                    <button class="btn ai" onclick="go(2)">
+                    <button class="btn ai" id="btnSendOtp" onclick="sendOtp()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path
                                 d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .82h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.68a16 16 0 006.29 6.29l1.42-1.42a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
@@ -1143,6 +1204,7 @@
 
                 <!-- VIEW 2 -->
                 <div class="view" id="v2">
+                    <div id="alert2"></div> {{-- ← tambah ini --}}
                     <div class="ai">
                         <h2 class="ft">Masukkan kode OTP 📩</h2>
                         <p class="fsub">Kode 6 digit telah dikirim ke email Anda. Berlaku selama <strong>5
@@ -1158,11 +1220,11 @@
                     </div>
                     <div class="rsr ai">
                         <p>Tidak menerima kode?&nbsp;
-                            <button class="rsbtn" id="rsBtn" disabled onclick="startCD()">Kirim ulang (<span
+                            <button class="rsbtn" id="rsBtn" disabled onclick="resendOtp()">Kirim ulang (<span
                                     class="cntd" id="cd">60</span>s)</button>
                         </p>
                     </div>
-                    <button class="btn ai" id="vBtn" onclick="go(3)" disabled>
+                    <button class="btn ai" id="vBtn" onclick="verifyOtp()" disabled>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="20 6 9 17 4 12" />
                         </svg>
@@ -1173,6 +1235,7 @@
 
                 <!-- VIEW 3 -->
                 <div class="view" id="v3">
+                    <div id="alert3"></div> {{-- ← tambah ini --}}
                     <div class="ai">
                         <h2 class="ft">Buat password baru 🔒</h2>
                         <p class="fsub">Password harus minimal 8 karakter, mengandung huruf kapital dan angka</p>
@@ -1220,7 +1283,7 @@
                                 </svg></button>
                         </div>
                     </div>
-                    <button class="btn ai" onclick="goSuccess()">
+                    <button class="btn ai" id="btnSavePass" onclick="savePassword()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z" />
                             <polyline points="17 21 17 13 7 13 7 21" />
@@ -1259,6 +1322,8 @@
     </div>
 
     <script>
+        const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
         const chipCfg = {
             mahasiswa: {
                 label: 'Email / NIM Mahasiswa',
@@ -1296,13 +1361,6 @@
             }
         }
 
-        function goSuccess() {
-            document.getElementById('v3').classList.remove('active');
-            document.getElementById('v4').classList.add('active');
-            document.getElementById('stepInd').style.display = 'none';
-            document.getElementById('slrow').style.display = 'none';
-        }
-
         function updStep(n) {
             for (let i = 1; i <= 3; i++) {
                 const d = document.getElementById('d' + i),
@@ -1324,12 +1382,72 @@
             for (let i = 1; i <= 2; i++) document.getElementById('l' + i).classList.toggle('done', i < n);
         }
 
+        // ── Alert helpers ──
+        function showAlert(zone, type, msg) {
+            const icon = type === 'error' ?
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' :
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+            document.getElementById(zone).innerHTML =
+                `<div class="alert alert-${type}">${icon}<span>${msg}</span></div>`;
+        }
+
+        function clearAlert(zone) {
+            document.getElementById(zone).innerHTML = '';
+        }
+
+        // ── Loading state ──
+        function setLoading(btn, loading, orig) {
+            btn.disabled = loading;
+            btn.innerHTML = loading ? '<div class="spin"></div> Memproses...' : orig;
+        }
+
+        // ── STEP 1: Kirim OTP ──
+        async function sendOtp() {
+            clearAlert('alert1');
+            const email = document.getElementById('ident').value.trim();
+            if (!email) {
+                showAlert('alert1', 'error', 'Email / NIM tidak boleh kosong.');
+                document.getElementById('ident').classList.add('error');
+                return;
+            }
+            document.getElementById('ident').classList.remove('error');
+
+            const btn = document.getElementById('btnSendOtp'),
+                orig = btn.innerHTML;
+            setLoading(btn, true, orig);
+
+            try {
+                const res = await fetch('{{ route('password.email') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    go(2);
+                } else {
+                    showAlert('alert1', 'error', data.errors?.email?.[0] ?? data.message ?? 'Terjadi kesalahan.');
+                }
+            } catch {
+                showAlert('alert1', 'error', 'Koneksi gagal, periksa jaringan Anda.');
+            } finally {
+                setLoading(btn, false, orig);
+            }
+        }
+
         function initOTP() {
             const ins = document.querySelectorAll('.oi');
             ins.forEach((inp, idx) => {
                 inp.value = '';
-                inp.classList.remove('filled');
+                inp.classList.remove('filled', 'error');
                 inp.oninput = function() {
+                    this.value = this.value.replace(/\D/g, '').slice(0, 1);
                     if (this.value.length === 1) {
                         this.classList.add('filled');
                         if (idx < ins.length - 1) ins[idx + 1].focus();
@@ -1339,8 +1457,21 @@
                 inp.onkeydown = function(e) {
                     if (e.key === 'Backspace' && !this.value && idx > 0) {
                         ins[idx - 1].focus();
+                        ins[idx - 1].value = '';
                         ins[idx - 1].classList.remove('filled');
                     }
+                };
+                inp.onpaste = function(e) {
+                    e.preventDefault();
+                    const p = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                    [...p].slice(0, 6).forEach((ch, i) => {
+                        if (ins[i]) {
+                            ins[i].value = ch;
+                            ins[i].classList.add('filled');
+                        }
+                    });
+                    ins[Math.min(p.length, 5)].focus();
+                    document.getElementById('vBtn').disabled = [...ins].some(i => i.value.length !== 1);
                 };
             });
             ins[0].focus();
@@ -1364,6 +1495,119 @@
                     btn.textContent = 'Kirim ulang kode';
                 }
             }, 1000);
+        }
+
+        // ── Resend OTP ──
+        async function resendOtp() {
+            clearAlert('alert2');
+            const email = document.getElementById('ident').value.trim();
+            try {
+                const res = await fetch('{{ route('password.email') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email
+                    })
+                });
+                if (res.ok) {
+                    showAlert('alert2', 'success', 'Kode OTP baru telah dikirim ke email Anda.');
+                    startCD();
+                } else {
+                    showAlert('alert2', 'error', 'Gagal mengirim ulang kode, coba beberapa saat lagi.');
+                }
+            } catch {
+                showAlert('alert2', 'error', 'Koneksi gagal.');
+            }
+        }
+
+        // ── STEP 2: Verifikasi OTP ──
+        async function verifyOtp() {
+            clearAlert('alert2');
+            const ins = document.querySelectorAll('.oi');
+            const otp = [...ins].map(i => i.value).join('');
+
+            const btn = document.getElementById('vBtn'),
+                orig = btn.innerHTML;
+            setLoading(btn, true, orig);
+
+            try {
+                const res = await fetch('{{ route('password.otp.verify') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        otp
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    go(3);
+                } else {
+                    showAlert('alert2', 'error', data.errors?.otp?.[0] ?? data.message ?? 'Kode OTP tidak valid.');
+                    ins.forEach(i => {
+                        i.classList.remove('filled');
+                        i.classList.add('error');
+                    });
+                }
+            } catch {
+                showAlert('alert2', 'error', 'Koneksi gagal, periksa jaringan Anda.');
+            } finally {
+                setLoading(btn, false, orig);
+            }
+        }
+
+        // ── STEP 3: Simpan Password ──
+        async function savePassword() {
+            clearAlert('alert3');
+            const password = document.getElementById('npw').value;
+            const password_confirmation = document.getElementById('cpw').value;
+
+            if (password !== password_confirmation) {
+                showAlert('alert3', 'error', 'Konfirmasi password tidak cocok.');
+                document.getElementById('cpw').classList.add('error');
+                return;
+            }
+            document.getElementById('cpw').classList.remove('error');
+
+            const btn = document.getElementById('btnSavePass'),
+                orig = btn.innerHTML;
+            setLoading(btn, true, orig);
+
+            try {
+                const res = await fetch('{{ route('password.reset.update') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        password,
+                        password_confirmation
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('stepInd').style.display = 'none';
+                    document.getElementById('slrow').style.display = 'none';
+                    [1, 2, 3].forEach(i => document.getElementById('v' + i).classList.remove('active'));
+                    document.getElementById('v4').classList.add('active');
+                } else {
+                    showAlert('alert3', 'error', data.errors?.password?.[0] ?? data.message ??
+                        'Gagal menyimpan password.');
+                }
+            } catch {
+                showAlert('alert3', 'error', 'Koneksi gagal, periksa jaringan Anda.');
+            } finally {
+                setLoading(btn, false, orig);
+            }
         }
 
         function chkStr(v) {
@@ -1399,6 +1643,23 @@
                 inp.type = 'password';
                 ic.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
             }
+        }
+
+        // ── Auto-fill OTP dari link email ──
+        const params = new URLSearchParams(window.location.search);
+        const otpParam = params.get('otp');
+        if (otpParam && otpParam.length === 6) {
+            go(2);
+            setTimeout(() => {
+                const ins = document.querySelectorAll('.oi');
+                [...otpParam].forEach((ch, i) => {
+                    if (ins[i]) {
+                        ins[i].value = ch;
+                        ins[i].classList.add('filled');
+                    }
+                });
+                document.getElementById('vBtn').disabled = false;
+            }, 300);
         }
     </script>
 </body>
