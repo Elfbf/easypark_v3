@@ -55,109 +55,6 @@
     @endif
 
     {{-- ══════════════════════════════════════
-         STAT CARDS
-    ══════════════════════════════════════ --}}
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
-
-        {{-- Total Catatan --}}
-        <div
-            style="background:#fff;border:1.5px solid #EBEEF5;border-radius:16px;
-                    padding:20px 22px;display:flex;align-items:center;gap:16px;">
-            <div
-                style="width:46px;height:46px;border-radius:12px;background:#E8F0FB;
-                        border:1.5px solid #C0D3F5;display:flex;align-items:center;
-                        justify-content:center;flex-shrink:0;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="2" style="width:20px;height:20px;">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                    <polyline points="10 9 9 9 8 9" />
-                </svg>
-            </div>
-            <div>
-                <div style="font-size:11.5px;color:#8A93AE;font-weight:500;margin-bottom:3px;">
-                    Total Catatan
-                </div>
-                <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#181D35;line-height:1;">
-                    {{ number_format($totalRecords) }}
-                </div>
-            </div>
-        </div>
-
-        {{-- Sedang Parkir --}}
-        <div
-            style="background:#fff;border:1.5px solid #EBEEF5;border-radius:16px;
-                    padding:20px 22px;display:flex;align-items:center;gap:16px;">
-            <div
-                style="width:46px;height:46px;border-radius:12px;background:#ECFDF3;
-                        border:1.5px solid #6CE9A6;display:flex;align-items:center;
-                        justify-content:center;flex-shrink:0;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#027A48" stroke-width="2" style="width:20px;height:20px;">
-                    <rect x="3" y="11" width="18" height="5" rx="2" />
-                    <circle cx="7" cy="18" r="2" />
-                    <circle cx="17" cy="18" r="2" />
-                    <path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4" />
-                </svg>
-            </div>
-            <div>
-                <div style="font-size:11.5px;color:#8A93AE;font-weight:500;margin-bottom:3px;">
-                    Sedang Parkir
-                </div>
-                <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#027A48;line-height:1;">
-                    {{ number_format($parkedCount) }}
-                </div>
-            </div>
-        </div>
-
-        {{-- Selesai Hari Ini --}}
-        <div
-            style="background:#fff;border:1.5px solid #EBEEF5;border-radius:16px;
-                    padding:20px 22px;display:flex;align-items:center;gap:16px;">
-            <div
-                style="width:46px;height:46px;border-radius:12px;background:#F5F0FF;
-                        border:1.5px solid #D9C8FA;display:flex;align-items:center;
-                        justify-content:center;flex-shrink:0;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#6B3DB5" stroke-width="2" style="width:20px;height:20px;">
-                    <polyline points="20 6 9 17 4 12" />
-                </svg>
-            </div>
-            <div>
-                <div style="font-size:11.5px;color:#8A93AE;font-weight:500;margin-bottom:3px;">
-                    Selesai Hari Ini
-                </div>
-                <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#6B3DB5;line-height:1;">
-                    {{ number_format($completedCount) }}
-                </div>
-            </div>
-        </div>
-
-        {{-- Masuk Hari Ini --}}
-        <div
-            style="background:#fff;border:1.5px solid #EBEEF5;border-radius:16px;
-                    padding:20px 22px;display:flex;align-items:center;gap:16px;">
-            <div
-                style="width:46px;height:46px;border-radius:12px;background:#FFFAEB;
-                        border:1.5px solid #FDE68A;display:flex;align-items:center;
-                        justify-content:center;flex-shrink:0;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#B54708" stroke-width="2" style="width:20px;height:20px;">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg>
-            </div>
-            <div>
-                <div style="font-size:11.5px;color:#8A93AE;font-weight:500;margin-bottom:3px;">
-                    Masuk Hari Ini
-                </div>
-                <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#B54708;line-height:1;">
-                    {{ number_format($todayCount) }}
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    {{-- ══════════════════════════════════════
          TABEL LAPORAN PARKIR
     ══════════════════════════════════════ --}}
     <div class="card">
@@ -262,32 +159,47 @@
                             {{-- Plat Nomor --}}
                             <td style="padding:14px 16px;">
                                 <div style="display:flex;align-items:center;gap:12px;">
+
                                     <div
                                         style="width:38px;height:38px;border-radius:10px;
-                    background:#E8F0FB;border:1.5px solid #C0D3F5;
-                    display:flex;align-items:center;justify-content:center;
-                    flex-shrink:0;">
+                   background:#E8F0FB;border:1.5px solid #C0D3F5;
+                   display:flex;align-items:center;justify-content:center;
+                   flex-shrink:0;">
+
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="2"
                                             style="width:17px;height:17px;">
+
                                             <rect x="3" y="11" width="18" height="5" rx="2" />
                                             <circle cx="7" cy="18" r="2" />
                                             <circle cx="17" cy="18" r="2" />
                                             <path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4" />
                                         </svg>
                                     </div>
+
                                     <div>
                                         <div
                                             style="font-family:monospace;font-weight:700;font-size:14px;
-                        letter-spacing:0.08em;color:#181D35;">
+                       letter-spacing:0.08em;color:#181D35;">
+
                                             {{ strtoupper($record->plate_number) }}
                                         </div>
+
                                         <div style="font-size:11.5px;color:#8A93AE;margin-top:2px;">
+
                                             @if ($record->vehicle)
-                                                {{ $record->vehicle->brand->name ?? '' }}
-                                                {{ $record->vehicle->model ?? '' }}
+                                                {{ ucfirst($record->vehicle->type?->name ?? '') }}
+
+                                                {{ ucfirst($record->vehicle->brand?->name ?? '') }}
+
+                                                @if ($record->vehicle->model)
+                                                    {{ ucfirst($record->vehicle->model->name) }}
+                                                @endif
                                             @else
-                                                <span style="font-style:italic;">Tidak terdaftar</span>
+                                                <span style="font-style:italic;">
+                                                    Tidak terdaftar
+                                                </span>
                                             @endif
+
                                         </div>
                                     </div>
                                 </div>
@@ -411,15 +323,18 @@
                                     {{-- Detail --}}
                                     <button class="tb-btn" title="Lihat detail"
                                         onclick="openDetailModal(
-                                            '{{ addslashes($record->plate_number) }}',
-                                            '{{ $record->entry_time?->format('d M Y, H:i:s') ?? '-' }}',
-                                            '{{ $record->exit_time?->format('d M Y, H:i:s') ?? '-' }}',
-                                            '{{ $durasi }}',
-                                            '{{ $record->status }}',
-                                            '{{ $record->vehicle?->brand ?? '' }}',
-                                            '{{ $record->vehicle?->model ?? '' }}',
-                                            '{{ $record->face_photo ?? '' }}'
-                                        )"
+    '{{ addslashes($record->plate_number) }}',
+    '{{ $record->entry_time?->format('d M Y, H:i:s') ?? '-' }}',
+    '{{ $record->exit_time?->format('d M Y, H:i:s') ?? '-' }}',
+    '{{ $durasi }}',
+    '{{ $record->status }}',
+
+    '{{ ucfirst($record->vehicle?->type?->name ?? '') }}',
+    '{{ ucfirst($record->vehicle?->brand?->name ?? '') }}',
+    '{{ ucfirst($record->vehicle?->model?->name ?? '') }}',
+
+    '{{ $record->face_photo ?? '' }}'
+)"
                                         style="width:32px;height:32px;border-radius:8px;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             style="width:14px;height:14px;">
@@ -585,54 +500,112 @@
 
             {{-- Info Grid --}}
             <div
-                style="display:flex;flex-direction:column;gap:0;border:1.5px solid #EBEEF5;border-radius:14px;overflow:hidden;">
+                style="display:flex;flex-direction:column;gap:0;
+           border:1.5px solid #EBEEF5;border-radius:14px;overflow:hidden;">
 
+                {{-- Plat --}}
                 <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;">
-                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">
+
+                    <div
+                        style="font-size:12.5px;color:#8A93AE;
+                   font-weight:500;width:130px;flex-shrink:0;">
+
                         Plat Nomor
                     </div>
+
                     <div id="detailPlate"
-                        style="font-family:monospace;font-weight:700;font-size:14px;
-                               letter-spacing:0.08em;color:#181D35;">
+                        style="font-family:monospace;
+                   font-weight:700;
+                   font-size:14px;
+                   letter-spacing:0.08em;
+                   color:#181D35;">
                     </div>
                 </div>
 
+                {{-- Kendaraan --}}
                 <div
-                    style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;background:#FAFBFD;">
-                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">
+                    style="display:flex;align-items:center;padding:12px 16px;
+               border-bottom:1px solid #EBEEF5;background:#FAFBFD;">
+
+                    <div
+                        style="font-size:12.5px;color:#8A93AE;
+                   font-weight:500;width:130px;flex-shrink:0;">
+
                         Kendaraan
                     </div>
-                    <div id="detailVehicle" style="font-size:13px;color:#181D35;font-weight:500;"></div>
+
+                    <div id="detailVehicle"
+                        style="font-size:13px;
+                   color:#181D35;
+                   font-weight:600;">
+                    </div>
                 </div>
 
+                {{-- Waktu Masuk --}}
                 <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;">
-                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">
+
+                    <div
+                        style="font-size:12.5px;color:#8A93AE;
+                   font-weight:500;width:130px;flex-shrink:0;">
+
                         Waktu Masuk
                     </div>
-                    <div id="detailEntry" style="font-size:13px;color:#181D35;font-weight:500;font-family:monospace;">
+
+                    <div id="detailEntry"
+                        style="font-size:13px;
+                   color:#181D35;
+                   font-weight:500;
+                   font-family:monospace;">
                     </div>
                 </div>
 
+                {{-- Waktu Keluar --}}
                 <div
-                    style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;background:#FAFBFD;">
-                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">
+                    style="display:flex;align-items:center;padding:12px 16px;
+               border-bottom:1px solid #EBEEF5;background:#FAFBFD;">
+
+                    <div
+                        style="font-size:12.5px;color:#8A93AE;
+                   font-weight:500;width:130px;flex-shrink:0;">
+
                         Waktu Keluar
                     </div>
-                    <div id="detailExit" style="font-size:13px;color:#181D35;font-weight:500;font-family:monospace;">
+
+                    <div id="detailExit"
+                        style="font-size:13px;
+                   color:#181D35;
+                   font-weight:500;
+                   font-family:monospace;">
                     </div>
                 </div>
 
+                {{-- Durasi --}}
                 <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;">
-                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">
+
+                    <div
+                        style="font-size:12.5px;color:#8A93AE;
+                   font-weight:500;width:130px;flex-shrink:0;">
+
                         Durasi Parkir
                     </div>
-                    <div id="detailDuration" style="font-size:13px;color:#181D35;font-weight:600;"></div>
+
+                    <div id="detailDuration"
+                        style="font-size:13px;
+                   color:#181D35;
+                   font-weight:600;">
+                    </div>
                 </div>
 
+                {{-- Status --}}
                 <div style="display:flex;align-items:center;padding:12px 16px;background:#FAFBFD;">
-                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">
+
+                    <div
+                        style="font-size:12.5px;color:#8A93AE;
+                   font-weight:500;width:130px;flex-shrink:0;">
+
                         Status
                     </div>
+
                     <div id="detailStatus"></div>
                 </div>
 
@@ -646,7 +619,6 @@
             </div>
         </div>
     </div>
-
 
     {{-- ══════════════════════════════════════
          MODAL — Foto Wajah
@@ -818,39 +790,116 @@
         // ═══════════════════════════════
         // MODAL DETAIL
         // ═══════════════════════════════
-        function openDetailModal(plate, entry, exit, duration, status, brand, model, photo) {
-            document.getElementById('detailPlate').textContent = plate.toUpperCase();
+        function openDetailModal(
+            plate,
+            entry,
+            exit,
+            duration,
+            status,
+            type,
+            brand,
+            model,
+            photo
+        ) {
+
+            // Plat
+            document.getElementById('detailPlate').textContent =
+                plate.toUpperCase();
+
+            // Waktu
             document.getElementById('detailEntry').textContent = entry;
-            document.getElementById('detailExit').textContent = exit === '-' ? '—' : exit;
+
+            document.getElementById('detailExit').textContent =
+                exit === '-' ? '—' : exit;
+
             document.getElementById('detailDuration').textContent = duration;
 
-            const vehicle = [brand, model].filter(Boolean).join(' ') || 'Tidak terdaftar';
-            document.getElementById('detailVehicle').textContent = vehicle;
+            // Kendaraan
+            const vehicle = [
+                    type ? type.charAt(0).toUpperCase() + type.slice(1) : '',
+                    brand ? brand.charAt(0).toUpperCase() + brand.slice(1) : '',
+                    model ? model.charAt(0).toUpperCase() + model.slice(1) : '',
+                ]
+                .filter(Boolean)
+                .join(' ');
 
+            document.getElementById('detailVehicle').textContent =
+                vehicle || 'Tidak terdaftar';
+
+            // Status
             const statusEl = document.getElementById('detailStatus');
+
             if (status === 'parked') {
-                statusEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px;
-                    background:#ECFDF3;border:1px solid #6CE9A6;color:#027A48;
-                    font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;">
-                    <span style="width:6px;height:6px;border-radius:50%;background:#12B76A;display:inline-block;"></span>
-                    Sedang Parkir</span>`;
+
+                statusEl.innerHTML = `
+            <span style="
+                display:inline-flex;
+                align-items:center;
+                gap:5px;
+                background:#ECFDF3;
+                border:1px solid #6CE9A6;
+                color:#027A48;
+                font-size:12px;
+                font-weight:600;
+                padding:4px 12px;
+                border-radius:100px;
+            ">
+                <span style="
+                    width:6px;
+                    height:6px;
+                    border-radius:50%;
+                    background:#12B76A;
+                    display:inline-block;
+                "></span>
+
+                Sedang Parkir
+            </span>
+        `;
+
             } else {
-                statusEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px;
-                    background:#F5F7FC;border:1px solid #D4D9E8;color:#4A5272;
-                    font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;">
-                    <span style="width:6px;height:6px;border-radius:50%;background:#D4D9E8;display:inline-block;"></span>
-                    Selesai</span>`;
+
+                statusEl.innerHTML = `
+            <span style="
+                display:inline-flex;
+                align-items:center;
+                gap:5px;
+                background:#F5F7FC;
+                border:1px solid #D4D9E8;
+                color:#4A5272;
+                font-size:12px;
+                font-weight:600;
+                padding:4px 12px;
+                border-radius:100px;
+            ">
+                <span style="
+                    width:6px;
+                    height:6px;
+                    border-radius:50%;
+                    background:#D4D9E8;
+                    display:inline-block;
+                "></span>
+
+                Selesai
+            </span>
+        `;
             }
 
+            // Foto kendaraan
             const photoWrap = document.getElementById('detailPhotoWrap');
             const photoImg = document.getElementById('detailPhoto');
+
             if (photo) {
+
                 photoImg.src = photo;
+
                 photoWrap.style.display = 'block';
+
             } else {
+
                 photoWrap.style.display = 'none';
             }
 
+            // Show modal
             document.getElementById('modalDetail').style.display = 'flex';
         }
 

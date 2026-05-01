@@ -45,10 +45,16 @@ class VehicleController extends Controller
             ->paginate(5)
             ->withQueryString();
 
-        $users          = User::latest()->get();
-        $vehicleTypes   = VehicleType::all();
-        $vehicleBrands  = VehicleBrand::all();
-        $vehicleModels  = VehicleModel::with('brand')->get();
+        // HANYA MAHASISWA
+        $users = User::whereHas('role', function ($q) {
+                $q->where('name', 'mahasiswa');
+            })
+            ->latest()
+            ->get();
+
+        $vehicleTypes  = VehicleType::all();
+        $vehicleBrands = VehicleBrand::all();
+        $vehicleModels = VehicleModel::with('brand')->get();
 
         return view('admin.vehicles.index', compact(
             'vehicles',
@@ -137,7 +143,9 @@ class VehicleController extends Controller
 
             Log::error('Vehicle store failed: ' . $e->getMessage());
 
-            return back()->withInput()->with('error', 'Gagal menambahkan kendaraan.');
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal menambahkan kendaraan.');
         }
     }
 
@@ -164,7 +172,10 @@ class VehicleController extends Controller
 
             if ($request->hasFile('vehicle_photo')) {
 
-                if ($vehicle->vehicle_photo && Storage::disk('public')->exists($vehicle->vehicle_photo)) {
+                if (
+                    $vehicle->vehicle_photo &&
+                    Storage::disk('public')->exists($vehicle->vehicle_photo)
+                ) {
                     Storage::disk('public')->delete($vehicle->vehicle_photo);
                 }
 
@@ -176,7 +187,10 @@ class VehicleController extends Controller
 
             if ($request->hasFile('stnk_photo')) {
 
-                if ($vehicle->stnk_photo && Storage::disk('public')->exists($vehicle->stnk_photo)) {
+                if (
+                    $vehicle->stnk_photo &&
+                    Storage::disk('public')->exists($vehicle->stnk_photo)
+                ) {
                     Storage::disk('public')->delete($vehicle->stnk_photo);
                 }
 
@@ -216,7 +230,9 @@ class VehicleController extends Controller
 
             Log::error('Vehicle update failed: ' . $e->getMessage());
 
-            return back()->withInput()->with('error', 'Gagal memperbarui kendaraan.');
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal memperbarui kendaraan.');
         }
     }
 
@@ -224,11 +240,17 @@ class VehicleController extends Controller
     {
         try {
 
-            if ($vehicle->vehicle_photo && Storage::disk('public')->exists($vehicle->vehicle_photo)) {
+            if (
+                $vehicle->vehicle_photo &&
+                Storage::disk('public')->exists($vehicle->vehicle_photo)
+            ) {
                 Storage::disk('public')->delete($vehicle->vehicle_photo);
             }
 
-            if ($vehicle->stnk_photo && Storage::disk('public')->exists($vehicle->stnk_photo)) {
+            if (
+                $vehicle->stnk_photo &&
+                Storage::disk('public')->exists($vehicle->stnk_photo)
+            ) {
                 Storage::disk('public')->delete($vehicle->stnk_photo);
             }
 

@@ -131,7 +131,7 @@
                         <th style="padding:14px 16px 14px 24px;width:60px;">#</th>
                         <th style="padding:14px 16px;">Kendaraan</th>
                         <th style="padding:14px 16px;">Pemilik</th>
-                        <th style="padding:14px 16px;width:130px;">Jenis & Merek</th>
+                        <th style="padding:14px 16px;width:260px;">Kendaraan</th>
                         <th style="padding:14px 16px;width:140px;">Status Parkir</th>
                         <th style="padding:14px 16px;width:110px;text-align:center;">Aktif</th>
                         <th style="padding:14px 16px;width:140px;">Terdaftar</th>
@@ -215,27 +215,40 @@
                                 @endif
                             </td>
 
-                            {{-- Jenis & Merek --}}
+                            {{-- Jenis / Merek / Model --}}
                             <td style="padding:14px 16px;">
-                                <div style="display:flex;flex-direction:column;gap:5px;">
+                                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+
                                     @if ($vehicle->type)
                                         <span
-                                            style="display:inline-flex;align-items:center;gap:5px;
-                                                    background:#F5F0FF;border:1px solid #D9C8FA;
-                                                    color:#6B3DB5;font-size:11.5px;font-weight:600;
-                                                    padding:3px 9px;border-radius:100px;width:fit-content;">
+                                            style="display:inline-flex;align-items:center;
+                       background:#F5F0FF;border:1px solid #D9C8FA;
+                       color:#6B3DB5;font-size:11.5px;font-weight:600;
+                       padding:4px 10px;border-radius:100px;">
                                             {{ $vehicle->type->name }}
                                         </span>
                                     @endif
+
                                     @if ($vehicle->brand)
                                         <span
-                                            style="display:inline-flex;align-items:center;gap:5px;
-                                                    background:#F5F7FC;border:1px solid #D4D9E8;
-                                                    color:#4A5272;font-size:11.5px;font-weight:500;
-                                                    padding:3px 9px;border-radius:100px;width:fit-content;">
+                                            style="display:inline-flex;align-items:center;
+                       background:#F5F7FC;border:1px solid #D4D9E8;
+                       color:#4A5272;font-size:11.5px;font-weight:500;
+                       padding:4px 10px;border-radius:100px;">
                                             {{ $vehicle->brand->name }}
                                         </span>
                                     @endif
+
+                                    @if ($vehicle->model)
+                                        <span
+                                            style="display:inline-flex;align-items:center;
+                       background:#EFF8FF;border:1px solid #84CAFF;
+                       color:#1D74C4;font-size:11.5px;font-weight:500;
+                       padding:4px 10px;border-radius:100px;">
+                                            {{ $vehicle->model->name }}
+                                        </span>
+                                    @endif
+
                                 </div>
                             </td>
 
@@ -318,6 +331,7 @@
         '{{ addslashes($vehicle->color ?? '—') }}',
         '{{ $vehicle->type?->name ?? '—' }}',
         '{{ $vehicle->brand?->name ?? '—' }}',
+        '{{ $vehicle->model?->name ?? '—' }}',
         {{ $vehicle->user_id ? "'" . addslashes($vehicle->user->name) . "'" : 'null' }},
         {{ $vehicle->user_id ? "'" . addslashes($vehicle->user->email) . "'" : 'null' }},
         {{ $vehicle->is_active ? 'true' : 'false' }},
@@ -343,6 +357,7 @@
         {{ $vehicle->user_id ?? 'null' }},
         {{ $vehicle->vehicle_type_id }},
         {{ $vehicle->vehicle_brand_id }},
+        {{ $vehicle->vehicle_model_id ? $vehicle->vehicle_model_id : 'null' }},
         '{{ addslashes($vehicle->plate_number) }}',
         '{{ addslashes($vehicle->color ?? '') }}',
         {{ $vehicle->is_active ? 'true' : 'false' }},
@@ -535,46 +550,94 @@
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
                             Jenis Kendaraan <span style="color:#D92D20;">*</span>
                         </label>
+
                         <select name="vehicle_type_id" required
                             style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
-                                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
-                                   font-size:13.5px;color:#181D35;background:#fff;
-                                   appearance:none;cursor:pointer;
-                                   transition:border-color .2s,box-shadow .2s;"
+                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
+                   font-size:13.5px;color:#181D35;background:#fff;
+                   appearance:none;cursor:pointer;
+                   transition:border-color .2s,box-shadow .2s;"
                             onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                             onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+
                             <option value="">— Pilih Jenis —</option>
+
                             @foreach ($vehicleTypes as $vt)
-                                <option value="{{ $vt->id }}">{{ $vt->name }}</option>
+                                <option value="{{ $vt->id }}">
+                                    {{ $vt->name }}
+                                </option>
                             @endforeach
                         </select>
+
                         @error('vehicle_type_id')
-                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
+                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
+
                     <div>
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
                             Merek Kendaraan <span style="color:#D92D20;">*</span>
                         </label>
-                        <select name="vehicle_brand_id" required
+
+                        <select name="vehicle_brand_id" required onchange="filterModels('addVehicleModelId', this.value)"
                             style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
-                                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
-                                   font-size:13.5px;color:#181D35;background:#fff;
-                                   appearance:none;cursor:pointer;
-                                   transition:border-color .2s,box-shadow .2s;"
+                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
+                   font-size:13.5px;color:#181D35;background:#fff;
+                   appearance:none;cursor:pointer;
+                   transition:border-color .2s,box-shadow .2s;"
                             onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                             onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+
                             <option value="">— Pilih Merek —</option>
+
                             @foreach ($vehicleBrands as $brand)
-                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                <option value="{{ $brand->id }}">
+                                    {{ $brand->name }}
+                                </option>
                             @endforeach
                         </select>
+
                         @error('vehicle_brand_id')
-                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">{{ $message }}</div>
+                            <div style="margin-top:6px;font-size:12px;color:#D92D20;">
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
                 </div>
 
+                {{-- Model Kendaraan --}}
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                        Model Kendaraan
+                        <span style="font-weight:400;color:#8A93AE;">(opsional)</span>
+                    </label>
+
+                    <select name="vehicle_model_id" id="addVehicleModelId"
+                        style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
+               padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
+               font-size:13.5px;color:#181D35;background:#fff;
+               appearance:none;cursor:pointer;
+               transition:border-color .2s,box-shadow .2s;"
+                        onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
+                        onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+
+                        <option value="">— Pilih Model —</option>
+
+                        @foreach ($vehicleModels as $model)
+                            <option value="{{ $model->id }}" data-brand="{{ $model->vehicle_brand_id }}">
+                                {{ $model->name }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('vehicle_model_id')
+                        <div style="margin-top:6px;font-size:12px;color:#D92D20;">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
                 {{-- Nomor Plat & Warna side by side --}}
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                     <div>
@@ -745,38 +808,76 @@
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
                             Jenis Kendaraan <span style="color:#D92D20;">*</span>
                         </label>
+
                         <select name="vehicle_type_id" id="editVehicleTypeId" required
                             style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
-                                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
-                                   font-size:13.5px;color:#181D35;background:#fff;
-                                   appearance:none;cursor:pointer;
-                                   transition:border-color .2s,box-shadow .2s;"
+                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
+                   font-size:13.5px;color:#181D35;background:#fff;
+                   appearance:none;cursor:pointer;
+                   transition:border-color .2s,box-shadow .2s;"
                             onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                             onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+
                             <option value="">— Pilih Jenis —</option>
+
                             @foreach ($vehicleTypes as $vt)
-                                <option value="{{ $vt->id }}">{{ $vt->name }}</option>
+                                <option value="{{ $vt->id }}">
+                                    {{ $vt->name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
+
                     <div>
                         <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
                             Merek Kendaraan <span style="color:#D92D20;">*</span>
                         </label>
+
                         <select name="vehicle_brand_id" id="editVehicleBrandId" required
+                            onchange="filterModels('editVehicleModelId', this.value)"
                             style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
-                                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
-                                   font-size:13.5px;color:#181D35;background:#fff;
-                                   appearance:none;cursor:pointer;
-                                   transition:border-color .2s,box-shadow .2s;"
+                   padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
+                   font-size:13.5px;color:#181D35;background:#fff;
+                   appearance:none;cursor:pointer;
+                   transition:border-color .2s,box-shadow .2s;"
                             onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
                             onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+
                             <option value="">— Pilih Merek —</option>
+
                             @foreach ($vehicleBrands as $brand)
-                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                <option value="{{ $brand->id }}">
+                                    {{ $brand->name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
+                </div>
+
+                {{-- Model Kendaraan --}}
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#181D35;margin-bottom:8px;">
+                        Model Kendaraan
+                        <span style="font-weight:400;color:#8A93AE;">(opsional)</span>
+                    </label>
+
+                    <select name="vehicle_model_id" id="editVehicleModelId"
+                        style="width:100%;height:42px;border:1.5px solid #D4D9E8;border-radius:10px;
+               padding:0 14px;outline:none;font-family:'DM Sans',sans-serif;
+               font-size:13.5px;color:#181D35;background:#fff;
+               appearance:none;cursor:pointer;
+               transition:border-color .2s,box-shadow .2s;"
+                        onfocus="this.style.borderColor='#3B6FD4';this.style.boxShadow='0 0 0 4px rgba(59,111,212,.10)'"
+                        onblur="this.style.borderColor='#D4D9E8';this.style.boxShadow='none'">
+
+                        <option value="">— Pilih Model —</option>
+
+                        @foreach ($vehicleModels as $model)
+                            <option value="{{ $model->id }}" data-brand="{{ $model->vehicle_brand_id }}">
+                                {{ $model->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 {{-- Nomor Plat & Warna --}}
@@ -1090,6 +1191,15 @@
                     <div id="detailBrand" style="font-size:13.5px;font-weight:700;color:#181D35;">—</div>
                 </div>
 
+                {{-- Model --}}
+                <div style="padding:14px;background:#F5F7FC;border-radius:12px;border:1.5px solid #EBEEF5;">
+                    <div
+                        style="font-size:11px;color:#8A93AE;font-weight:600;text-transform:uppercase;
+            letter-spacing:0.06em;margin-bottom:6px;">
+                        Model</div>
+                    <div id="detailModel" style="font-size:13.5px;font-weight:700;color:#181D35;">—</div>
+                </div>
+
                 {{-- Warna --}}
                 <div style="padding:14px;background:#F5F7FC;border-radius:12px;border:1.5px solid #EBEEF5;">
                     <div
@@ -1262,40 +1372,90 @@
                     svg: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
                 },
             };
+
             const c = configs[type] || configs.success;
             const id = 'toast-' + Date.now();
+
             const toast = document.createElement('div');
+
             toast.id = id;
-            toast.style.cssText = `pointer-events:auto;background:${c.bg};border:1.5px solid ${c.border};
-                border-radius:12px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;
-                min-width:280px;max-width:360px;box-shadow:0 8px 24px rgba(0,0,0,.10);
-                animation:toastIn .25s ease;font-family:'DM Sans',sans-serif;`;
+            toast.style.cssText = `
+                pointer-events:auto;
+                background:${c.bg};
+                border:1.5px solid ${c.border};
+                border-radius:12px;
+                padding:12px 16px;
+                display:flex;
+                align-items:flex-start;
+                gap:10px;
+                min-width:280px;
+                max-width:360px;
+                box-shadow:0 8px 24px rgba(0,0,0,.10);
+                animation:toastIn .25s ease;
+                font-family:'DM Sans',sans-serif;
+            `;
+
             toast.innerHTML = `
                 <svg viewBox="0 0 24 24" fill="none" stroke="${c.icon}" stroke-width="2"
-                    style="width:16px;height:16px;flex-shrink:0;margin-top:1px;">${c.svg}</svg>
-                <span style="font-size:13px;color:${c.text};line-height:1.5;flex:1;">${message}</span>
+                    style="width:16px;height:16px;flex-shrink:0;margin-top:1px;">
+                    ${c.svg}
+                </svg>
+
+                <span style="font-size:13px;color:${c.text};line-height:1.5;flex:1;">
+                    ${message}
+                </span>
+
                 <button onclick="removeToast('${id}')"
                     style="background:none;border:none;cursor:pointer;padding:0;color:${c.icon};opacity:.6;flex-shrink:0;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
-                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="width:14px;height:14px;">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
-                </button>`;
+                </button>
+            `;
+
             document.getElementById('toastContainer').appendChild(toast);
+
             setTimeout(() => removeToast(id), 4000);
         }
 
         function removeToast(id) {
             const el = document.getElementById(id);
+
             if (el) {
                 el.style.animation = 'toastOut .2s ease forwards';
+
                 setTimeout(() => el.remove(), 200);
             }
         }
 
         const toastStyle = document.createElement('style');
+
         toastStyle.textContent = `
-            @keyframes toastIn  { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
-            @keyframes toastOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(20px)} }`;
+            @keyframes toastIn {
+                from {
+                    opacity:0;
+                    transform:translateX(20px)
+                }
+                to {
+                    opacity:1;
+                    transform:translateX(0)
+                }
+            }
+
+            @keyframes toastOut {
+                from {
+                    opacity:1;
+                    transform:translateX(0)
+                }
+                to {
+                    opacity:0;
+                    transform:translateX(20px)
+                }
+            }
+        `;
+
         document.head.appendChild(toastStyle);
 
         // ═══════════════════════════════
@@ -1304,6 +1464,7 @@
         function updateFileName(inputId, labelId) {
             const input = document.getElementById(inputId);
             const label = document.getElementById(labelId);
+
             if (input.files && input.files[0]) {
                 label.textContent = input.files[0].name;
                 label.style.color = '#181D35';
@@ -1314,12 +1475,34 @@
         }
 
         // ═══════════════════════════════
+        // FILTER MODEL BY BRAND
+        // ═══════════════════════════════
+        function filterModels(selectId, brandId) {
+            const select = document.getElementById(selectId);
+
+            if (!select) return;
+
+            const current = select.value;
+
+            Array.from(select.options).forEach(opt => {
+                if (!opt.value) return;
+
+                opt.hidden = opt.dataset.brand !== String(brandId);
+            });
+
+            if (select.options[select.selectedIndex]?.hidden) {
+                select.value = '';
+            }
+        }
+
+        // ═══════════════════════════════
         // SEARCH (debounce + submit)
         // ═══════════════════════════════
         let searchTimer;
 
         function debounceSearch() {
             clearTimeout(searchTimer);
+
             searchTimer = setTimeout(() => {
                 document.getElementById('searchForm').submit();
             }, 500);
@@ -1339,27 +1522,46 @@
         // ═══════════════════════════════
         // MODAL EDIT
         // ═══════════════════════════════
-        function openEditModal(id, userId, vehicleTypeId, vehicleBrandId,
-            plateNumber, color, isActive,
-            vehiclePhotoUrl, stnkPhotoUrl) {
+        function openEditModal(
+            id,
+            userId,
+            vehicleTypeId,
+            vehicleBrandId,
+            vehicleModelId,
+            plateNumber,
+            color,
+            isActive,
+            vehiclePhotoUrl,
+            stnkPhotoUrl
+        ) {
 
             document.getElementById('editUserId').value = userId ?? '';
             document.getElementById('editVehicleTypeId').value = vehicleTypeId;
+
             document.getElementById('editVehicleBrandId').value = vehicleBrandId;
+
+            // FILTER MODEL
+            filterModels('editVehicleModelId', vehicleBrandId);
+
+            document.getElementById('editVehicleModelId').value = vehicleModelId ?? '';
+
             document.getElementById('editPlateNumber').value = plateNumber;
             document.getElementById('editColor').value = color;
+
             document.getElementById('editForm').action = '/admin/vehicles/' + id;
 
             // Reset file inputs + label
             ['editVehiclePhoto', 'editStnkPhoto'].forEach(inputId => {
                 document.getElementById(inputId).value = '';
             });
+
             document.getElementById('editVehiclePhotoLabel').textContent = 'Ganti foto...';
             document.getElementById('editVehiclePhotoLabel').style.color = '#8A93AE';
+
             document.getElementById('editStnkPhotoLabel').textContent = 'Ganti foto...';
             document.getElementById('editStnkPhotoLabel').style.color = '#8A93AE';
 
-            // Set preview foto kendaraan
+            // Preview kendaraan
             _setEditPreview(
                 vehiclePhotoUrl,
                 'editVehiclePhotoPreview',
@@ -1368,7 +1570,7 @@
                 'editVehiclePhotoNewBadge'
             );
 
-            // Set preview foto STNK
+            // Preview STNK
             _setEditPreview(
                 stnkPhotoUrl,
                 'editStnkPhotoPreview',
@@ -1381,15 +1583,22 @@
             const checkbox = document.getElementById('editIsActive');
             const track = document.getElementById('toggleTrack');
             const thumb = document.getElementById('toggleThumb');
+
             checkbox.checked = isActive;
+
             track.style.background = isActive ? '#1A4BAD' : '#D4D9E8';
             thumb.style.transform = isActive ? 'translateX(20px)' : 'translateX(0)';
 
             document.getElementById('modalEdit').style.display = 'flex';
-            setTimeout(() => document.getElementById('editPlateNumber').focus(), 100);
+
+            setTimeout(() => {
+                document.getElementById('editPlateNumber').focus();
+            }, 100);
         }
 
-        // Helper: tampilkan foto lama atau placeholder
+        // ═══════════════════════════════
+        // HELPER PREVIEW
+        // ═══════════════════════════════
         function _setEditPreview(url, imgId, noneId, oldBadgeId, newBadgeId) {
             const img = document.getElementById(imgId);
             const none = document.getElementById(noneId);
@@ -1401,18 +1610,26 @@
             if (url) {
                 img.src = url;
                 img.style.display = 'block';
+
                 none.style.display = 'none';
+
                 oldBadge.style.display = 'inline-block';
             } else {
                 img.src = '';
+
                 img.style.display = 'none';
+
                 none.style.display = 'flex';
+
                 oldBadge.style.display = 'none';
             }
         }
 
-        // Preview saat user pilih file baru
+        // ═══════════════════════════════
+        // PREVIEW FILE EDIT
+        // ═══════════════════════════════
         function previewEditPhoto(inputId, imgId, noneId, labelId, oldBadgeId, newBadgeId) {
+
             const input = document.getElementById(inputId);
             const img = document.getElementById(imgId);
             const none = document.getElementById(noneId);
@@ -1421,14 +1638,19 @@
             const newBadge = document.getElementById(newBadgeId);
 
             if (input.files && input.files[0]) {
+
                 const reader = new FileReader();
+
                 reader.onload = e => {
                     img.src = e.target.result;
+
                     img.style.display = 'block';
                     none.style.display = 'none';
+
                     oldBadge.style.display = 'none';
                     newBadge.style.display = 'inline-block';
                 };
+
                 reader.readAsDataURL(input.files[0]);
 
                 label.textContent = input.files[0].name;
@@ -1443,47 +1665,78 @@
         // ═══════════════════════════════
         // MODAL DETAIL
         // ═══════════════════════════════
-        function openDetailModal(plate, color, type, brand, ownerName, ownerEmail,
-            isActive, isParked, parkedAt, createdAt,
-            vehiclePhotoUrl, stnkPhotoUrl) {
+        function openDetailModal(
+            plate,
+            color,
+            type,
+            brand,
+            modelName,
+            ownerName,
+            ownerEmail,
+            isActive,
+            isParked,
+            parkedAt,
+            createdAt,
+            vehiclePhotoUrl,
+            stnkPhotoUrl
+        ) {
 
             // Plat
             document.getElementById('detailPlate').textContent = plate;
 
-            // Info grid
+            // Info
             document.getElementById('detailType').textContent = type;
             document.getElementById('detailBrand').textContent = brand;
+            document.getElementById('detailModel').textContent = modelName || '—';
             document.getElementById('detailColor').textContent = color || '—';
             document.getElementById('detailCreatedAt').textContent = createdAt;
 
             // Status aktif
             const statusAktif = document.getElementById('detailStatusAktif');
+
             if (isActive) {
                 statusAktif.innerHTML =
                     '<span style="width:6px;height:6px;border-radius:50%;background:#12B76A;display:inline-block;"></span> Aktif';
-                statusAktif.style.cssText += 'background:#ECFDF3;border:1px solid #6CE9A6;color:#027A48;';
+
+                statusAktif.style.cssText +=
+                    'background:#ECFDF3;border:1px solid #6CE9A6;color:#027A48;';
             } else {
                 statusAktif.innerHTML =
                     '<span style="width:6px;height:6px;border-radius:50%;background:#D4D9E8;display:inline-block;"></span> Nonaktif';
-                statusAktif.style.cssText += 'background:#F5F7FC;border:1px solid #D4D9E8;color:#8A93AE;';
+
+                statusAktif.style.cssText +=
+                    'background:#F5F7FC;border:1px solid #D4D9E8;color:#8A93AE;';
             }
 
             // Status parkir
             const statusParkir = document.getElementById('detailStatusParkir');
+
             if (isParked) {
                 statusParkir.innerHTML =
-                    `<svg viewBox="0 0 24 24" fill="none" stroke="#1D74C4" stroke-width="2.5" style="width:11px;height:11px;flex-shrink:0;"><rect x="3" y="11" width="18" height="5" rx="2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/></svg> Sedang Parkir`;
-                statusParkir.style.cssText += 'background:#EFF8FF;border:1px solid #84CAFF;color:#1D74C4;';
+                    `<svg viewBox="0 0 24 24" fill="none" stroke="#1D74C4" stroke-width="2.5"
+                        style="width:11px;height:11px;flex-shrink:0;">
+                        <rect x="3" y="11" width="18" height="5" rx="2"/>
+                        <circle cx="7" cy="18" r="2"/>
+                        <circle cx="17" cy="18" r="2"/>
+                        <path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/>
+                    </svg> Sedang Parkir`;
+
+                statusParkir.style.cssText +=
+                    'background:#EFF8FF;border:1px solid #84CAFF;color:#1D74C4;';
             } else {
                 statusParkir.innerHTML =
                     '<span style="width:6px;height:6px;border-radius:50%;background:#D4D9E8;display:inline-block;"></span> Tidak Parkir';
-                statusParkir.style.cssText += 'background:#F5F7FC;border:1px solid #D4D9E8;color:#8A93AE;';
+
+                statusParkir.style.cssText +=
+                    'background:#F5F7FC;border:1px solid #D4D9E8;color:#8A93AE;';
             }
 
             // Waktu parkir
             const parkedWrap = document.getElementById('detailParkedAtWrap');
+
             if (isParked && parkedAt) {
                 document.getElementById('detailParkedAt').textContent = parkedAt;
+
                 parkedWrap.style.display = 'block';
             } else {
                 parkedWrap.style.display = 'none';
@@ -1492,8 +1745,10 @@
             // Foto kendaraan
             const photo = document.getElementById('detailPhoto');
             const placeholder = document.getElementById('detailPhotoPlaceholder');
+
             if (vehiclePhotoUrl) {
                 photo.src = vehiclePhotoUrl;
+
                 photo.style.display = 'block';
                 placeholder.style.display = 'none';
             } else {
@@ -1503,9 +1758,11 @@
 
             // Foto STNK
             const stnkSection = document.getElementById('detailStnkSection');
+
             if (stnkPhotoUrl) {
                 document.getElementById('detailStnkPhoto').src = stnkPhotoUrl;
                 document.getElementById('detailStnkLink').href = stnkPhotoUrl;
+
                 stnkSection.style.display = 'block';
             } else {
                 stnkSection.style.display = 'none';
@@ -1513,12 +1770,19 @@
 
             // Pemilik
             if (ownerName) {
-                document.getElementById('detailOwnerAvatar').textContent = ownerName.charAt(0).toUpperCase();
+                document.getElementById('detailOwnerAvatar').textContent =
+                    ownerName.charAt(0).toUpperCase();
+
                 document.getElementById('detailOwnerName').textContent = ownerName;
-                document.getElementById('detailOwnerEmail').textContent = ownerEmail || '—';
+
+                document.getElementById('detailOwnerEmail').textContent =
+                    ownerEmail || '—';
             } else {
                 document.getElementById('detailOwnerAvatar').textContent = '?';
-                document.getElementById('detailOwnerName').textContent = '— Tidak ada pemilik —';
+
+                document.getElementById('detailOwnerName').textContent =
+                    '— Tidak ada pemilik —';
+
                 document.getElementById('detailOwnerEmail').textContent = '';
             }
 
@@ -1531,9 +1795,12 @@
 
         // Toggle visual update
         document.getElementById('editIsActive').addEventListener('change', function() {
-            document.getElementById('toggleTrack').style.background = this.checked ? '#1A4BAD' : '#D4D9E8';
-            document.getElementById('toggleThumb').style.transform = this.checked ? 'translateX(20px)' :
-                'translateX(0)';
+
+            document.getElementById('toggleTrack').style.background =
+                this.checked ? '#1A4BAD' : '#D4D9E8';
+
+            document.getElementById('toggleThumb').style.transform =
+                this.checked ? 'translateX(20px)' : 'translateX(0)';
         });
 
         // ═══════════════════════════════
@@ -1541,7 +1808,10 @@
         // ═══════════════════════════════
         function confirmDelete(id, plateNumber) {
             document.getElementById('deletePlateNumber').textContent = plateNumber;
-            document.getElementById('deleteForm').action = '/admin/vehicles/' + id;
+
+            document.getElementById('deleteForm').action =
+                '/admin/vehicles/' + id;
+
             document.getElementById('modalDelete').style.display = 'flex';
         }
 
@@ -1549,17 +1819,28 @@
             document.getElementById('modalDelete').style.display = 'none';
         }
 
-        // ── Tutup modal backdrop & Escape ──
-        ['modalAdd', 'modalEdit', 'modalDelete'].forEach(id => {
+        // ═══════════════════════════════
+        // BACKDROP & ESCAPE
+        // ═══════════════════════════════
+        ['modalAdd', 'modalEdit', 'modalDelete', 'modalDetail'].forEach(id => {
+
             document.getElementById(id).addEventListener('click', function(e) {
-                if (e.target === this) this.style.display = 'none';
+
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
             });
         });
 
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape')
-                ['modalAdd', 'modalEdit', 'modalDelete'].forEach(id =>
-                    document.getElementById(id).style.display = 'none');
+
+            if (e.key === 'Escape') {
+
+                ['modalAdd', 'modalEdit', 'modalDelete', 'modalDetail']
+                .forEach(id => {
+                    document.getElementById(id).style.display = 'none';
+                });
+            }
         });
     </script>
 @endpush
