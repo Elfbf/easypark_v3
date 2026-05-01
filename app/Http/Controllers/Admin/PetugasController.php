@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
@@ -28,8 +30,8 @@ class PetugasController extends Controller
                 });
             })
             ->latest()
-            ->paginate(5) // 🔥 pagination
-            ->withQueryString(); // biar search tetap
+            ->paginate(5)
+            ->withQueryString();
 
         return view('admin.petugas.index', compact('petugas', 'search'));
     }
@@ -49,14 +51,16 @@ class PetugasController extends Controller
         ]);
 
         try {
+
             $role = Role::where('name', 'petugas')->firstOrFail();
 
             $photoPath = null;
+
             if ($request->hasFile('photo')) {
                 $photoPath = $request->file('photo')->store('photos/petugas', 'public');
             }
 
-            User::create([
+            $user = User::create([
                 'role_id'    => $role->id,
                 'name'       => $request->name,
                 'nim_nip'    => $request->nim_nip,
@@ -70,8 +74,21 @@ class PetugasController extends Controller
                 'photo'      => $photoPath,
             ]);
 
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Petugas',
+                'activity' => 'create_petugas',
+                'description' => 'Menambahkan petugas ' . $user->name,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
+
             return back()->with('success', 'Data petugas berhasil ditambahkan.');
+
         } catch (QueryException $e) {
+
             Log::error('Petugas store failed: ' . $e->getMessage());
 
             return back()
@@ -94,6 +111,7 @@ class PetugasController extends Controller
         ]);
 
         try {
+
             $data = [
                 'name'       => $request->name,
                 'nim_nip'    => $request->nim_nip,
@@ -106,17 +124,31 @@ class PetugasController extends Controller
             ];
 
             if ($request->hasFile('photo')) {
-                // Hapus foto lama jika ada
+
                 if ($petugas->photo) {
                     Storage::disk('public')->delete($petugas->photo);
                 }
+
                 $data['photo'] = $request->file('photo')->store('photos/petugas', 'public');
             }
 
             $petugas->update($data);
 
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Petugas',
+                'activity' => 'update_petugas',
+                'description' => 'Memperbarui petugas ' . $petugas->name,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
+
             return back()->with('success', 'Data petugas berhasil diperbarui.');
+
         } catch (QueryException $e) {
+
             Log::error('Petugas update failed: ' . $e->getMessage());
 
             return back()
@@ -133,15 +165,30 @@ class PetugasController extends Controller
     public function destroy(User $petugas)
     {
         try {
-            // Hapus foto dari storage jika ada
+
             if ($petugas->photo) {
                 Storage::disk('public')->delete($petugas->photo);
             }
 
+            $petugasName = $petugas->name;
+
             $petugas->delete();
 
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Petugas',
+                'activity' => 'delete_petugas',
+                'description' => 'Menghapus petugas ' . $petugasName,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
+
             return back()->with('success', 'Data petugas berhasil dihapus.');
+
         } catch (QueryException $e) {
+
             Log::error('Petugas delete failed: ' . $e->getMessage());
 
             return back()->with('error', 'Gagal menghapus petugas.');

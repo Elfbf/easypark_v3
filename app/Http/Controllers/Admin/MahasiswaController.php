@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\StudyProgram;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
@@ -30,10 +32,9 @@ class MahasiswaController extends Controller
                 });
             })
             ->latest()
-            ->paginate(5) // 🔥 ini yang penting
-            ->withQueryString(); // biar search tidak hilang saat pindah page
+            ->paginate(5)
+            ->withQueryString();
 
-        // 🔥 untuk dropdown modal
         $departments = Department::orderBy('name')->get();
         $studyPrograms = StudyProgram::orderBy('name')->get();
 
@@ -65,11 +66,12 @@ class MahasiswaController extends Controller
             $role = Role::where('name', 'mahasiswa')->firstOrFail();
 
             $photoPath = null;
+
             if ($request->hasFile('photo')) {
                 $photoPath = $request->file('photo')->store('photos/mahasiswa', 'public');
             }
 
-            User::create([
+            $user = User::create([
                 'role_id'          => $role->id,
                 'name'             => $request->name,
                 'nim_nip'          => $request->nim_nip,
@@ -83,6 +85,17 @@ class MahasiswaController extends Controller
                 'birth_date'       => $request->birth_date,
                 'address'          => $request->address,
                 'photo'            => $photoPath,
+            ]);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Mahasiswa',
+                'activity' => 'create_mahasiswa',
+                'description' => 'Menambahkan mahasiswa ' . $user->name,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
             ]);
 
             return back()->with('success', 'Data mahasiswa berhasil ditambahkan.');
@@ -125,13 +138,26 @@ class MahasiswaController extends Controller
             ];
 
             if ($request->hasFile('photo')) {
+
                 if ($mahasiswa->photo) {
                     Storage::disk('public')->delete($mahasiswa->photo);
                 }
+
                 $data['photo'] = $request->file('photo')->store('photos/mahasiswa', 'public');
             }
 
             $mahasiswa->update($data);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Mahasiswa',
+                'activity' => 'update_mahasiswa',
+                'description' => 'Memperbarui mahasiswa ' . $mahasiswa->name,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
 
             return back()->with('success', 'Data mahasiswa berhasil diperbarui.');
         } catch (QueryException $e) {
@@ -155,7 +181,20 @@ class MahasiswaController extends Controller
                 Storage::disk('public')->delete($mahasiswa->photo);
             }
 
+            $mahasiswaName = $mahasiswa->name;
+
             $mahasiswa->delete();
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Mahasiswa',
+                'activity' => 'delete_mahasiswa',
+                'description' => 'Menghapus mahasiswa ' . $mahasiswaName,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
 
             return back()->with('success', 'Data mahasiswa berhasil dihapus.');
         } catch (QueryException $e) {

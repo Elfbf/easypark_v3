@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Department;
 use App\Models\StudyProgram;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class StudyProgramController extends Controller
@@ -20,10 +22,9 @@ class StudyProgramController extends Controller
                 $query->where('name', 'like', '%' . $search . '%');
             })
             ->latest()
-            ->paginate(5) // 🔥 ganti get()
-            ->withQueryString(); // biar search tetap saat pindah page
+            ->paginate(5)
+            ->withQueryString();
 
-        // 🔥 WAJIB untuk dropdown modal
         $departments = Department::orderBy('name')->get();
 
         return view('admin.study-programs.index', compact(
@@ -41,13 +42,27 @@ class StudyProgramController extends Controller
         ]);
 
         try {
-            StudyProgram::create([
+
+            $studyProgram = StudyProgram::create([
                 'department_id' => $request->department_id,
                 'name' => $request->name,
             ]);
 
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Study Program',
+                'activity' => 'create_study_program',
+                'description' => 'Menambahkan program studi ' . $studyProgram->name,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
+
             return back()->with('success', 'Program studi berhasil ditambahkan.');
+
         } catch (QueryException $e) {
+
             Log::error('StudyProgram store failed: ' . $e->getMessage());
 
             return back()
@@ -64,13 +79,27 @@ class StudyProgramController extends Controller
         ]);
 
         try {
+
             $studyProgram->update([
                 'department_id' => $request->department_id,
                 'name' => $request->name,
             ]);
 
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Study Program',
+                'activity' => 'update_study_program',
+                'description' => 'Memperbarui program studi ' . $studyProgram->name,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
+
             return back()->with('success', 'Program studi berhasil diperbarui.');
+
         } catch (QueryException $e) {
+
             Log::error('StudyProgram update failed: ' . $e->getMessage());
 
             return back()
@@ -82,10 +111,26 @@ class StudyProgramController extends Controller
     public function destroy(StudyProgram $studyProgram)
     {
         try {
+
+            $studyProgramName = $studyProgram->name;
+
             $studyProgram->delete();
 
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Study Program',
+                'activity' => 'delete_study_program',
+                'description' => 'Menghapus program studi ' . $studyProgramName,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
+
             return back()->with('success', 'Program studi berhasil dihapus.');
+
         } catch (QueryException $e) {
+
             Log::error('StudyProgram delete failed: ' . $e->getMessage());
 
             return back()->with('error', 'Gagal menghapus program studi.');

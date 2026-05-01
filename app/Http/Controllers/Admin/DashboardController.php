@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\ActivityLog;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
-        return view('admin.dashboard');
+        $recentLogs = ActivityLog::with('user')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('admin.dashboard', compact('recentLogs'));
     }
 }

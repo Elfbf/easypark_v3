@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class DepartmentController extends Controller
 {
@@ -31,8 +33,19 @@ class DepartmentController extends Controller
         ]);
 
         try {
-            Department::create([
+            $department = Department::create([
                 'name' => $request->name
+            ]);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Department',
+                'activity' => 'create_department',
+                'description' => 'Menambahkan jurusan ' . $department->name,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
             ]);
 
             return back()->with('success', 'Jurusan berhasil ditambahkan.');
@@ -54,6 +67,17 @@ class DepartmentController extends Controller
         try {
             $department->update([
                 'name' => $request->name
+            ]);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Department',
+                'activity' => 'update_department',
+                'description' => 'Memperbarui jurusan ' . $department->name,
+                'ip_address' => Request()->ip(),
+                'user_agent' => Request()->userAgent(),
+                'url' => Request()->url(),
+                'method' => Request()->method(),
             ]);
 
             return back()->with('success', 'Jurusan berhasil diperbarui.');
@@ -83,7 +107,20 @@ class DepartmentController extends Controller
                 );
             }
 
+            $departmentName = $department->name;
+
             $department->delete();
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Department',
+                'activity' => 'delete_department',
+                'description' => 'Menghapus jurusan ' . $departmentName,
+                'ip_address' => Request()->ip(),
+                'user_agent' => Request()->userAgent(),
+                'url' => Request()->url(),
+                'method' => Request()->method(),
+            ]);
 
             return back()->with('success', 'Jurusan berhasil dihapus.');
         } catch (QueryException $e) {

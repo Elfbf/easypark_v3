@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\ParkingArea;
 use App\Models\ParkingSlot;
 use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ParkingSlotController extends Controller
@@ -49,12 +51,23 @@ class ParkingSlotController extends Controller
 
         try {
 
-            ParkingSlot::create([
+            $parkingSlot = ParkingSlot::create([
                 'parking_area_id' => $request->parking_area_id,
                 'vehicle_type_id' => $request->vehicle_type_id,
                 'slot_code'       => strtoupper($request->slot_code),
                 'status'          => $request->status,
                 'is_active'       => true,
+            ]);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Parking Slot',
+                'activity' => 'create_parking_slot',
+                'description' => 'Menambahkan slot parkir ' . $parkingSlot->slot_code,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
             ]);
 
             return back()->with(
@@ -92,6 +105,17 @@ class ParkingSlotController extends Controller
                 'is_active'       => $request->boolean('is_active'),
             ]);
 
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Parking Slot',
+                'activity' => 'update_parking_slot',
+                'description' => 'Memperbarui slot parkir ' . $parkingSlot->slot_code,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
+
             return back()->with(
                 'success',
                 'Slot parkir berhasil diperbarui.'
@@ -118,7 +142,20 @@ class ParkingSlotController extends Controller
                 );
             }
 
+            $slotCode = $parkingSlot->slot_code;
+
             $parkingSlot->delete();
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Parking Slot',
+                'activity' => 'delete_parking_slot',
+                'description' => 'Menghapus slot parkir ' . $slotCode,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
 
             return back()->with(
                 'success',

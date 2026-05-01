@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Vehicle;
+use App\Models\ActivityLog;
 use App\Models\User;
-use App\Models\VehicleType;
+use App\Models\Vehicle;
 use App\Models\VehicleBrand;
+use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -82,7 +84,7 @@ class VehicleController extends Controller
                     ->store('vehicles/stnk', 'public');
             }
 
-            Vehicle::create([
+            $vehicle = Vehicle::create([
                 'user_id'          => $request->user_id,
                 'vehicle_type_id'  => $request->vehicle_type_id,
                 'vehicle_brand_id' => $request->vehicle_brand_id,
@@ -96,6 +98,17 @@ class VehicleController extends Controller
                 'is_parked'        => false,
                 'parked_at'        => null,
                 'is_active'        => true,
+            ]);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Vehicle',
+                'activity' => 'create_vehicle',
+                'description' => 'Menambahkan kendaraan ' . $vehicle->plate_number,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
             ]);
 
             return back()->with('success', 'Kendaraan berhasil ditambahkan.');
@@ -126,24 +139,26 @@ class VehicleController extends Controller
 
         try {
 
-            // Handle vehicle_photo
             $vehiclePhotoPath = $vehicle->vehicle_photo;
 
             if ($request->hasFile('vehicle_photo')) {
+
                 if ($vehicle->vehicle_photo && Storage::disk('public')->exists($vehicle->vehicle_photo)) {
                     Storage::disk('public')->delete($vehicle->vehicle_photo);
                 }
+
                 $vehiclePhotoPath = $request->file('vehicle_photo')
                     ->store('vehicles/photos', 'public');
             }
 
-            // Handle stnk_photo
             $stnkPhotoPath = $vehicle->stnk_photo;
 
             if ($request->hasFile('stnk_photo')) {
+
                 if ($vehicle->stnk_photo && Storage::disk('public')->exists($vehicle->stnk_photo)) {
                     Storage::disk('public')->delete($vehicle->stnk_photo);
                 }
+
                 $stnkPhotoPath = $request->file('stnk_photo')
                     ->store('vehicles/stnk', 'public');
             }
@@ -160,6 +175,17 @@ class VehicleController extends Controller
                 'stnk_photo'       => $stnkPhotoPath,
 
                 'is_active'        => $request->boolean('is_active'),
+            ]);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Vehicle',
+                'activity' => 'update_vehicle',
+                'description' => 'Memperbarui kendaraan ' . $vehicle->plate_number,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
             ]);
 
             return back()->with('success', 'Kendaraan berhasil diperbarui.');
@@ -184,7 +210,20 @@ class VehicleController extends Controller
                 Storage::disk('public')->delete($vehicle->stnk_photo);
             }
 
+            $plateNumber = $vehicle->plate_number;
+
             $vehicle->delete();
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Vehicle',
+                'activity' => 'delete_vehicle',
+                'description' => 'Menghapus kendaraan ' . $plateNumber,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->url(),
+                'method' => request()->method(),
+            ]);
 
             return back()->with('success', 'Kendaraan berhasil dihapus.');
 

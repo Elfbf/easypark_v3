@@ -94,6 +94,33 @@ return new class extends Migration
             $table->boolean('is_used')->default(false);
             $table->timestamps();
         });
+
+        // ACTIVITY LOGS
+        Schema::create('activity_logs', function (Blueprint $table) {
+
+            $table->id();
+
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+
+            $table->string('module')->nullable();
+
+            $table->string('activity');
+
+            $table->text('description')->nullable();
+
+            $table->string('ip_address')->nullable();
+
+            $table->text('user_agent')->nullable();
+
+            $table->string('url')->nullable();
+
+            $table->string('method')->nullable();
+
+            $table->timestamps();
+        });
     }
 
     public function down(): void
@@ -105,5 +132,6 @@ return new class extends Migration
         Schema::dropIfExists('departments');
         Schema::dropIfExists('roles');
         Schema::dropIfExists('password_reset_otps');
+        Schema::dropIfExists('activity_logs');
     }
 };
