@@ -43,6 +43,7 @@
              ADMIN
         ══════════════════════════════════════ --}}
         @if ($role === 'admin')
+            {{-- Utama --}}
             <div class="sb-section-label">Utama</div>
 
             <a href="{{ route('admin.dashboard') }}"
@@ -55,6 +56,9 @@
                 </svg>
                 <span>Dashboard</span>
             </a>
+
+            {{-- Manajemen Pengguna --}}
+            <div class="sb-section-label" style="margin-top:16px">Manajemen Pengguna</div>
 
             <a href="{{ route('admin.roles.index') }}"
                 class="sb-item {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
@@ -85,6 +89,9 @@
                 <span>Mahasiswa</span>
             </a>
 
+            {{-- Akademik --}}
+            <div class="sb-section-label" style="margin-top:16px">Akademik</div>
+
             <a href="{{ route('admin.departments.index') }}"
                 class="sb-item {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -106,6 +113,7 @@
                 <span>Program Studi</span>
             </a>
 
+            {{-- Kendaraan --}}
             <div class="sb-section-label" style="margin-top:16px">Kendaraan</div>
 
             <a href="{{ route('admin.vehicle-types.index') }}"
@@ -139,6 +147,7 @@
                 <span>Kendaraan</span>
             </a>
 
+            {{-- Parkir --}}
             <div class="sb-section-label" style="margin-top:16px">Parkir</div>
 
             <a href="{{ route('admin.parking-areas.index') }}"
@@ -160,6 +169,40 @@
                     <circle cx="17" cy="13" r="1" fill="currentColor" />
                 </svg>
                 <span>Slot Parkir</span>
+            </a>
+
+            <a href="{{ route('admin.parking-records.index') }}"
+                class="sb-item {{ request()->routeIs('admin.parking-records.*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                    <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
+                </svg>
+                <span>Parking Records</span>
+            </a>
+
+            {{-- Monitoring & Log --}}
+            <div class="sb-section-label" style="margin-top:16px">Monitoring &amp; Log</div>
+
+            <a href="javascript:void(0)" class="sb-item disabled">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+                <span>Activity Logs</span>
+            </a>
+
+            {{-- Pengaturan --}}
+            <div class="sb-section-label" style="margin-top:16px">Pengaturan</div>
+
+            <a href="javascript:void(0)" class="sb-item disabled">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                </svg>
+                <span>Profil</span>
             </a>
 
             {{-- ══════════════════════════════════════
@@ -219,7 +262,6 @@
         @elseif ($role === 'mahasiswa')
             <div class="sb-section-label">Utama</div>
 
-            {{-- route belum ada, pakai '#' dulu --}}
             <a href="{{ route('mahasiswa.dashboard') }}"
                 class="sb-item {{ request()->routeIs('mahasiswa.dashboard') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

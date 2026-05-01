@@ -46,6 +46,7 @@
         <div class="stat-card-accent" style="background:#3B6FD4;"></div>
     </div>
 
+    {{-- Slot Terisi: DINAMIS --}}
     <div class="stat-card">
         <div class="stat-card-icon" style="background:#FFFAEB;">
             <svg viewBox="0 0 24 24" fill="none" stroke="#F79009" stroke-width="2">
@@ -53,12 +54,15 @@
                 <path d="M3 9h18M9 21V9"/>
             </svg>
         </div>
-        <div class="stat-card-val">80</div>
+        <div class="stat-card-val">{{ $takenSlots }}</div>
         <div class="stat-card-label">Slot Terisi Sekarang</div>
-        <div class="stat-card-delta delta-neu">±2%</div>
+        <div class="stat-card-delta delta-neu">
+            {{ $totalSlots > 0 ? round($takenSlots / $totalSlots * 100) : 0 }}% terisi
+        </div>
         <div class="stat-card-accent" style="background:#F79009;"></div>
     </div>
 
+    {{-- Slot Kosong: DINAMIS --}}
     <div class="stat-card">
         <div class="stat-card-icon" style="background:#ECFDF3;">
             <svg viewBox="0 0 24 24" fill="none" stroke="#12B76A" stroke-width="2">
@@ -68,9 +72,11 @@
                 <line x1="14" y1="18" x2="16" y2="18"/>
             </svg>
         </div>
-        <div class="stat-card-val">40</div>
+        <div class="stat-card-val">{{ $freeSlots }}</div>
         <div class="stat-card-label">Slot Kosong Tersedia</div>
-        <div class="stat-card-delta delta-down">↓ 12%</div>
+        <div class="stat-card-delta {{ $freeSlots < 10 ? 'delta-up' : 'delta-down' }}">
+            {{ $totalSlots > 0 ? round($freeSlots / $totalSlots * 100) : 0 }}% tersedia
+        </div>
         <div class="stat-card-accent" style="background:#12B76A;"></div>
     </div>
 
@@ -93,7 +99,7 @@
 {{-- ── Main Content Grid ── --}}
 <div class="content-grid">
 
-    {{-- Tabel Aktivitas --}}
+    {{-- Tabel Aktivitas: statis --}}
     <div class="card">
         <div class="card-header">
             <div>
@@ -184,42 +190,20 @@
         </table>
     </div>
 
-    {{-- Peta Slot --}}
+    {{-- Peta Slot: DINAMIS semua zona --}}
     <div class="card">
         <div class="card-header">
             <div>
-                <div class="card-title">Peta Slot — Zona A</div>
-                <div class="card-sub">100 slot total · 60 terisi · 40 kosong</div>
+                <div class="card-title">Peta Slot Parkir</div>
+                <div class="card-sub">{{ $totalSlots }} slot total · {{ $takenSlots }} terisi · {{ $freeSlots }} kosong</div>
             </div>
             <a href="#" class="card-action">Semua zona</a>
         </div>
 
         <div class="slot-map-wrap">
 
-            <div class="mini-stats">
-                <div class="mini-stat">
-                    <div class="mini-stat-val" style="color:#1A4BAD;">60</div>
-                    <div class="mini-stat-label">Terisi</div>
-                </div>
-                <div class="mini-stat">
-                    <div class="mini-stat-val" style="color:#C9960F;">40</div>
-                    <div class="mini-stat-label">Kosong</div>
-                </div>
-                <div class="mini-stat">
-                    <div class="mini-stat-val" style="color:#D92D20;">5</div>
-                    <div class="mini-stat-label">Blokir</div>
-                </div>
-            </div>
-
-            <div class="chart-area" id="chartArea"></div>
-
-            <div class="zone-label" style="margin-top:14px;">Baris 1 — 2</div>
-            <div class="slot-row" id="slotRowA"></div>
-
-            <div class="zone-label">Baris 3 — 4</div>
-            <div class="slot-row" id="slotRowB"></div>
-
-            <div class="slot-legend">
+            {{-- Legend --}}
+            <div class="slot-legend" style="margin-bottom:12px;">
                 <div class="leg-item">
                     <div class="leg-dot" style="background:rgba(59,111,212,.25);border:1.5px solid #3B6FD4;"></div>
                     Terisi
@@ -234,6 +218,12 @@
                 </div>
             </div>
 
+            {{-- Area tabs --}}
+            <div class="area-tabs" id="areaTabs"></div>
+
+            {{-- Slot grid per area --}}
+            <div id="areaSlotPanels"></div>
+
         </div>
     </div>
 </div>
@@ -241,7 +231,7 @@
 {{-- ── Bottom Grid ── --}}
 <div class="bottom-grid">
 
-    {{-- Log Aktivitas --}}
+    {{-- Log Aktivitas: statis --}}
     <div class="card">
         <div class="card-header">
             <div>
@@ -253,9 +243,7 @@
             <div class="activity-list">
 
                 <div class="act-item">
-                    <div class="act-dot-wrap">
-                        <div class="act-dot" style="background:#12B76A;"></div>
-                    </div>
+                    <div class="act-dot-wrap"><div class="act-dot" style="background:#12B76A;"></div></div>
                     <div class="act-content">
                         <div class="act-title">Kendaraan masuk — W 1234 AB</div>
                         <div class="act-meta">Zona A, Slot 01 · Alief</div>
@@ -264,9 +252,7 @@
                 </div>
 
                 <div class="act-item">
-                    <div class="act-dot-wrap">
-                        <div class="act-dot" style="background:#8A93AE;"></div>
-                    </div>
+                    <div class="act-dot-wrap"><div class="act-dot" style="background:#8A93AE;"></div></div>
                     <div class="act-content">
                         <div class="act-title">Kendaraan keluar — L 5678 CD</div>
                         <div class="act-meta">Zona A, Slot 02 · Budi</div>
@@ -275,9 +261,7 @@
                 </div>
 
                 <div class="act-item">
-                    <div class="act-dot-wrap">
-                        <div class="act-dot" style="background:#D92D20;"></div>
-                    </div>
+                    <div class="act-dot-wrap"><div class="act-dot" style="background:#D92D20;"></div></div>
                     <div class="act-content">
                         <div class="act-title">Pelanggaran tercatat — N 9012 EF</div>
                         <div class="act-meta">Zona B, Slot 05 · Citra</div>
@@ -286,9 +270,7 @@
                 </div>
 
                 <div class="act-item">
-                    <div class="act-dot-wrap">
-                        <div class="act-dot" style="background:#F79009;"></div>
-                    </div>
+                    <div class="act-dot-wrap"><div class="act-dot" style="background:#F79009;"></div></div>
                     <div class="act-content">
                         <div class="act-title">Slot diblokir — Zona B, 03</div>
                         <div class="act-meta">Oleh sistem otomatis</div>
@@ -300,7 +282,7 @@
         </div>
     </div>
 
-    {{-- Kapasitas Zona --}}
+    {{-- Kapasitas Zona: DINAMIS --}}
     <div class="card">
         <div class="card-header">
             <div>
@@ -310,52 +292,34 @@
         </div>
         <div class="card-body">
             <div class="zone-cards">
-
+                @forelse($zones as $zone)
+                @php
+                    $pct   = $zone->total_slots > 0
+                               ? round($zone->taken_slots / $zone->total_slots * 100)
+                               : 0;
+                    $color = $pct >= 90 ? '#D92D20'
+                           : ($pct >= 75 ? '#F79009'
+                           : ($pct >= 50 ? '#3B6FD4' : '#12B76A'));
+                @endphp
                 <div class="zone-item">
                     <div class="zone-top">
-                        <div class="zone-name">Zona A</div>
-                        <div class="zone-count">60 / 100 slot</div>
+                        <div class="zone-name">{{ $zone->name }}</div>
+                        <div class="zone-count">{{ $zone->taken_slots }} / {{ $zone->total_slots }} slot</div>
                     </div>
                     <div class="progress">
-                        <div class="progress-fill" style="width:60%;background:#3B6FD4;"></div>
+                        <div class="progress-fill" style="width:{{ $pct }}%; background:{{ $color }};"></div>
                     </div>
                 </div>
-
-                <div class="zone-item">
-                    <div class="zone-top">
-                        <div class="zone-name">Zona B</div>
-                        <div class="zone-count">30 / 100 slot</div>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-fill" style="width:30%;background:#12B76A;"></div>
-                    </div>
+                @empty
+                <div style="text-align:center;color:#8A93AE;padding:16px 0;font-size:13px;">
+                    Belum ada data zona.
                 </div>
-
-                <div class="zone-item">
-                    <div class="zone-top">
-                        <div class="zone-name">Zona C</div>
-                        <div class="zone-count">85 / 100 slot</div>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-fill" style="width:85%;background:#F79009;"></div>
-                    </div>
-                </div>
-
-                <div class="zone-item">
-                    <div class="zone-top">
-                        <div class="zone-name">Zona D</div>
-                        <div class="zone-count">98 / 100 slot</div>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-fill" style="width:98%;background:#D92D20;"></div>
-                    </div>
-                </div>
-
+                @endforelse
             </div>
         </div>
     </div>
 
-    {{-- Petugas Berjaga --}}
+    {{-- Petugas Berjaga: statis --}}
     <div class="card">
         <div class="card-header">
             <div>
@@ -368,37 +332,25 @@
 
                 <div class="officer-item">
                     <div class="off-av" style="background:#0E2F7A;">AL</div>
-                    <div>
-                        <div class="off-name">Alief Chandra</div>
-                        <div class="off-zone">Zona A</div>
-                    </div>
+                    <div><div class="off-name">Alief Chandra</div><div class="off-zone">Zona A</div></div>
                     <div class="off-status" style="background:#12B76A;box-shadow:0 0 6px #12B76A;"></div>
                 </div>
 
                 <div class="officer-item">
                     <div class="off-av" style="background:#1A4BAD;">BD</div>
-                    <div>
-                        <div class="off-name">Budi Santoso</div>
-                        <div class="off-zone">Zona B</div>
-                    </div>
+                    <div><div class="off-name">Budi Santoso</div><div class="off-zone">Zona B</div></div>
                     <div class="off-status" style="background:#12B76A;box-shadow:0 0 6px #12B76A;"></div>
                 </div>
 
                 <div class="officer-item">
                     <div class="off-av" style="background:#C9960F;">CT</div>
-                    <div>
-                        <div class="off-name">Citra Dewi</div>
-                        <div class="off-zone">Zona C</div>
-                    </div>
+                    <div><div class="off-name">Citra Dewi</div><div class="off-zone">Zona C</div></div>
                     <div class="off-status" style="background:#12B76A;box-shadow:0 0 6px #12B76A;"></div>
                 </div>
 
                 <div class="officer-item">
                     <div class="off-av" style="background:#4A5272;">DN</div>
-                    <div>
-                        <div class="off-name">Dani Prasetyo</div>
-                        <div class="off-zone">Zona D</div>
-                    </div>
+                    <div><div class="off-name">Dani Prasetyo</div><div class="off-zone">Zona D</div></div>
                     <div class="off-status" style="background:#8A93AE;"></div>
                 </div>
 
@@ -412,37 +364,83 @@
 
 @push('scripts')
 <script>
-    // ── Slot Map ──
-    const slotsA = [
-        {id:'A1', status:'taken'}, {id:'A2', status:'free'},
-        {id:'A3', status:'blocked'}, {id:'A4', status:'free'},
-        {id:'A5', status:'taken'}, {id:'A6', status:'taken'},
-        {id:'A7', status:'free'}, {id:'A8', status:'taken'},
-    ];
+    // ── Data semua zona dari database ──
+    const zonesData = @json($zonesWithSlots);
 
-    const slotsB = [
-        {id:'A9', status:'free'}, {id:'A10', status:'taken'},
-        {id:'A11', status:'free'}, {id:'A12', status:'blocked'},
-        {id:'A13', status:'taken'}, {id:'A14', status:'free'},
-        {id:'A15', status:'taken'}, {id:'A16', status:'taken'},
-    ];
+    const tabsEl   = document.getElementById('areaTabs');
+    const panelsEl = document.getElementById('areaSlotPanels');
 
-    function buildRow(data, elId) {
-        const el = document.getElementById(elId);
-        if (!el) return;
-        data.forEach(s => {
-            const d = document.createElement('div');
-            d.className = 'sl ' + s.status;
-            d.innerText = s.id;
-            d.title = s.id + ' — ' + (s.status === 'taken' ? 'Terisi' : s.status === 'free' ? 'Kosong' : 'Diblokir');
-            el.appendChild(d);
-        });
+    // Buat tab dan panel per zona
+    zonesData.forEach((zone, idx) => {
+        // ── Tab ──
+        const tab = document.createElement('button');
+        tab.className   = 'area-tab' + (idx === 0 ? ' active' : '');
+        tab.dataset.idx = idx;
+        tab.innerHTML   = `${zone.name} <span class="area-tab-count">${zone.taken}/${zone.total}</span>`;
+        tab.addEventListener('click', () => switchTab(idx));
+        tabsEl.appendChild(tab);
+
+        // ── Panel ──
+        const panel = document.createElement('div');
+        panel.className  = 'area-panel' + (idx === 0 ? ' active' : '');
+        panel.dataset.idx = idx;
+
+        // Mini stats
+        panel.innerHTML = `
+            <div class="mini-stats" style="margin-bottom:12px;">
+                <div class="mini-stat">
+                    <div class="mini-stat-val" style="color:#1A4BAD;">${zone.taken}</div>
+                    <div class="mini-stat-label">Terisi</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-val" style="color:#C9960F;">${zone.available}</div>
+                    <div class="mini-stat-label">Kosong</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-val" style="color:#D92D20;">${zone.blocked}</div>
+                    <div class="mini-stat-label">Blokir</div>
+                </div>
+            </div>
+        `;
+
+        // Slot grid (tanpa baris)
+        const grid = document.createElement('div');
+        grid.className = 'slot-row';
+        grid.style.flexWrap = 'wrap';
+
+        if (zone.slots.length === 0) {
+            grid.innerHTML = '<div style="color:#8A93AE;font-size:13px;padding:8px 0;">Belum ada slot.</div>';
+        } else {
+            zone.slots.forEach(s => {
+                const d = document.createElement('div');
+                d.className = 'sl ' + s.status;
+                d.innerText = s.id;
+                d.title     = s.id + ' — ' + (
+                    s.status === 'taken'   ? 'Terisi'   :
+                    s.status === 'free'    ? 'Kosong'   : 'Diblokir'
+                );
+                grid.appendChild(d);
+            });
+        }
+
+        panel.appendChild(grid);
+        panelsEl.appendChild(panel);
+    });
+
+    // Fallback jika tidak ada zona
+    if (zonesData.length === 0) {
+        tabsEl.innerHTML   = '<div style="color:#8A93AE;font-size:13px;">Belum ada area parkir.</div>';
+        panelsEl.innerHTML = '';
     }
 
-    buildRow(slotsA, 'slotRowA');
-    buildRow(slotsB, 'slotRowB');
+    function switchTab(idx) {
+        document.querySelectorAll('.area-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.area-panel').forEach(p => p.classList.remove('active'));
+        document.querySelector(`.area-tab[data-idx="${idx}"]`).classList.add('active');
+        document.querySelector(`.area-panel[data-idx="${idx}"]`).classList.add('active');
+    }
 
-    // ── Bar Chart ──
+    // ── Bar Chart (statis) ──
     const hourData = [2, 4, 6, 8, 10, 6, 4, 3, 5, 7, 8, 6];
     const hours    = ['06','07','08','09','10','11','12','13','14','15','16','17'];
     const maxV     = Math.max(...hourData);
@@ -454,9 +452,9 @@
             wrap.className = 'bar-wrap';
 
             const bar = document.createElement('div');
-            bar.className = 'bar';
-            bar.style.height      = (v / maxV * 120) + 'px';
-            bar.style.background  = v === maxV
+            bar.className    = 'bar';
+            bar.style.height = (v / maxV * 120) + 'px';
+            bar.style.background = v === maxV
                 ? 'linear-gradient(180deg,#3B6FD4,#1A4BAD)'
                 : 'linear-gradient(180deg,#93B3EE,#C0D3F5)';
             bar.title = hours[i] + ':00 — ' + v + ' kendaraan';
@@ -471,4 +469,55 @@
         });
     }
 </script>
+
+<style>
+    /* ── Area Tabs ── */
+    .area-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+    .area-tab {
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: 1.5px solid #E2E6F0;
+        background: #F8F9FC;
+        color: #4A5272;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all .15s;
+    }
+    .area-tab:hover {
+        border-color: #3B6FD4;
+        color: #1A4BAD;
+    }
+    .area-tab.active {
+        background: #E8F0FB;
+        border-color: #3B6FD4;
+        color: #1A4BAD;
+        font-weight: 600;
+    }
+    .area-tab-count {
+        background: #fff;
+        border: 1px solid #D0D7EE;
+        border-radius: 20px;
+        padding: 1px 7px;
+        font-size: 11px;
+        color: #8A93AE;
+    }
+    .area-tab.active .area-tab-count {
+        background: #3B6FD4;
+        border-color: #3B6FD4;
+        color: #fff;
+    }
+
+    /* ── Area Panels ── */
+    .area-panel { display: none; }
+    .area-panel.active { display: block; }
+</style>
 @endpush

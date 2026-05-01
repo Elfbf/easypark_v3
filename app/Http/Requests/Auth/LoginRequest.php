@@ -9,22 +9,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -34,45 +27,39 @@ class LoginRequest extends FormRequest
         ];
     }
 
-    /**
-     * Custom attribute names untuk pesan error yang lebih ramah.
-     */
     public function attributes(): array
     {
         return [
             'identifier' => match ($this->input('role')) {
                 'admin'   => 'email admin',
-                'petugas' => 'ID petugas',
-                default   => 'NIM mahasiswa',
+                'petugas' => 'email atau ID petugas',
+                default   => 'email atau NIM mahasiswa',
             },
         ];
     }
 
-    /**
-     * Attempt to authenticate the request's credentials.
-     *
-     * @throws ValidationException
-     */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        $role = $this->input('role');
+        $role       = $this->input('role');
+        $identifier = $this->input('identifier');
+        $password   = $this->input('password');
 
-        // Tentukan kolom DB berdasarkan role
-        // Admin  → pakai kolom email
-        // Petugas & Mahasiswa → pakai kolom nim_nip
-        $field = match ($role) {
-            'admin'   => 'email',
-            default   => 'nim_nip',
-        };
+        // ── Cari user berdasarkan role ──
+        if ($role === 'admin') {
+            // Admin hanya pakai email
+            $user = User::where('email', $identifier)->first();
 
-        $credentials = [
-            $field     => $this->input('identifier'),
-            'password' => $this->input('password'),
-        ];
+        } else {
+            // Petugas & Mahasiswa → bisa pakai email ATAU nim_nip
+            $user = User::where('email', $identifier)
+                        ->orWhere('nim_nip', $identifier)
+                        ->first();
+        }
 
-        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
+        // User tidak ditemukan atau password salah
+        if (!$user || !Auth::attempt(['email' => $user->email, 'password' => $password], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -81,8 +68,6 @@ class LoginRequest extends FormRequest
         }
 
         // ✅ Pastikan role user sesuai pilihan di form
-        // (mencegah mahasiswa login via tab Petugas, dll.)
-        $user = Auth::user();
         if ($user->role->name !== $role) {
             Auth::logout();
 
@@ -94,11 +79,6 @@ class LoginRequest extends FormRequest
         RateLimiter::clear($this->throttleKey());
     }
 
-    /**
-     * Ensure the login request is not rate limited.
-     *
-     * @throws ValidationException
-     */
     public function ensureIsNotRateLimited(): void
     {
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
@@ -117,9 +97,6 @@ class LoginRequest extends FormRequest
         ]);
     }
 
-    /**
-     * Get the rate limiting throttle key for the request.
-     */
     public function throttleKey(): string
     {
         return Str::transliterate(

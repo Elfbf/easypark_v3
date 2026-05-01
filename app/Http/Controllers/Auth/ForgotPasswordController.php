@@ -50,10 +50,25 @@ class ForgotPasswordController extends Controller
             'is_used'    => false,
         ]);
 
-        Mail::to($user->email)->send(new OtpMail($otp, $user->name));
+        // Meta info untuk email
+        $meta = [
+            'ip'    => $request->ip(),
+            'time'  => now()->timezone('Asia/Jakarta')->format('d M Y, H:i') . ' WIB',
+            'email' => $this->maskEmail($user->email),
+        ];
+
+        Mail::to($user->email)->send(new OtpMail($otp, $user->name, $meta));
 
         session(['otp_email' => $user->email]);
 
         return response()->json(['message' => 'OTP berhasil dikirim.']);
+    }
+
+    // Sensor email → e***@gmail.com
+    private function maskEmail(string $email): string
+    {
+        [$local, $domain] = explode('@', $email);
+        $masked = substr($local, 0, 1) . str_repeat('*', max(3, strlen($local) - 1));
+        return $masked . '@' . $domain;
     }
 }

@@ -18,46 +18,42 @@ class ParkingSlotSeeder extends Seeder
 
         foreach ($areas as $area) {
 
-            /*
-            |--------------------------------------------------------------------------
-            | SLOT MOTOR
-            |--------------------------------------------------------------------------
-            */
+            $totalSlot = $area->capacity;
 
-            for ($i = 1; $i <= 10; $i++) {
+            if (str_contains($area->code, 'MBL')) {
 
-                ParkingSlot::firstOrCreate(
-                    [
-                        'parking_area_id' => $area->id,
-                        'slot_code'       => 'M-' . str_pad($i, 2, '0', STR_PAD_LEFT),
-                    ],
-                    [
-                        'vehicle_type_id' => $motor?->id,
-                        'status'          => 'available',
-                        'is_active'       => true,
-                    ]
-                );
+                for ($i = 1; $i <= $totalSlot; $i++) {
+
+                    ParkingSlot::firstOrCreate(
+                        [
+                            'parking_area_id' => $area->id,
+                            'slot_code'       => 'C-' . str_pad($i, 2, '0', STR_PAD_LEFT),
+                        ],
+                        [
+                            'vehicle_type_id' => $mobil?->id,
+                            'status'          => 'available',
+                            'is_active'       => true,
+                        ]
+                    );
+                }
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | SLOT MOBIL
-            |--------------------------------------------------------------------------
-            */
+            if (str_contains($area->code, 'MTR')) {
 
-            for ($i = 1; $i <= 5; $i++) {
+                for ($i = 1; $i <= $totalSlot; $i++) {
 
-                ParkingSlot::firstOrCreate(
-                    [
-                        'parking_area_id' => $area->id,
-                        'slot_code'       => 'C-' . str_pad($i, 2, '0', STR_PAD_LEFT),
-                    ],
-                    [
-                        'vehicle_type_id' => $mobil?->id,
-                        'status'          => 'available',
-                        'is_active'       => true,
-                    ]
-                );
+                    ParkingSlot::firstOrCreate(
+                        [
+                            'parking_area_id' => $area->id,
+                            'slot_code'       => 'M-' . str_pad($i, 2, '0', STR_PAD_LEFT),
+                        ],
+                        [
+                            'vehicle_type_id' => $motor?->id,
+                            'status'          => 'available',
+                            'is_active'       => true,
+                        ]
+                    );
+                }
             }
         }
     }

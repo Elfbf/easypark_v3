@@ -15,14 +15,8 @@ class OtpMail extends Mailable
     public function __construct(
         public string $otp,
         public string $name,
+        public array  $meta = [],  // ← tambah ini
     ) {}
-
-    public function envelope(): Envelope
-    {
-        return new Envelope(
-            subject: 'Kode OTP Reset Password - EasyPark',
-        );
-    }
 
     public function content(): Content
     {
@@ -31,6 +25,7 @@ class OtpMail extends Mailable
             with: [
                 'otp'  => $this->otp,
                 'name' => $this->name,
+                'meta' => $this->meta,  // ← tambah ini
             ],
         );
     }

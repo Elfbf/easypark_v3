@@ -10,29 +10,26 @@ class ParkingAreaSeeder extends Seeder
     public function run(): void
     {
         $areas = [
+            // AREA MOBIL
             [
-                'name'        => 'Parkir Gedung TI',
-                'code'        => 'TI-A',
-                'description' => 'Area parkir mahasiswa jurusan Teknologi Informasi',
-                'capacity'    => 50,
+                'name'        => 'Parkir Mobil A',
+                'code'        => 'MBL-A',
+                'description' => 'Area parkir mobil A',
+                'capacity'    => 6,
+            ],
+
+            // AREA MOTOR
+            [
+                'name'        => 'Parkir Motor A',
+                'code'        => 'MTR-A',
+                'description' => 'Area parkir motor A',
+                'capacity'    => 4,
             ],
             [
-                'name'        => 'Parkir Gedung Pertanian',
-                'code'        => 'TP-A',
-                'description' => 'Area parkir jurusan Produksi Pertanian',
-                'capacity'    => 40,
-            ],
-            [
-                'name'        => 'Parkir Gedung Teknik',
-                'code'        => 'TK-A',
-                'description' => 'Area parkir jurusan Teknik',
-                'capacity'    => 35,
-            ],
-            [
-                'name'        => 'Parkir Dosen',
-                'code'        => 'DSN',
-                'description' => 'Area khusus dosen dan staff',
-                'capacity'    => 25,
+                'name'        => 'Parkir Motor B',
+                'code'        => 'MTR-B',
+                'description' => 'Area parkir motor B',
+                'capacity'    => 4,
             ],
         ];
 
