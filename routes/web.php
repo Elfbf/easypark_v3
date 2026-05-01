@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\PetugasController;
 use App\Http\Controllers\Admin\MahasiswaController;
 use App\Http\Controllers\Admin\VehicleTypeController;
 use App\Http\Controllers\Admin\VehicleBrandController;
+use App\Http\Controllers\Admin\VehicleModelController;
 use App\Http\Controllers\Admin\ParkingAreaController;
 use App\Http\Controllers\Admin\ParkingSlotController;
 use App\Http\Controllers\Admin\VehicleController;
@@ -81,6 +82,9 @@ Route::prefix('admin')
             ->only(['index', 'store', 'update', 'destroy']);
 
         Route::resource('/vehicle-brands', VehicleBrandController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+
+        Route::resource('/vehicle-models', VehicleModelController::class)
             ->only(['index', 'store', 'update', 'destroy']);
 
         Route::resource('/parking-areas', ParkingAreaController::class)

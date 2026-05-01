@@ -20,6 +20,13 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('vehicle_models', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('vehicle_brand_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->timestamps();
+        });
+
         Schema::create('parking_areas', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -38,6 +45,7 @@ return new class extends Migration
             $table->enum('status', ['available', 'occupied', 'maintenance'])->default('available');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
             $table->unique(['parking_area_id', 'slot_code']);
         });
 
@@ -47,6 +55,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('vehicle_type_id')->constrained()->cascadeOnDelete();
             $table->foreignId('vehicle_brand_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('vehicle_model_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('parking_slot_id')->nullable()->constrained()->nullOnDelete();
 
             $table->string('plate_number')->unique();
@@ -82,11 +91,12 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::dropIfExists('parking_records');
         Schema::dropIfExists('vehicles');
         Schema::dropIfExists('parking_slots');
         Schema::dropIfExists('parking_areas');
+        Schema::dropIfExists('vehicle_models');
         Schema::dropIfExists('vehicle_brands');
         Schema::dropIfExists('vehicle_types');
-        Schema::dropIfExists('parking_records');
     }
 };

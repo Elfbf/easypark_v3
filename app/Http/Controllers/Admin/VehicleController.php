@@ -7,6 +7,7 @@ use App\Models\ActivityLog;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\VehicleBrand;
+use App\Models\VehicleModel;
 use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
@@ -20,11 +21,20 @@ class VehicleController extends Controller
     {
         $search = $request->query('search');
 
-        $vehicles = Vehicle::with(['user', 'type', 'brand', 'parkingSlot'])
+        $vehicles = Vehicle::with([
+                'user',
+                'type',
+                'brand',
+                'model',
+                'parkingSlot'
+            ])
             ->when($search, function ($query, $search) {
                 $query->where('plate_number', 'like', '%' . $search . '%')
                     ->orWhere('color', 'like', '%' . $search . '%')
                     ->orWhereHas('brand', function ($q) use ($search) {
+                        $q->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('model', function ($q) use ($search) {
                         $q->where('name', 'like', '%' . $search . '%');
                     })
                     ->orWhereHas('type', function ($q) use ($search) {
@@ -35,22 +45,30 @@ class VehicleController extends Controller
             ->paginate(5)
             ->withQueryString();
 
-        $users         = User::latest()->get();
-        $vehicleTypes  = VehicleType::all();
-        $vehicleBrands = VehicleBrand::all();
+        $users          = User::latest()->get();
+        $vehicleTypes   = VehicleType::all();
+        $vehicleBrands  = VehicleBrand::all();
+        $vehicleModels  = VehicleModel::with('brand')->get();
 
         return view('admin.vehicles.index', compact(
             'vehicles',
             'users',
             'vehicleTypes',
             'vehicleBrands',
+            'vehicleModels',
             'search'
         ));
     }
 
     public function show(Vehicle $vehicle)
     {
-        $vehicle->load(['user', 'type', 'brand', 'parkingSlot']);
+        $vehicle->load([
+            'user',
+            'type',
+            'brand',
+            'model',
+            'parkingSlot'
+        ]);
 
         return view('admin.vehicles.show', compact('vehicle'));
     }
@@ -58,21 +76,22 @@ class VehicleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id'          => 'nullable|exists:users,id',
-            'vehicle_type_id'  => 'required|exists:vehicle_types,id',
-            'vehicle_brand_id' => 'required|exists:vehicle_brands,id',
+            'user_id'           => 'nullable|exists:users,id',
+            'vehicle_type_id'   => 'required|exists:vehicle_types,id',
+            'vehicle_brand_id'  => 'required|exists:vehicle_brands,id',
+            'vehicle_model_id'  => 'nullable|exists:vehicle_models,id',
 
-            'plate_number'     => 'required|string|max:20|unique:vehicles,plate_number',
-            'color'            => 'nullable|string|max:100',
+            'plate_number'      => 'required|string|max:20|unique:vehicles,plate_number',
+            'color'             => 'nullable|string|max:100',
 
-            'vehicle_photo'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'stnk_photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'vehicle_photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'stnk_photo'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         try {
 
             $vehiclePhotoPath = null;
-            $stnkPhotoPath    = null;
+            $stnkPhotoPath = null;
 
             if ($request->hasFile('vehicle_photo')) {
                 $vehiclePhotoPath = $request->file('vehicle_photo')
@@ -85,19 +104,20 @@ class VehicleController extends Controller
             }
 
             $vehicle = Vehicle::create([
-                'user_id'          => $request->user_id,
-                'vehicle_type_id'  => $request->vehicle_type_id,
-                'vehicle_brand_id' => $request->vehicle_brand_id,
+                'user_id'           => $request->user_id,
+                'vehicle_type_id'   => $request->vehicle_type_id,
+                'vehicle_brand_id'  => $request->vehicle_brand_id,
+                'vehicle_model_id'  => $request->vehicle_model_id,
 
-                'plate_number'     => strtoupper($request->plate_number),
-                'color'            => $request->color,
+                'plate_number'      => strtoupper($request->plate_number),
+                'color'             => $request->color,
 
-                'vehicle_photo'    => $vehiclePhotoPath,
-                'stnk_photo'       => $stnkPhotoPath,
+                'vehicle_photo'     => $vehiclePhotoPath,
+                'stnk_photo'        => $stnkPhotoPath,
 
-                'is_parked'        => false,
-                'parked_at'        => null,
-                'is_active'        => true,
+                'is_parked'         => false,
+                'parked_at'         => null,
+                'is_active'         => true,
             ]);
 
             ActivityLog::create([
@@ -124,17 +144,18 @@ class VehicleController extends Controller
     public function update(Request $request, Vehicle $vehicle)
     {
         $request->validate([
-            'user_id'          => 'nullable|exists:users,id',
-            'vehicle_type_id'  => 'required|exists:vehicle_types,id',
-            'vehicle_brand_id' => 'required|exists:vehicle_brands,id',
+            'user_id'           => 'nullable|exists:users,id',
+            'vehicle_type_id'   => 'required|exists:vehicle_types,id',
+            'vehicle_brand_id'  => 'required|exists:vehicle_brands,id',
+            'vehicle_model_id'  => 'nullable|exists:vehicle_models,id',
 
-            'plate_number'     => 'required|string|max:20|unique:vehicles,plate_number,' . $vehicle->id,
-            'color'            => 'nullable|string|max:100',
+            'plate_number'      => 'required|string|max:20|unique:vehicles,plate_number,' . $vehicle->id,
+            'color'             => 'nullable|string|max:100',
 
-            'vehicle_photo'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'stnk_photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'vehicle_photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'stnk_photo'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
 
-            'is_active'        => 'nullable|boolean',
+            'is_active'         => 'nullable|boolean',
         ]);
 
         try {
@@ -164,17 +185,18 @@ class VehicleController extends Controller
             }
 
             $vehicle->update([
-                'user_id'          => $request->user_id,
-                'vehicle_type_id'  => $request->vehicle_type_id,
-                'vehicle_brand_id' => $request->vehicle_brand_id,
+                'user_id'           => $request->user_id,
+                'vehicle_type_id'   => $request->vehicle_type_id,
+                'vehicle_brand_id'  => $request->vehicle_brand_id,
+                'vehicle_model_id'  => $request->vehicle_model_id,
 
-                'plate_number'     => strtoupper($request->plate_number),
-                'color'            => $request->color,
+                'plate_number'      => strtoupper($request->plate_number),
+                'color'             => $request->color,
 
-                'vehicle_photo'    => $vehiclePhotoPath,
-                'stnk_photo'       => $stnkPhotoPath,
+                'vehicle_photo'     => $vehiclePhotoPath,
+                'stnk_photo'        => $stnkPhotoPath,
 
-                'is_active'        => $request->boolean('is_active'),
+                'is_active'         => $request->boolean('is_active'),
             ]);
 
             ActivityLog::create([

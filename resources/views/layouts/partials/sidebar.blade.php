@@ -136,6 +136,18 @@
                 <span>Brand Kendaraan</span>
             </a>
 
+            <a href="{{ route('admin.vehicle-models.index') }}"
+                class="sb-item {{ request()->routeIs('admin.vehicle-models.*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7h18" />
+                    <path d="M5 7l1.5-3h11L19 7" />
+                    <rect x="3" y="7" width="18" height="10" rx="2" />
+                    <circle cx="7" cy="17" r="1.5" />
+                    <circle cx="17" cy="17" r="1.5" />
+                </svg>
+                <span>Model Kendaraan</span>
+            </a>
+
             <a href="{{ route('admin.vehicles.index') }}"
                 class="sb-item {{ request()->routeIs('admin.vehicles.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -192,17 +204,6 @@
                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                 </svg>
                 <span>Activity Logs</span>
-            </a>
-
-            {{-- Pengaturan --}}
-            <div class="sb-section-label" style="margin-top:16px">Pengaturan</div>
-
-            <a href="javascript:void(0)" class="sb-item disabled">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                </svg>
-                <span>Profil</span>
             </a>
 
             {{-- ══════════════════════════════════════

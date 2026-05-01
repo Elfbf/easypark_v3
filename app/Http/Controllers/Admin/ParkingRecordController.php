@@ -15,22 +15,25 @@ class ParkingRecordController extends Controller
         $status = $request->query('status');
 
         $parkingRecords = ParkingRecord::with('vehicle')
-            ->when($search, function ($query, $search) {
+            ->when($search, function ($query) use ($search) {
                 $query->where('plate_number', 'like', "%{$search}%");
             })
-            ->when($status, function ($query, $status) {
+            ->when($status, function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->latest('entry_time')
             ->paginate(10)
             ->withQueryString();
 
-        $totalRecords   = ParkingRecord::count();
-        $parkedCount    = ParkingRecord::where('status', 'parked')->count();
+        $totalRecords = ParkingRecord::count();
+
+        $parkedCount = ParkingRecord::where('status', 'parked')->count();
+
         $completedCount = ParkingRecord::where('status', 'completed')
-                            ->whereDate('exit_time', today())
-                            ->count();
-        $todayCount     = ParkingRecord::whereDate('entry_time', today())->count();
+            ->whereDate('exit_time', today())
+            ->count();
+
+        $todayCount = ParkingRecord::whereDate('entry_time', today())->count();
 
         return view('admin.parking-records.index', compact(
             'parkingRecords',
@@ -39,7 +42,7 @@ class ParkingRecordController extends Controller
             'completedCount',
             'todayCount',
             'search',
-            'status',
+            'status'
         ));
     }
 
@@ -53,8 +56,8 @@ class ParkingRecordController extends Controller
         $vehicle = Vehicle::where('plate_number', $request->plate_number)->first();
 
         $record = ParkingRecord::create([
-            'vehicle_id'   => $vehicle->id ?? null,
-            'plate_number' => $request->plate_number,
+            'vehicle_id'   => $vehicle?->id,
+            'plate_number' => strtoupper($request->plate_number),
             'face_photo'   => $request->face_photo,
             'entry_time'   => now(),
             'status'       => 'parked',
@@ -73,9 +76,9 @@ class ParkingRecordController extends Controller
             'plate_number' => 'required|string',
         ]);
 
-        $record = ParkingRecord::where('plate_number', $request->plate_number)
+        $record = ParkingRecord::where('plate_number', strtoupper($request->plate_number))
             ->where('status', 'parked')
-            ->latest()
+            ->latest('entry_time')
             ->first();
 
         if (!$record) {

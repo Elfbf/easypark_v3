@@ -15,6 +15,11 @@ class ParkingRecord extends Model
         'status',
     ];
 
+    protected $casts = [
+        'entry_time' => 'datetime',
+        'exit_time'  => 'datetime',
+    ];
+
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);

@@ -10,6 +10,8 @@ class Vehicle extends Model
         'user_id',
         'vehicle_type_id',
         'vehicle_brand_id',
+        'vehicle_model_id',
+        'parking_slot_id',
         'plate_number',
         'color',
         'vehicle_photo',
@@ -20,30 +22,32 @@ class Vehicle extends Model
     ];
 
     protected $casts = [
-        'is_parked'  => 'boolean',
-        'is_active'  => 'boolean',
-        'parked_at'  => 'datetime',
+        'is_parked' => 'boolean',
+        'is_active' => 'boolean',
+        'parked_at' => 'datetime',
     ];
 
-    // 🔥 Relasi ke user
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // 🔥 Relasi ke type
     public function type()
     {
         return $this->belongsTo(VehicleType::class, 'vehicle_type_id');
     }
 
-    // 🔥 Relasi ke brand
     public function brand()
     {
         return $this->belongsTo(VehicleBrand::class, 'vehicle_brand_id');
     }
 
-        public function parkingSlot()
+    public function model()
+    {
+        return $this->belongsTo(VehicleModel::class, 'vehicle_model_id');
+    }
+
+    public function parkingSlot()
     {
         return $this->belongsTo(ParkingSlot::class);
     }
