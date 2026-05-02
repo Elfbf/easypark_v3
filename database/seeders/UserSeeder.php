@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
         $users = [
 
             // ADMIN
+            // test
             [
                 'role' => 'admin',
                 'name' => 'Admin EasyPark',
