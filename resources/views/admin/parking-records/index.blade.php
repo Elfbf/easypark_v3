@@ -36,39 +36,34 @@
     </div>
 
     @if (session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('success', '{{ session('success') }}'));
-        </script>
+        <script>document.addEventListener('DOMContentLoaded', () => showToast('success', '{{ session('success') }}'));</script>
     @endif
     @if (session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('error', '{{ session('error') }}'));
-        </script>
+        <script>document.addEventListener('DOMContentLoaded', () => showToast('error', '{{ session('error') }}'));</script>
     @endif
     @if (session('warning'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('warning', '{{ session('warning') }}'));
-        </script>
+        <script>document.addEventListener('DOMContentLoaded', () => showToast('warning', '{{ session('warning') }}'));</script>
     @endif
 
     {{-- ══════════════════════════════════════
          TABEL LAPORAN PARKIR
     ══════════════════════════════════════ --}}
     <div class="card">
-        <div class="card-header">
+        <div class="card-header" style="flex-wrap:wrap;gap:12px;">
             <div>
                 <div class="card-title">Daftar Catatan Parkir</div>
                 <div class="card-sub">{{ $parkingRecords->total() }} catatan ditemukan dalam sistem</div>
             </div>
 
-            <div style="display:flex;align-items:center;gap:10px;">
+            {{-- ── Filter Row ── --}}
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
 
-                {{-- Filter Status --}}
-                <form method="GET" action="{{ route('admin.parking-records.index') }}" id="filterForm">
-                    <input type="hidden" name="search" value="{{ $search }}">
+                {{-- Filter Form (status + tanggal + search dalam satu form) --}}
+                <form method="GET" action="{{ route('admin.parking-records.index') }}"
+                      id="filterForm"
+                      style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+
+                    {{-- Filter Status --}}
                     <select name="status" onchange="document.getElementById('filterForm').submit()"
                         style="height:38px;border:1.5px solid #D4D9E8;border-radius:10px;
                                padding:0 32px 0 12px;outline:none;font-family:'DM Sans',sans-serif;
@@ -79,23 +74,111 @@
                                transition:border-color .2s;"
                         onfocus="this.style.borderColor='#3B6FD4'" onblur="this.style.borderColor='#D4D9E8'">
                         <option value="">Semua Status</option>
-                        <option value="parked" {{ $status === 'parked' ? 'selected' : '' }}>Sedang Parkir</option>
+                        <option value="parked"    {{ $status === 'parked'    ? 'selected' : '' }}>Sedang Parkir</option>
                         <option value="completed" {{ $status === 'completed' ? 'selected' : '' }}>Selesai</option>
                     </select>
-                </form>
 
-                {{-- Search --}}
-                <form method="GET" action="{{ route('admin.parking-records.index') }}" id="searchForm">
-                    <input type="hidden" name="status" value="{{ $status }}">
-                    <div class="tb-search" style="width:240px;">
+                    {{-- Filter Tanggal Dari --}}
+                    <div style="position:relative;display:flex;align-items:center;">
+                        <span style="position:absolute;left:10px;pointer-events:none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
+                                style="width:14px;height:14px;">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                        </span>
+                        <input type="date" name="date_from" value="{{ $dateFrom }}"
+                            onchange="document.getElementById('filterForm').submit()"
+                            title="Tanggal mulai"
+                            style="height:38px;border:1.5px solid #D4D9E8;border-radius:10px;
+                                   padding:0 12px 0 32px;outline:none;font-family:'DM Sans',sans-serif;
+                                   font-size:13px;color:#181D35;background:#fff;cursor:pointer;
+                                   transition:border-color .2s;width:148px;"
+                            onfocus="this.style.borderColor='#3B6FD4'"
+                            onblur="this.style.borderColor='#D4D9E8'">
+                    </div>
+
+                    <span style="font-size:12.5px;color:#8A93AE;flex-shrink:0;">s/d</span>
+
+                    {{-- Filter Tanggal Sampai --}}
+                    <div style="position:relative;display:flex;align-items:center;">
+                        <span style="position:absolute;left:10px;pointer-events:none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
+                                style="width:14px;height:14px;">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                        </span>
+                        <input type="date" name="date_to" value="{{ $dateTo }}"
+                            onchange="document.getElementById('filterForm').submit()"
+                            title="Tanggal akhir"
+                            style="height:38px;border:1.5px solid #D4D9E8;border-radius:10px;
+                                   padding:0 12px 0 32px;outline:none;font-family:'DM Sans',sans-serif;
+                                   font-size:13px;color:#181D35;background:#fff;cursor:pointer;
+                                   transition:border-color .2s;width:148px;"
+                            onfocus="this.style.borderColor='#3B6FD4'"
+                            onblur="this.style.borderColor='#D4D9E8'">
+                    </div>
+
+                    {{-- Search --}}
+                    <div class="tb-search" style="width:210px;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8" />
                             <path d="M21 21l-4.35-4.35" />
                         </svg>
-                        <input type="text" name="search" id="searchInput" placeholder="Cari plat nomor..."
+                        <input type="text" name="search" id="searchInput"
+                            placeholder="Cari plat nomor..."
                             value="{{ $search }}" oninput="debounceSearch()">
                     </div>
+
+                    {{-- Reset filter (tampil jika ada filter aktif) --}}
+                    @if ($search || $status || $dateFrom || $dateTo)
+                        <a href="{{ route('admin.parking-records.index') }}"
+                            title="Reset semua filter"
+                            style="height:38px;display:inline-flex;align-items:center;gap:5px;
+                                   padding:0 12px;border:1.5px solid #FECDCA;border-radius:10px;
+                                   color:#D92D20;font-size:12.5px;font-weight:600;text-decoration:none;
+                                   background:#FEF3F2;transition:background .2s;"
+                            onmouseover="this.style.background='#FEE4E2'"
+                            onmouseout="this.style.background='#FEF3F2'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                style="width:13px;height:13px;">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            Reset
+                        </a>
+                    @endif
+
                 </form>
+
+                {{-- Tombol Cetak Laporan --}}
+                <a href="{{ route('admin.parking-records.print', array_filter([
+                        'search'    => $search,
+                        'status'    => $status,
+                        'date_from' => $dateFrom,
+                        'date_to'   => $dateTo,
+                    ])) }}"
+                    target="_blank"
+                    style="height:38px;display:inline-flex;align-items:center;gap:7px;
+                           padding:0 16px;border:1.5px solid #C0D3F5;border-radius:10px;
+                           background:#E8F0FB;color:#1A4BAD;font-family:'DM Sans',sans-serif;
+                           font-size:13px;font-weight:600;text-decoration:none;
+                           transition:background .2s,border-color .2s;flex-shrink:0;"
+                    onmouseover="this.style.background='#D0E2F8';this.style.borderColor='#1A4BAD'"
+                    onmouseout="this.style.background='#E8F0FB';this.style.borderColor='#C0D3F5'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="width:14px;height:14px;">
+                        <polyline points="6 9 6 2 18 2 18 9"/>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                        <rect x="6" y="14" width="12" height="8"/>
+                    </svg>
+                    Cetak Laporan
+                </a>
 
             </div>
         </div>
@@ -103,8 +186,7 @@
         @if ($parkingRecords->isEmpty())
             {{-- ── Empty State ── --}}
             <div style="padding:64px 24px;text-align:center;">
-                <div
-                    style="width:60px;height:60px;background:#E8F0FB;border-radius:16px;
+                <div style="width:60px;height:60px;background:#E8F0FB;border-radius:16px;
                             display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="2"
                         style="width:28px;height:28px;">
@@ -112,13 +194,12 @@
                         <polyline points="14 2 14 8 20 8" />
                     </svg>
                 </div>
-                <div
-                    style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+                <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
                             color:#181D35;margin-bottom:6px;">
-                    {{ $search || $status ? 'Tidak ada catatan yang cocok' : 'Belum ada catatan parkir' }}
+                    {{ ($search || $status || $dateFrom || $dateTo) ? 'Tidak ada catatan yang cocok' : 'Belum ada catatan parkir' }}
                 </div>
                 <div style="font-size:13px;color:#8A93AE;margin-bottom:22px;line-height:1.6;">
-                    @if ($search || $status)
+                    @if ($search || $status || $dateFrom || $dateTo)
                         Coba ubah filter atau
                         <a href="{{ route('admin.parking-records.index') }}"
                             style="color:#1A4BAD;font-weight:500;text-decoration:underline;">reset pencarian</a>
@@ -138,7 +219,7 @@
                         <th style="padding:14px 16px;width:160px;">Waktu Keluar</th>
                         <th style="padding:14px 16px;width:100px;">Durasi</th>
                         <th style="padding:14px 16px;width:140px;text-align:center;">Status</th>
-                        <th style="padding:14px 16px;width:110px;text-align:center;">Aksi</th>
+                        <th style="padding:14px 16px;width:70px;text-align:center;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -147,8 +228,7 @@
 
                             {{-- No --}}
                             <td style="padding:14px 16px 14px 24px;">
-                                <span
-                                    style="font-size:12px;font-weight:600;color:#8A93AE;
+                                <span style="font-size:12px;font-weight:600;color:#8A93AE;
                                              background:#F5F7FC;border:1px solid #EBEEF5;
                                              border-radius:6px;padding:3px 8px;
                                              display:inline-block;min-width:28px;text-align:center;">
@@ -159,47 +239,33 @@
                             {{-- Plat Nomor --}}
                             <td style="padding:14px 16px;">
                                 <div style="display:flex;align-items:center;gap:12px;">
-
-                                    <div
-                                        style="width:38px;height:38px;border-radius:10px;
-                   background:#E8F0FB;border:1.5px solid #C0D3F5;
-                   display:flex;align-items:center;justify-content:center;
-                   flex-shrink:0;">
-
+                                    <div style="width:38px;height:38px;border-radius:10px;
+                                               background:#E8F0FB;border:1.5px solid #C0D3F5;
+                                               display:flex;align-items:center;justify-content:center;
+                                               flex-shrink:0;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="2"
                                             style="width:17px;height:17px;">
-
                                             <rect x="3" y="11" width="18" height="5" rx="2" />
                                             <circle cx="7" cy="18" r="2" />
                                             <circle cx="17" cy="18" r="2" />
                                             <path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4" />
                                         </svg>
                                     </div>
-
                                     <div>
-                                        <div
-                                            style="font-family:monospace;font-weight:700;font-size:14px;
-                       letter-spacing:0.08em;color:#181D35;">
-
+                                        <div style="font-family:monospace;font-weight:700;font-size:14px;
+                                                   letter-spacing:0.08em;color:#181D35;">
                                             {{ strtoupper($record->plate_number) }}
                                         </div>
-
                                         <div style="font-size:11.5px;color:#8A93AE;margin-top:2px;">
-
                                             @if ($record->vehicle)
                                                 {{ ucfirst($record->vehicle->type?->name ?? '') }}
-
                                                 {{ ucfirst($record->vehicle->brand?->name ?? '') }}
-
                                                 @if ($record->vehicle->model)
                                                     {{ ucfirst($record->vehicle->model->name) }}
                                                 @endif
                                             @else
-                                                <span style="font-style:italic;">
-                                                    Tidak terdaftar
-                                                </span>
+                                                <span style="font-style:italic;">Tidak terdaftar</span>
                                             @endif
-
                                         </div>
                                     </div>
                                 </div>
@@ -224,8 +290,7 @@
                                         </svg>
                                     </button>
                                 @else
-                                    <span
-                                        style="display:inline-flex;align-items:center;justify-content:center;
+                                    <span style="display:inline-flex;align-items:center;justify-content:center;
                                                  width:38px;height:38px;border-radius:10px;
                                                  background:#F5F7FC;border:1.5px solid #EBEEF5;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="#D4D9E8" stroke-width="2"
@@ -264,24 +329,22 @@
                             {{-- Durasi --}}
                             <td style="padding:14px 16px;">
                                 @php
-                                    $end = $record->exit_time ?? now();
+                                    $end   = $record->exit_time ?? now();
                                     $start = $record->entry_time;
                                     if ($start) {
-                                        $diff = $start->diff($end);
-                                        $hours = $diff->days * 24 + $diff->h;
+                                        $diff    = $start->diff($end);
+                                        $hours   = $diff->days * 24 + $diff->h;
                                         $minutes = $diff->i;
-                                        $durasi = $hours > 0 ? "{$hours}j {$minutes}m" : "{$minutes}m";
+                                        $durasi  = $hours > 0 ? "{$hours}j {$minutes}m" : "{$minutes}m";
                                     } else {
                                         $durasi = '-';
                                     }
                                 @endphp
-                                <span
-                                    style="display:inline-flex;align-items:center;gap:4px;
+                                <span style="display:inline-flex;align-items:center;gap:4px;
                                              font-size:12.5px;font-weight:600;
                                              color:{{ $record->status === 'parked' ? '#027A48' : '#181D35' }};">
                                     @if ($record->status === 'parked')
-                                        <span
-                                            style="width:6px;height:6px;border-radius:50%;
+                                        <span style="width:6px;height:6px;border-radius:50%;
                                                      background:#12B76A;display:inline-block;
                                                      animation:pulse 1.5s infinite;"></span>
                                     @endif
@@ -292,24 +355,20 @@
                             {{-- Status --}}
                             <td style="padding:14px 16px;text-align:center;">
                                 @if ($record->status === 'parked')
-                                    <span
-                                        style="display:inline-flex;align-items:center;gap:5px;
+                                    <span style="display:inline-flex;align-items:center;gap:5px;
                                                  background:#ECFDF3;border:1px solid #6CE9A6;
                                                  color:#027A48;font-size:12px;font-weight:600;
                                                  padding:4px 12px;border-radius:100px;">
-                                        <span
-                                            style="width:6px;height:6px;border-radius:50%;
+                                        <span style="width:6px;height:6px;border-radius:50%;
                                                      background:#12B76A;display:inline-block;"></span>
                                         Parkir
                                     </span>
                                 @else
-                                    <span
-                                        style="display:inline-flex;align-items:center;gap:5px;
+                                    <span style="display:inline-flex;align-items:center;gap:5px;
                                                  background:#F5F7FC;border:1px solid #D4D9E8;
                                                  color:#4A5272;font-size:12px;font-weight:600;
                                                  padding:4px 12px;border-radius:100px;">
-                                        <span
-                                            style="width:6px;height:6px;border-radius:50%;
+                                        <span style="width:6px;height:6px;border-radius:50%;
                                                      background:#D4D9E8;display:inline-block;"></span>
                                         Selesai
                                     </span>
@@ -318,48 +377,26 @@
 
                             {{-- Aksi --}}
                             <td style="padding:14px 16px;text-align:center;">
-                                <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
-
-                                    {{-- Detail --}}
-                                    <button class="tb-btn" title="Lihat detail"
-                                        onclick="openDetailModal(
-    '{{ addslashes($record->plate_number) }}',
-    '{{ $record->entry_time?->format('d M Y, H:i:s') ?? '-' }}',
-    '{{ $record->exit_time?->format('d M Y, H:i:s') ?? '-' }}',
-    '{{ $durasi }}',
-    '{{ $record->status }}',
-
-    '{{ ucfirst($record->vehicle?->type?->name ?? '') }}',
-    '{{ ucfirst($record->vehicle?->brand?->name ?? '') }}',
-    '{{ ucfirst($record->vehicle?->model?->name ?? '') }}',
-
-    '{{ $record->face_photo ?? '' }}'
-)"
-                                        style="width:32px;height:32px;border-radius:8px;">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            style="width:14px;height:14px;">
-                                            <circle cx="11" cy="11" r="8" />
-                                            <path d="M21 21l-4.35-4.35" />
-                                        </svg>
-                                    </button>
-
-                                    {{-- Force Exit (hanya jika masih parkir) --}}
-                                    @if ($record->status === 'parked')
-                                        <button class="tb-btn" title="Paksa keluar"
-                                            onclick="confirmForceExit({{ $record->id }}, '{{ addslashes($record->plate_number) }}')"
-                                            style="width:32px;height:32px;border-radius:8px;border-color:#FECDCA;">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="#D92D20" stroke-width="2"
-                                                style="width:14px;height:14px;">
-                                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                                                <polyline points="16 17 21 12 16 7" />
-                                                <line x1="21" y1="12" x2="9" y2="12" />
-                                            </svg>
-                                        </button>
-                                    @else
-                                        <span style="width:32px;height:32px;"></span>
-                                    @endif
-
-                                </div>
+                                {{-- Detail --}}
+                                <button class="tb-btn" title="Lihat detail"
+                                    onclick="openDetailModal(
+                                        '{{ addslashes($record->plate_number) }}',
+                                        '{{ $record->entry_time?->format('d M Y, H:i:s') ?? '-' }}',
+                                        '{{ $record->exit_time?->format('d M Y, H:i:s') ?? '-' }}',
+                                        '{{ $durasi }}',
+                                        '{{ $record->status }}',
+                                        '{{ ucfirst($record->vehicle?->type?->name ?? '') }}',
+                                        '{{ ucfirst($record->vehicle?->brand?->name ?? '') }}',
+                                        '{{ ucfirst($record->vehicle?->model?->name ?? '') }}',
+                                        '{{ $record->face_photo ?? '' }}'
+                                    )"
+                                    style="width:32px;height:32px;border-radius:8px;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width:14px;height:14px;">
+                                        <circle cx="11" cy="11" r="8" />
+                                        <path d="M21 21l-4.35-4.35" />
+                                    </svg>
+                                </button>
                             </td>
 
                         </tr>
@@ -368,8 +405,7 @@
             </table>
 
             {{-- Footer + Pagination --}}
-            <div
-                style="padding:14px 24px;border-top:1px solid #EBEEF5;
+            <div style="padding:14px 24px;border-top:1px solid #EBEEF5;
                         display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                 <span style="font-size:12.5px;color:#8A93AE;">
                     Menampilkan {{ $parkingRecords->firstItem() }}–{{ $parkingRecords->lastItem() }}
@@ -380,14 +416,11 @@
                     <div style="display:flex;align-items:center;gap:6px;">
                         {{-- Prev --}}
                         @if ($parkingRecords->onFirstPage())
-                            <span
-                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
+                            <span style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
                                          display:flex;align-items:center;justify-content:center;
                                          opacity:.4;cursor:not-allowed;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
-                                    style="width:14px;height:14px;">
-                                    <polyline points="15 18 9 12 15 6" />
-                                </svg>
+                                    style="width:14px;height:14px;"><polyline points="15 18 9 12 15 6"/></svg>
                             </span>
                         @else
                             <a href="{{ $parkingRecords->previousPageUrl() }}"
@@ -397,22 +430,17 @@
                                 onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
                                 onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2"
-                                    style="width:14px;height:14px;">
-                                    <polyline points="15 18 9 12 15 6" />
-                                </svg>
+                                    style="width:14px;height:14px;"><polyline points="15 18 9 12 15 6"/></svg>
                             </a>
                         @endif
 
                         {{-- Page Numbers --}}
                         @foreach ($parkingRecords->getUrlRange(1, $parkingRecords->lastPage()) as $page => $url)
                             @if ($page == $parkingRecords->currentPage())
-                                <span
-                                    style="width:32px;height:32px;border-radius:8px;
+                                <span style="width:32px;height:32px;border-radius:8px;
                                              background:#1A4BAD;color:#fff;
                                              display:flex;align-items:center;justify-content:center;
-                                             font-size:12.5px;font-weight:600;">
-                                    {{ $page }}
-                                </span>
+                                             font-size:12.5px;font-weight:600;">{{ $page }}</span>
                             @else
                                 <a href="{{ $url }}"
                                     style="width:32px;height:32px;border-radius:8px;border:1.5px solid #D4D9E8;
@@ -435,19 +463,14 @@
                                 onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#F8FAFF'"
                                 onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#fff'">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#4A5175" stroke-width="2"
-                                    style="width:14px;height:14px;">
-                                    <polyline points="9 18 15 12 9 6" />
-                                </svg>
+                                    style="width:14px;height:14px;"><polyline points="9 18 15 12 9 6"/></svg>
                             </a>
                         @else
-                            <span
-                                style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
+                            <span style="width:32px;height:32px;border-radius:8px;border:1.5px solid #EBEEF5;
                                          display:flex;align-items:center;justify-content:center;
                                          opacity:.4;cursor:not-allowed;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#8A93AE" stroke-width="2"
-                                    style="width:14px;height:14px;">
-                                    <polyline points="9 18 15 12 9 6" />
-                                </svg>
+                                    style="width:14px;height:14px;"><polyline points="9 18 15 12 9 6"/></svg>
                             </span>
                         @endif
                     </div>
@@ -464,14 +487,12 @@
         style="display:none;position:fixed;inset:0;z-index:200;
                background:rgba(7,28,82,.45);backdrop-filter:blur(4px);
                align-items:center;justify-content:center;">
-        <div
-            style="background:#fff;border-radius:20px;padding:32px;
+        <div style="background:#fff;border-radius:20px;padding:32px;
                     width:100%;max-width:460px;box-shadow:0 24px 64px rgba(7,28,82,.18);
                     margin:16px;">
 
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
-                <div
-                    style="width:40px;height:40px;border-radius:10px;background:#E8F0FB;
+                <div style="width:40px;height:40px;border-radius:10px;background:#E8F0FB;
                             border:1.5px solid #C0D3F5;display:flex;align-items:center;
                             justify-content:center;flex-shrink:0;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="2"
@@ -499,123 +520,43 @@
             </div>
 
             {{-- Info Grid --}}
-            <div
-                style="display:flex;flex-direction:column;gap:0;
-           border:1.5px solid #EBEEF5;border-radius:14px;overflow:hidden;">
+            <div style="display:flex;flex-direction:column;gap:0;
+                        border:1.5px solid #EBEEF5;border-radius:14px;overflow:hidden;">
 
-                {{-- Plat --}}
                 <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;">
-
-                    <div
-                        style="font-size:12.5px;color:#8A93AE;
-                   font-weight:500;width:130px;flex-shrink:0;">
-
-                        Plat Nomor
-                    </div>
-
-                    <div id="detailPlate"
-                        style="font-family:monospace;
-                   font-weight:700;
-                   font-size:14px;
-                   letter-spacing:0.08em;
-                   color:#181D35;">
-                    </div>
+                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">Plat Nomor</div>
+                    <div id="detailPlate" style="font-family:monospace;font-weight:700;font-size:14px;letter-spacing:0.08em;color:#181D35;"></div>
                 </div>
 
-                {{-- Kendaraan --}}
-                <div
-                    style="display:flex;align-items:center;padding:12px 16px;
-               border-bottom:1px solid #EBEEF5;background:#FAFBFD;">
-
-                    <div
-                        style="font-size:12.5px;color:#8A93AE;
-                   font-weight:500;width:130px;flex-shrink:0;">
-
-                        Kendaraan
-                    </div>
-
-                    <div id="detailVehicle"
-                        style="font-size:13px;
-                   color:#181D35;
-                   font-weight:600;">
-                    </div>
+                <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;background:#FAFBFD;">
+                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">Kendaraan</div>
+                    <div id="detailVehicle" style="font-size:13px;color:#181D35;font-weight:600;"></div>
                 </div>
 
-                {{-- Waktu Masuk --}}
                 <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;">
-
-                    <div
-                        style="font-size:12.5px;color:#8A93AE;
-                   font-weight:500;width:130px;flex-shrink:0;">
-
-                        Waktu Masuk
-                    </div>
-
-                    <div id="detailEntry"
-                        style="font-size:13px;
-                   color:#181D35;
-                   font-weight:500;
-                   font-family:monospace;">
-                    </div>
+                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">Waktu Masuk</div>
+                    <div id="detailEntry" style="font-size:13px;color:#181D35;font-weight:500;font-family:monospace;"></div>
                 </div>
 
-                {{-- Waktu Keluar --}}
-                <div
-                    style="display:flex;align-items:center;padding:12px 16px;
-               border-bottom:1px solid #EBEEF5;background:#FAFBFD;">
-
-                    <div
-                        style="font-size:12.5px;color:#8A93AE;
-                   font-weight:500;width:130px;flex-shrink:0;">
-
-                        Waktu Keluar
-                    </div>
-
-                    <div id="detailExit"
-                        style="font-size:13px;
-                   color:#181D35;
-                   font-weight:500;
-                   font-family:monospace;">
-                    </div>
+                <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;background:#FAFBFD;">
+                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">Waktu Keluar</div>
+                    <div id="detailExit" style="font-size:13px;color:#181D35;font-weight:500;font-family:monospace;"></div>
                 </div>
 
-                {{-- Durasi --}}
                 <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;">
-
-                    <div
-                        style="font-size:12.5px;color:#8A93AE;
-                   font-weight:500;width:130px;flex-shrink:0;">
-
-                        Durasi Parkir
-                    </div>
-
-                    <div id="detailDuration"
-                        style="font-size:13px;
-                   color:#181D35;
-                   font-weight:600;">
-                    </div>
+                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">Durasi Parkir</div>
+                    <div id="detailDuration" style="font-size:13px;color:#181D35;font-weight:600;"></div>
                 </div>
 
-                {{-- Status --}}
                 <div style="display:flex;align-items:center;padding:12px 16px;background:#FAFBFD;">
-
-                    <div
-                        style="font-size:12.5px;color:#8A93AE;
-                   font-weight:500;width:130px;flex-shrink:0;">
-
-                        Status
-                    </div>
-
+                    <div style="font-size:12.5px;color:#8A93AE;font-weight:500;width:130px;flex-shrink:0;">Status</div>
                     <div id="detailStatus"></div>
                 </div>
-
             </div>
 
             <div style="margin-top:20px;">
                 <button type="button" onclick="closeDetailModal()" class="btn-outline"
-                    style="width:100%;justify-content:center;">
-                    Tutup
-                </button>
+                    style="width:100%;justify-content:center;">Tutup</button>
             </div>
         </div>
     </div>
@@ -627,15 +568,11 @@
         style="display:none;position:fixed;inset:0;z-index:210;
                background:rgba(7,28,82,.6);backdrop-filter:blur(6px);
                align-items:center;justify-content:center;">
-        <div
-            style="background:#fff;border-radius:20px;padding:24px;
+        <div style="background:#fff;border-radius:20px;padding:24px;
                     max-width:360px;width:calc(100% - 32px);
                     box-shadow:0 24px 64px rgba(7,28,82,.25);text-align:center;">
             <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;
-                        color:#181D35;margin-bottom:4px;"
-                id="photoModalTitle">
-                Foto Wajah
-            </div>
+                        color:#181D35;margin-bottom:4px;" id="photoModalTitle">Foto Wajah</div>
             <div style="font-size:12px;color:#8A93AE;margin-bottom:16px;" id="photoModalPlate"></div>
             <img id="photoModalImg" src="" alt="Foto Wajah"
                 style="width:200px;height:200px;border-radius:50%;object-fit:cover;
@@ -644,67 +581,6 @@
             <button onclick="closePhotoModal()" class="btn-outline" style="width:100%;justify-content:center;">
                 Tutup
             </button>
-        </div>
-    </div>
-
-
-    {{-- ══════════════════════════════════════
-         MODAL — Konfirmasi Force Exit
-    ══════════════════════════════════════ --}}
-    <div id="modalForceExit"
-        style="display:none;position:fixed;inset:0;z-index:200;
-               background:rgba(7,28,82,.45);backdrop-filter:blur(4px);
-               align-items:center;justify-content:center;">
-        <div
-            style="background:#fff;border-radius:20px;padding:32px;
-                    width:100%;max-width:400px;box-shadow:0 24px 64px rgba(7,28,82,.18);
-                    margin:16px;text-align:center;">
-
-            <div
-                style="width:60px;height:60px;background:#FEF3F2;border-radius:16px;
-                        display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#D92D20" stroke-width="2"
-                    style="width:28px;height:28px;">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    <polyline points="16 17 21 12 16 7" />
-                    <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
-            </div>
-
-            <div
-                style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;
-                        color:#181D35;margin-bottom:8px;">
-                Paksa Keluarkan Kendaraan?
-            </div>
-            <div style="font-size:13px;color:#8A93AE;margin-bottom:6px;line-height:1.6;">
-                Kendaraan <strong id="forceExitPlate"
-                    style="color:#181D35;background:#F5F7FC;padding:1px 8px;
-                           border-radius:6px;border:1px solid #D4D9E8;font-family:monospace;"></strong>
-                akan dicatat sebagai selesai parkir.
-            </div>
-            <div
-                style="font-size:12.5px;color:#F79009;background:#FFFAEB;
-                        border:1px solid #FDE68A;border-radius:10px;
-                        padding:10px 14px;margin-bottom:24px;line-height:1.6;">
-                ⚠ Waktu keluar akan diset ke waktu saat ini.
-            </div>
-
-            <form id="forceExitForm" method="POST">
-                @csrf
-                @method('PATCH')
-                <div style="display:flex;gap:10px;">
-                    <button type="button" onclick="closeForceExitModal()" class="btn-outline" style="flex:1;">
-                        Batal
-                    </button>
-                    <button type="submit"
-                        style="flex:1;height:38px;border:none;border-radius:10px;
-                               background:#D92D20;color:#fff;font-family:'DM Sans',sans-serif;
-                               font-size:13.5px;font-weight:600;cursor:pointer;transition:background .2s;"
-                        onmouseover="this.style.background='#912018'" onmouseout="this.style.background='#D92D20'">
-                        Ya, Paksa Keluar
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -717,32 +593,17 @@
         // ═══════════════════════════════
         function showToast(type, message) {
             const configs = {
-                success: {
-                    bg: '#ECFDF3',
-                    border: '#6CE9A6',
-                    icon: '#12B76A',
-                    text: '#027A48',
-                    svg: '<polyline points="20 6 9 17 4 12"/>'
-                },
-                error: {
-                    bg: '#FEF3F2',
-                    border: '#FECDCA',
-                    icon: '#D92D20',
-                    text: '#912018',
-                    svg: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
-                },
-                warning: {
-                    bg: '#FFFAEB',
-                    border: '#FDE68A',
-                    icon: '#F79009',
-                    text: '#B54708',
-                    svg: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
-                },
+                success: { bg:'#ECFDF3', border:'#6CE9A6', icon:'#12B76A', text:'#027A48',
+                    svg:'<polyline points="20 6 9 17 4 12"/>' },
+                error:   { bg:'#FEF3F2', border:'#FECDCA', icon:'#D92D20', text:'#912018',
+                    svg:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' },
+                warning: { bg:'#FFFAEB', border:'#FDE68A', icon:'#F79009', text:'#B54708',
+                    svg:'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>' },
             };
-            const c = configs[type] || configs.success;
+            const c  = configs[type] || configs.success;
             const id = 'toast-' + Date.now();
             const el = document.createElement('div');
-            el.id = id;
+            el.id    = id;
             el.style.cssText = `pointer-events:auto;background:${c.bg};border:1.5px solid ${c.border};
                 border-radius:12px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;
                 min-width:280px;max-width:360px;box-shadow:0 8px 24px rgba(0,0,0,.10);
@@ -773,176 +634,74 @@
         const toastStyle = document.createElement('style');
         toastStyle.textContent = `
             @keyframes toastIn  { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
-            @keyframes toastOut { from{opacity:1;transform:translateX(0)}    to{opacity:0;transform:translateX(20px)} }
+            @keyframes toastOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(20px)} }
             @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:.4} }`;
         document.head.appendChild(toastStyle);
 
         // ═══════════════════════════════
-        // SEARCH
+        // SEARCH (debounce)
         // ═══════════════════════════════
         let searchTimer;
-
         function debounceSearch() {
             clearTimeout(searchTimer);
-            searchTimer = setTimeout(() => document.getElementById('searchForm').submit(), 500);
+            searchTimer = setTimeout(() => document.getElementById('filterForm').submit(), 500);
         }
 
         // ═══════════════════════════════
         // MODAL DETAIL
         // ═══════════════════════════════
-        function openDetailModal(
-            plate,
-            entry,
-            exit,
-            duration,
-            status,
-            type,
-            brand,
-            model,
-            photo
-        ) {
-
-            // Plat
-            document.getElementById('detailPlate').textContent =
-                plate.toUpperCase();
-
-            // Waktu
-            document.getElementById('detailEntry').textContent = entry;
-
-            document.getElementById('detailExit').textContent =
-                exit === '-' ? '—' : exit;
-
+        function openDetailModal(plate, entry, exit, duration, status, type, brand, model, photo) {
+            document.getElementById('detailPlate').textContent    = plate.toUpperCase();
+            document.getElementById('detailEntry').textContent    = entry;
+            document.getElementById('detailExit').textContent     = exit === '-' ? '—' : exit;
             document.getElementById('detailDuration').textContent = duration;
 
-            // Kendaraan
-            const vehicle = [
-                    type ? type.charAt(0).toUpperCase() + type.slice(1) : '',
-                    brand ? brand.charAt(0).toUpperCase() + brand.slice(1) : '',
-                    model ? model.charAt(0).toUpperCase() + model.slice(1) : '',
-                ]
-                .filter(Boolean)
-                .join(' ');
+            const vehicle = [type, brand, model].filter(Boolean).join(' ');
+            document.getElementById('detailVehicle').textContent  = vehicle || 'Tidak terdaftar';
 
-            document.getElementById('detailVehicle').textContent =
-                vehicle || 'Tidak terdaftar';
-
-            // Status
             const statusEl = document.getElementById('detailStatus');
-
             if (status === 'parked') {
-
-                statusEl.innerHTML = `
-            <span style="
-                display:inline-flex;
-                align-items:center;
-                gap:5px;
-                background:#ECFDF3;
-                border:1px solid #6CE9A6;
-                color:#027A48;
-                font-size:12px;
-                font-weight:600;
-                padding:4px 12px;
-                border-radius:100px;
-            ">
-                <span style="
-                    width:6px;
-                    height:6px;
-                    border-radius:50%;
-                    background:#12B76A;
-                    display:inline-block;
-                "></span>
-
-                Sedang Parkir
-            </span>
-        `;
-
+                statusEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px;
+                    background:#ECFDF3;border:1px solid #6CE9A6;color:#027A48;font-size:12px;
+                    font-weight:600;padding:4px 12px;border-radius:100px;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#12B76A;display:inline-block;"></span>
+                    Sedang Parkir</span>`;
             } else {
-
-                statusEl.innerHTML = `
-            <span style="
-                display:inline-flex;
-                align-items:center;
-                gap:5px;
-                background:#F5F7FC;
-                border:1px solid #D4D9E8;
-                color:#4A5272;
-                font-size:12px;
-                font-weight:600;
-                padding:4px 12px;
-                border-radius:100px;
-            ">
-                <span style="
-                    width:6px;
-                    height:6px;
-                    border-radius:50%;
-                    background:#D4D9E8;
-                    display:inline-block;
-                "></span>
-
-                Selesai
-            </span>
-        `;
+                statusEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px;
+                    background:#F5F7FC;border:1px solid #D4D9E8;color:#4A5272;font-size:12px;
+                    font-weight:600;padding:4px 12px;border-radius:100px;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#D4D9E8;display:inline-block;"></span>
+                    Selesai</span>`;
             }
 
-            // Foto kendaraan
             const photoWrap = document.getElementById('detailPhotoWrap');
-            const photoImg = document.getElementById('detailPhoto');
+            const photoImg  = document.getElementById('detailPhoto');
+            if (photo) { photoImg.src = photo; photoWrap.style.display = 'block'; }
+            else        { photoWrap.style.display = 'none'; }
 
-            if (photo) {
-
-                photoImg.src = photo;
-
-                photoWrap.style.display = 'block';
-
-            } else {
-
-                photoWrap.style.display = 'none';
-            }
-
-            // Show modal
             document.getElementById('modalDetail').style.display = 'flex';
         }
-
-        function closeDetailModal() {
-            document.getElementById('modalDetail').style.display = 'none';
-        }
+        function closeDetailModal() { document.getElementById('modalDetail').style.display = 'none'; }
 
         // ═══════════════════════════════
         // MODAL FOTO
         // ═══════════════════════════════
         function openPhotoModal(photoUrl, plate) {
-            document.getElementById('photoModalImg').src = photoUrl;
+            document.getElementById('photoModalImg').src         = photoUrl;
             document.getElementById('photoModalPlate').textContent = plate.toUpperCase();
-            document.getElementById('modalPhoto').style.display = 'flex';
+            document.getElementById('modalPhoto').style.display  = 'flex';
         }
-
-        function closePhotoModal() {
-            document.getElementById('modalPhoto').style.display = 'none';
-        }
-
-        // ═══════════════════════════════
-        // MODAL FORCE EXIT
-        // ═══════════════════════════════
-        function confirmForceExit(id, plate) {
-            document.getElementById('forceExitPlate').textContent = plate.toUpperCase();
-            document.getElementById('forceExitForm').action = '/admin/parking-records/' + id + '/force-exit';
-            document.getElementById('modalForceExit').style.display = 'flex';
-        }
-
-        function closeForceExitModal() {
-            document.getElementById('modalForceExit').style.display = 'none';
-        }
+        function closePhotoModal() { document.getElementById('modalPhoto').style.display = 'none'; }
 
         // ── Tutup backdrop & Escape ──
-        ['modalDetail', 'modalPhoto', 'modalForceExit'].forEach(id => {
-            document.getElementById(id).addEventListener('click', function(e) {
+        ['modalDetail', 'modalPhoto'].forEach(id => {
+            document.getElementById(id).addEventListener('click', function (e) {
                 if (e.target === this) this.style.display = 'none';
             });
         });
-
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape')
-                ['modalDetail', 'modalPhoto', 'modalForceExit'].forEach(id =>
+                ['modalDetail', 'modalPhoto'].forEach(id =>
                     document.getElementById(id).style.display = 'none');
         });
     </script>

@@ -23,7 +23,7 @@
     @php
         $nameParts = explode(' ', Auth::user()->name);
         $initials = strtoupper($nameParts[0][0] ?? '') . strtoupper(end($nameParts)[0] ?? '');
-        $role = Auth::user()->role->name; // 'admin' | 'petugas' | 'mahasiswa'
+        $role = Auth::user()->role->name;
     @endphp
 
     <!-- User -->
@@ -33,7 +33,6 @@
             <div class="sb-uname">{{ Auth::user()->name }}</div>
             <div class="sb-urole">{{ ucfirst($role) }}</div>
         </div>
-        <div class="sb-badge">{{ ucfirst($role) }}</div>
     </div>
 
     <!-- Navigation -->
@@ -193,17 +192,6 @@
                     <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
                 </svg>
                 <span>Parking Records</span>
-            </a>
-
-            {{-- Monitoring & Log --}}
-            <div class="sb-section-label" style="margin-top:16px">Monitoring &amp; Log</div>
-
-            <a href="javascript:void(0)" class="sb-item disabled">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 20h9" />
-                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                </svg>
-                <span>Activity Logs</span>
             </a>
 
             {{-- ══════════════════════════════════════

@@ -59,7 +59,6 @@ Route::get('/dashboard', function () {
     };
 })->middleware(['auth'])->name('dashboard');
 
-
 // ADMIN
 Route::prefix('admin')
     ->name('admin.')
@@ -67,6 +66,7 @@ Route::prefix('admin')
     ->group(function () {
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/refresh', [AdminDashboardController::class, 'refresh']);
 
         Route::resource('/roles', RoleController::class);
         Route::resource('/departments', DepartmentController::class);
@@ -93,10 +93,16 @@ Route::prefix('admin')
         Route::resource('/parking-slots', ParkingSlotController::class)
             ->only(['index', 'store', 'update', 'destroy']);
 
-        Route::resource('/vehicles', VehicleController::class);
+        Route::resource('/vehicles', VehicleController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
 
         Route::resource('/parking-records', ParkingRecordController::class)
-            ->only(['index', 'show']);
+            ->only(['index']);
+
+        Route::get(
+            '/parking-records/print',
+            [ParkingRecordController::class, 'printReport']
+        )->name('parking-records.print');
     });
 
 

@@ -9,31 +9,40 @@ use Illuminate\Http\Request;
 
 class ParkingRecordController extends Controller
 {
+    /**
+     * Shared query builder untuk index & print.
+     */
+    private function baseQuery(Request $request)
+    {
+        $search   = $request->query('search');
+        $status   = $request->query('status');
+        $dateFrom = $request->query('date_from');
+        $dateTo   = $request->query('date_to');
+
+        return ParkingRecord::with(['vehicle.type', 'vehicle.brand', 'vehicle.model'])
+            ->when($search, fn ($q) => $q->where('plate_number', 'like', "%{$search}%"))
+            ->when($status, fn ($q) => $q->where('status', $status))
+            ->when($dateFrom, fn ($q) => $q->whereDate('entry_time', '>=', $dateFrom))
+            ->when($dateTo,   fn ($q) => $q->whereDate('entry_time', '<=', $dateTo))
+            ->latest('entry_time');
+    }
+
     public function index(Request $request)
     {
-        $search = $request->query('search');
-        $status = $request->query('status');
+        $search   = $request->query('search', '');
+        $status   = $request->query('status', '');
+        $dateFrom = $request->query('date_from', '');
+        $dateTo   = $request->query('date_to', '');
 
-        $parkingRecords = ParkingRecord::with('vehicle')
-            ->when($search, function ($query) use ($search) {
-                $query->where('plate_number', 'like', "%{$search}%");
-            })
-            ->when($status, function ($query) use ($status) {
-                $query->where('status', $status);
-            })
-            ->latest('entry_time')
+        $parkingRecords = $this->baseQuery($request)
             ->paginate(10)
             ->withQueryString();
 
-        $totalRecords = ParkingRecord::count();
-
-        $parkedCount = ParkingRecord::where('status', 'parked')->count();
-
+        $totalRecords   = ParkingRecord::count();
+        $parkedCount    = ParkingRecord::where('status', 'parked')->count();
         $completedCount = ParkingRecord::where('status', 'completed')
-            ->whereDate('exit_time', today())
-            ->count();
-
-        $todayCount = ParkingRecord::whereDate('entry_time', today())->count();
+                            ->whereDate('exit_time', today())->count();
+        $todayCount     = ParkingRecord::whereDate('entry_time', today())->count();
 
         return view('admin.parking-records.index', compact(
             'parkingRecords',
@@ -42,7 +51,30 @@ class ParkingRecordController extends Controller
             'completedCount',
             'todayCount',
             'search',
-            'status'
+            'status',
+            'dateFrom',
+            'dateTo',
+        ));
+    }
+
+    /**
+     * Halaman cetak laporan (tanpa pagination, semua record sesuai filter).
+     */
+    public function printReport(Request $request)
+    {
+        $search   = $request->query('search', '');
+        $status   = $request->query('status', '');
+        $dateFrom = $request->query('date_from', '');
+        $dateTo   = $request->query('date_to', '');
+
+        $records = $this->baseQuery($request)->get();
+
+        return view('admin.parking-records.print', compact(
+            'records',
+            'search',
+            'status',
+            'dateFrom',
+            'dateTo',
         ));
     }
 
@@ -81,7 +113,7 @@ class ParkingRecordController extends Controller
             ->latest('entry_time')
             ->first();
 
-        if (!$record) {
+        if (! $record) {
             return response()->json([
                 'success' => false,
                 'message' => 'Data parkir tidak ditemukan',
@@ -98,19 +130,5 @@ class ParkingRecordController extends Controller
             'message' => 'Kendaraan berhasil keluar',
             'data'    => $record,
         ]);
-    }
-
-    public function forceExit(ParkingRecord $parkingRecord)
-    {
-        if ($parkingRecord->status !== 'parked') {
-            return back()->with('error', 'Kendaraan ini sudah tidak dalam status parkir.');
-        }
-
-        $parkingRecord->update([
-            'exit_time' => now(),
-            'status'    => 'completed',
-        ]);
-
-        return back()->with('success', 'Kendaraan berhasil dipaksa keluar.');
     }
 }
