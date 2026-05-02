@@ -80,13 +80,8 @@
         }
 
         @keyframes gridDrift {
-            from {
-                background-position: 0 0;
-            }
-
-            to {
-                background-position: 56px 56px;
-            }
+            from { background-position: 0 0; }
+            to   { background-position: 56px 56px; }
         }
 
         .orb {
@@ -123,15 +118,8 @@
         }
 
         @keyframes breathe {
-            0% {
-                opacity: 0.5;
-                transform: scale(1);
-            }
-
-            100% {
-                opacity: 1;
-                transform: scale(1.18);
-            }
+            0%   { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 1;   transform: scale(1.18); }
         }
 
         .park-scene {
@@ -148,13 +136,8 @@
         }
 
         @keyframes sceneLift {
-            from {
-                transform: perspective(900px) rotateX(22deg) rotateZ(-7deg) translateY(0);
-            }
-
-            to {
-                transform: perspective(900px) rotateX(22deg) rotateZ(-7deg) translateY(-14px);
-            }
+            from { transform: perspective(900px) rotateX(22deg) rotateZ(-7deg) translateY(0); }
+            to   { transform: perspective(900px) rotateX(22deg) rotateZ(-7deg) translateY(-14px); }
         }
 
         .park-road {
@@ -216,15 +199,8 @@
         }
 
         @keyframes slotBlink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.45;
-            }
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.45; }
         }
 
         .left-content {
@@ -250,10 +226,7 @@
             justify-content: center;
         }
 
-        .polije-emblem svg {
-            width: 28px;
-            height: 28px;
-        }
+        .polije-emblem svg { width: 28px; height: 28px; }
 
         .polije-name p:first-child {
             font-size: 13px;
@@ -316,10 +289,7 @@
             margin-bottom: 36px;
         }
 
-        .stats-row {
-            display: flex;
-            gap: 28px;
-        }
+        .stats-row { display: flex; gap: 28px; }
 
         .stat-num {
             font-family: 'Syne', sans-serif;
@@ -375,10 +345,7 @@
             justify-content: center;
         }
 
-        .logo-box svg {
-            width: 24px;
-            height: 24px;
-        }
+        .logo-box svg { width: 24px; height: 24px; }
 
         .logo-wordmark {
             font-family: 'Syne', sans-serif;
@@ -388,9 +355,7 @@
             letter-spacing: -0.02em;
         }
 
-        .logo-wordmark span {
-            color: var(--p-600);
-        }
+        .logo-wordmark span { color: var(--p-600); }
 
         .logo-sep {
             width: 1px;
@@ -444,7 +409,7 @@
 
         .role-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             margin-bottom: 24px;
         }
@@ -474,9 +439,7 @@
             box-shadow: 0 0 0 4px rgba(26, 75, 173, 0.1);
         }
 
-        .role-btn.active .role-check {
-            opacity: 1;
-        }
+        .role-btn.active .role-check { opacity: 1; }
 
         .role-icon {
             width: 36px;
@@ -489,9 +452,7 @@
             transition: background 0.18s;
         }
 
-        .role-btn.active .role-icon {
-            background: var(--p-100);
-        }
+        .role-btn.active .role-icon { background: var(--p-100); }
 
         .role-icon svg {
             width: 18px;
@@ -499,9 +460,7 @@
             color: var(--n-400);
         }
 
-        .role-btn.active .role-icon svg {
-            color: var(--p-800);
-        }
+        .role-btn.active .role-icon svg { color: var(--p-800); }
 
         .role-name {
             font-size: 12px;
@@ -510,9 +469,7 @@
             text-align: center;
         }
 
-        .role-btn.active .role-name {
-            color: var(--p-800);
-        }
+        .role-btn.active .role-name { color: var(--p-800); }
 
         .role-check {
             position: absolute;
@@ -536,9 +493,7 @@
         }
 
         /* Fields */
-        .field {
-            margin-bottom: 18px;
-        }
+        .field { margin-bottom: 18px; }
 
         .field label {
             display: block;
@@ -548,9 +503,7 @@
             margin-bottom: 6px;
         }
 
-        .input-wrap {
-            position: relative;
-        }
+        .input-wrap { position: relative; }
 
         .i-icon {
             position: absolute;
@@ -588,9 +541,7 @@
             box-shadow: 0 0 0 4px rgba(217, 45, 32, 0.1);
         }
 
-        .input-wrap input::placeholder {
-            color: #B3BBCC;
-        }
+        .input-wrap input::placeholder { color: #B3BBCC; }
 
         .input-wrap input:focus {
             border-color: var(--p-400);
@@ -611,9 +562,7 @@
             transition: color 0.2s;
         }
 
-        .eye-btn:hover {
-            color: var(--n-600);
-        }
+        .eye-btn:hover { color: var(--n-600); }
 
         /* Error message */
         .err-msg {
@@ -690,9 +639,7 @@
             text-decoration: none;
         }
 
-        .forgot-link:hover {
-            text-decoration: underline;
-        }
+        .forgot-link:hover { text-decoration: underline; }
 
         .btn-submit {
             width: 100%;
@@ -749,48 +696,18 @@
             line-height: 1.5;
         }
 
-        .ai {
-            animation: fadeUp 0.5s ease both;
-        }
-
-        .ai:nth-child(1) {
-            animation-delay: 0.04s;
-        }
-
-        .ai:nth-child(2) {
-            animation-delay: 0.09s;
-        }
-
-        .ai:nth-child(3) {
-            animation-delay: 0.14s;
-        }
-
-        .ai:nth-child(4) {
-            animation-delay: 0.19s;
-        }
-
-        .ai:nth-child(5) {
-            animation-delay: 0.24s;
-        }
-
-        .ai:nth-child(6) {
-            animation-delay: 0.29s;
-        }
-
-        .ai:nth-child(7) {
-            animation-delay: 0.34s;
-        }
+        .ai { animation: fadeUp 0.5s ease both; }
+        .ai:nth-child(1) { animation-delay: 0.04s; }
+        .ai:nth-child(2) { animation-delay: 0.09s; }
+        .ai:nth-child(3) { animation-delay: 0.14s; }
+        .ai:nth-child(4) { animation-delay: 0.19s; }
+        .ai:nth-child(5) { animation-delay: 0.24s; }
+        .ai:nth-child(6) { animation-delay: 0.29s; }
+        .ai:nth-child(7) { animation-delay: 0.34s; }
 
         @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(14px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -888,11 +805,11 @@
 
             <div class="form-card">
                 <div class="ai">
-                    <h2 class="form-title">Masuk ke Sistem 🎓</h2>
+                    <h2 class="form-title">Masuk ke Sistem 👋</h2>
                     <p class="form-subtitle">Pilih peran Anda, lalu masukkan kredensial akun</p>
                 </div>
 
-                {{-- ✅ Global session error (mis. akun tidak aktif) --}}
+                {{-- Global session error --}}
                 @if (session('error'))
                     <div class="alert-error ai">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -904,31 +821,18 @@
                     </div>
                 @endif
 
-                <!-- Role selector -->
+                <!-- Role selector — hanya Petugas & Admin -->
                 <div class="ai">
                     <p class="role-label">Login sebagai</p>
                     <div class="role-grid">
                         <button type="button"
-                            class="role-btn {{ old('role', 'mahasiswa') === 'mahasiswa' ? 'active' : '' }}"
-                            data-role="mahasiswa" onclick="selectRole(this)">
-                            <div class="role-check"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor"
-                                    stroke-width="2">
+                            class="role-btn {{ old('role', 'petugas') === 'petugas' ? 'active' : '' }}"
+                            data-role="petugas" onclick="selectRole(this)">
+                            <div class="role-check">
+                                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="1.5,5 4,7.5 8.5,2.5" />
-                                </svg></div>
-                            <div class="role-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                    <path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z" />
-                                    <path d="M6 12v5c3.33 2 8.67 2 12 0v-5" />
                                 </svg>
                             </div>
-                            <span class="role-name">Mahasiswa</span>
-                        </button>
-                        <button type="button" class="role-btn {{ old('role') === 'petugas' ? 'active' : '' }}"
-                            data-role="petugas" onclick="selectRole(this)">
-                            <div class="role-check"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <polyline points="1.5,5 4,7.5 8.5,2.5" />
-                                </svg></div>
                             <div class="role-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -936,12 +840,14 @@
                             </div>
                             <span class="role-name">Petugas</span>
                         </button>
-                        <button type="button" class="role-btn {{ old('role') === 'admin' ? 'active' : '' }}"
+                        <button type="button"
+                            class="role-btn {{ old('role') === 'admin' ? 'active' : '' }}"
                             data-role="admin" onclick="selectRole(this)">
-                            <div class="role-check"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor"
-                                    stroke-width="2">
+                            <div class="role-check">
+                                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="1.5,5 4,7.5 8.5,2.5" />
-                                </svg></div>
+                                </svg>
+                            </div>
                             <div class="role-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <circle cx="12" cy="8" r="4" />
@@ -954,25 +860,26 @@
                     </div>
                 </div>
 
-                {{-- ✅ @csrf wajib ada agar tidak 419 Page Expired --}}
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
-                    <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'mahasiswa') }}">
+                    <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'petugas') }}">
 
                     <div class="field ai">
                         <label id="idLabel" for="identifier">
-                            {{ old('role', 'mahasiswa') === 'admin' ? 'Email Admin' : (old('role') === 'petugas' ? 'ID Petugas' : 'NIM Mahasiswa') }}
+                            {{ old('role') === 'admin' ? 'Email Admin' : 'ID Petugas' }}
                         </label>
                         <div class="input-wrap">
-                            <svg class="i-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
+                            <svg class="i-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="2" y="5" width="20" height="14" rx="2" />
                                 <path d="M2 10h20" />
                             </svg>
-                            <input type="{{ old('role') === 'admin' ? 'email' : 'text' }}" id="identifier"
-                                name="identifier" value="{{ old('identifier') }}"
-                                placeholder="{{ old('role') === 'admin' ? 'admin@polije.ac.id' : (old('role') === 'petugas' ? 'Masukkan ID petugas' : 'Contoh: E41220XXX') }}"
-                                class="{{ $errors->has('identifier') ? 'is-error' : '' }}" autocomplete="username"
+                            <input type="{{ old('role') === 'admin' ? 'email' : 'text' }}"
+                                id="identifier"
+                                name="identifier"
+                                value="{{ old('identifier') }}"
+                                placeholder="{{ old('role') === 'admin' ? 'admin@polije.ac.id' : 'Masukkan ID petugas' }}"
+                                class="{{ $errors->has('identifier') ? 'is-error' : '' }}"
+                                autocomplete="username"
                                 required>
                         </div>
                         @error('identifier')
@@ -990,16 +897,18 @@
                     <div class="field ai">
                         <label for="password">Password</label>
                         <div class="input-wrap">
-                            <svg class="i-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
+                            <svg class="i-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="11" width="18" height="11" rx="2" />
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                             </svg>
-                            <input type="password" id="password" name="password" placeholder="Masukkan password"
+                            <input type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Masukkan password"
                                 class="{{ $errors->has('password') ? 'is-error' : '' }}"
-                                autocomplete="current-password" required>
-                            <button type="button" class="eye-btn" onclick="togglePwd(this)"
-                                aria-label="Toggle password">
+                                autocomplete="current-password"
+                                required>
+                            <button type="button" class="eye-btn" onclick="togglePwd(this)" aria-label="Toggle password">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     style="width:16px;height:16px;">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -1034,7 +943,7 @@
                             <polyline points="10 17 15 12 10 7" />
                             <line x1="15" y1="12" x2="3" y2="12" />
                         </svg>
-                        Masuk sebagai {{ ucfirst(old('role', 'Mahasiswa')) }}
+                        Masuk sebagai {{ old('role') === 'admin' ? 'Admin' : 'Petugas' }}
                     </button>
 
                     <div class="info-strip ai">
@@ -1046,10 +955,8 @@
                         <p id="infoText">
                             @if (old('role') === 'admin')
                                 Akses admin hanya untuk pengelola sistem. Hubungi UPT TIK jika lupa password.
-                            @elseif(old('role') === 'petugas')
-                                Gunakan ID dan password yang diberikan oleh Admin sistem parkir kampus.
                             @else
-                                Gunakan NIM dan password SIAKAD Polije untuk login sebagai mahasiswa.
+                                Gunakan ID dan password yang diberikan oleh Admin sistem parkir kampus.
                             @endif
                         </p>
                     </div>
@@ -1061,13 +968,6 @@
 
     <script>
         const roleConfig = {
-            mahasiswa: {
-                label: 'NIM Mahasiswa',
-                placeholder: 'Contoh: E41220XXX',
-                btnText: 'Masuk sebagai Mahasiswa',
-                info: 'Gunakan NIM dan password SIAKAD Polije untuk login sebagai mahasiswa.',
-                inputType: 'text'
-            },
             petugas: {
                 label: 'ID Petugas',
                 placeholder: 'Masukkan ID petugas',
@@ -1122,8 +1022,8 @@
             }
         }
 
-        // ✅ Restore active role dari old() value saat ada validation error
-        (function() {
+        // Restore active role dari old() value saat ada validation error
+        (function () {
             const savedRole = document.getElementById('roleInput').value;
             if (savedRole) {
                 const btn = document.querySelector(`.role-btn[data-role="${savedRole}"]`);

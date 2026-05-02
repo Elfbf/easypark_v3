@@ -3,11 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LandingController;
+use Illuminate\Support\Facades\Auth;
 
 // Dashboard Controllers
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Petugas\DashboardController as PetugasDashboardController;
-use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\RoleController;
@@ -22,6 +22,11 @@ use App\Http\Controllers\Admin\ParkingAreaController;
 use App\Http\Controllers\Admin\ParkingSlotController;
 use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\ParkingRecordController;
+
+// Petugas Controllers
+use App\Http\Controllers\Petugas\ParkingAreaController as PetugasParkingAreaController;
+use App\Http\Controllers\Petugas\ParkingSlotController as PetugasParkingSlotController;
+use App\Http\Controllers\Petugas\ParkingRecordController as PetugasParkingRecordController;
 
 // Auth Controllers
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -45,19 +50,19 @@ Route::middleware('guest')->group(function () {
 // REDIRECT DASHBOARD
 Route::get('/dashboard', function () {
 
-    $user = auth()->user();
+    $user = Auth::user();
 
     if (! $user) {
         return redirect('/login');
     }
 
     return match ($user->role->name) {
-        'admin'     => redirect('/admin/dashboard'),
-        'petugas'   => redirect('/petugas/dashboard'),
-        'mahasiswa' => redirect('/mahasiswa/dashboard'),
-        default     => abort(403),
+        'admin'   => redirect('/admin/dashboard'),
+        'petugas' => redirect('/petugas/dashboard'),
+        default   => abort(403),
     };
 })->middleware(['auth'])->name('dashboard');
+
 
 // ADMIN
 Route::prefix('admin')
@@ -105,7 +110,6 @@ Route::prefix('admin')
         )->name('parking-records.print');
     });
 
-
 // PETUGAS
 Route::prefix('petugas')
     ->middleware(['auth', 'role:petugas'])
@@ -114,28 +118,27 @@ Route::prefix('petugas')
 
         Route::get('/dashboard', [PetugasDashboardController::class, 'index'])
             ->name('dashboard');
+
+        Route::resource('/parking-areas', PetugasParkingAreaController::class)
+            ->only(['index']);
+
+        Route::resource('/parking-slots', PetugasParkingSlotController::class)
+            ->only(['index']);
+
+        // Parking Records — tambah ini
+        Route::get('/parking-records', [PetugasParkingRecordController::class, 'index'])
+            ->name('parking-records.index');
+        Route::post('/parking-records/entry', [PetugasParkingRecordController::class, 'entry'])
+            ->name('parking-records.entry');
+        Route::post('/parking-records/exit', [PetugasParkingRecordController::class, 'exit'])
+            ->name('parking-records.exit');
     });
 
-
-// MAHASISWA
-Route::prefix('mahasiswa')
-    ->middleware(['auth', 'role:mahasiswa'])
-    ->name('mahasiswa.')
-    ->group(function () {
-
-        Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])
-            ->name('dashboard');
-    });
-
-
-// PROFILE
 Route::middleware('auth')->group(function () {
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile',            [ProfileController::class, 'show'])->name('profile.show');
+    Route::patch('/profile',          [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
 });
-
 
 // AUTH
 require __DIR__ . '/auth.php';

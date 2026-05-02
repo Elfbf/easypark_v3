@@ -22,27 +22,45 @@
 
     @php
         $nameParts = explode(' ', Auth::user()->name);
-        $initials = strtoupper($nameParts[0][0] ?? '') . strtoupper(end($nameParts)[0] ?? '');
-        $role = Auth::user()->role->name;
+        $initials  = strtoupper($nameParts[0][0] ?? '') . strtoupper(end($nameParts)[0] ?? '');
+        $role      = Auth::user()->role->name;
     @endphp
 
-    <!-- User -->
-    <div class="sb-user">
-        <div class="sb-avatar">{{ $initials }}</div>
-        <div>
-            <div class="sb-uname">{{ Auth::user()->name }}</div>
+    <!-- User — klik ke halaman profil -->
+    <a href="{{ route('profile.show') }}"
+        class="sb-user {{ request()->routeIs('profile.*') ? 'sb-user-active' : '' }}"
+        style="text-decoration:none;display:flex;align-items:center;gap:10px;
+               margin:0 10px;padding:10px;border-radius:10px;
+               border:1px solid {{ request()->routeIs('profile.*') ? 'rgba(255,255,255,0.15)' : 'transparent' }};
+               background:{{ request()->routeIs('profile.*') ? 'rgba(255,255,255,0.08)' : 'transparent' }};
+               transition:background .15s,border-color .15s;"
+        onmouseover="this.style.background='rgba(255,255,255,0.06)'"
+        onmouseout="this.style.background='{{ request()->routeIs('profile.*') ? 'rgba(255,255,255,0.08)' : 'transparent' }}'">
+        <div class="sb-avatar" style="flex-shrink:0;">
+            @if(Auth::user()->photo)
+                <img src="{{ asset('storage/'.Auth::user()->photo) }}"
+                    style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            @else
+                {{ $initials }}
+            @endif
+        </div>
+        <div style="flex:1;min-width:0;">
+            <div class="sb-uname" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                {{ Auth::user()->name }}
+            </div>
             <div class="sb-urole">{{ ucfirst($role) }}</div>
         </div>
-    </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"
+            style="width:13px;height:13px;flex-shrink:0;">
+            <polyline points="9 18 15 12 9 6"/>
+        </svg>
+    </a>
 
     <!-- Navigation -->
     <nav class="sb-nav">
 
-        {{-- ══════════════════════════════════════
-             ADMIN
-        ══════════════════════════════════════ --}}
+        {{-- ══ ADMIN ══ --}}
         @if ($role === 'admin')
-            {{-- Utama --}}
             <div class="sb-section-label">Utama</div>
 
             <a href="{{ route('admin.dashboard') }}"
@@ -56,7 +74,6 @@
                 <span>Dashboard</span>
             </a>
 
-            {{-- Manajemen Pengguna --}}
             <div class="sb-section-label" style="margin-top:16px">Manajemen Pengguna</div>
 
             <a href="{{ route('admin.roles.index') }}"
@@ -88,7 +105,6 @@
                 <span>Mahasiswa</span>
             </a>
 
-            {{-- Akademik --}}
             <div class="sb-section-label" style="margin-top:16px">Akademik</div>
 
             <a href="{{ route('admin.departments.index') }}"
@@ -112,7 +128,6 @@
                 <span>Program Studi</span>
             </a>
 
-            {{-- Kendaraan --}}
             <div class="sb-section-label" style="margin-top:16px">Kendaraan</div>
 
             <a href="{{ route('admin.vehicle-types.index') }}"
@@ -158,7 +173,6 @@
                 <span>Kendaraan</span>
             </a>
 
-            {{-- Parkir --}}
             <div class="sb-section-label" style="margin-top:16px">Parkir</div>
 
             <a href="{{ route('admin.parking-areas.index') }}"
@@ -194,14 +208,12 @@
                 <span>Parking Records</span>
             </a>
 
-            {{-- ══════════════════════════════════════
-             PETUGAS
-        ══════════════════════════════════════ --}}
+        {{-- ══ PETUGAS ══ --}}
         @elseif ($role === 'petugas')
             <div class="sb-section-label">Utama</div>
 
-            <a href="{{ route('admin.dashboard') }}"
-                class="sb-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <a href="{{ route('petugas.dashboard') }}"
+                class="sb-item {{ request()->routeIs('petugas.dashboard') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="3" width="7" height="7" rx="1" />
                     <rect x="14" y="3" width="7" height="7" rx="1" />
@@ -213,8 +225,8 @@
 
             <div class="sb-section-label" style="margin-top:16px">Parkir</div>
 
-            <a href="{{ route('admin.parking-areas.index') }}"
-                class="sb-item {{ request()->routeIs('admin.parking-areas.*') ? 'active' : '' }}">
+            <a href="{{ route('petugas.parking-areas.index') }}"
+                class="sb-item {{ request()->routeIs('petugas.parking-areas.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <path d="M8 17V7h5a3 3 0 0 1 0 6H8" />
@@ -223,8 +235,8 @@
                 <span>Area Parkir</span>
             </a>
 
-            <a href="{{ route('admin.parking-slots.index') }}"
-                class="sb-item {{ request()->routeIs('admin.parking-slots.*') ? 'active' : '' }}">
+            <a href="{{ route('petugas.parking-slots.index') }}"
+                class="sb-item {{ request()->routeIs('petugas.parking-slots.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="5" width="18" height="14" rx="2" />
                     <path d="M7 9h10" />
@@ -234,81 +246,20 @@
                 <span>Slot Parkir</span>
             </a>
 
-            <a href="{{ route('admin.vehicles.index') }}"
-                class="sb-item {{ request()->routeIs('admin.vehicles.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="1" y="11" width="22" height="6" rx="2" />
-                    <path d="M5 11l2-5h10l2 5" />
-                    <circle cx="7" cy="18" r="2" />
-                    <circle cx="17" cy="18" r="2" />
-                </svg>
-                <span>Kendaraan</span>
-            </a>
-
-            {{-- ══════════════════════════════════════
-             MAHASISWA
-        ══════════════════════════════════════ --}}
-        @elseif ($role === 'mahasiswa')
-            <div class="sb-section-label">Utama</div>
-
-            <a href="{{ route('mahasiswa.dashboard') }}"
-                class="sb-item {{ request()->routeIs('mahasiswa.dashboard') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7" rx="1" />
-                    <rect x="14" y="3" width="7" height="7" rx="1" />
-                    <rect x="14" y="14" width="7" height="7" rx="1" />
-                    <rect x="3" y="14" width="7" height="7" rx="1" />
-                </svg>
-                <span>Dashboard</span>
-            </a>
-
-            <div class="sb-section-label" style="margin-top:16px">Kendaraan Saya</div>
-
-            <a href="#" class="sb-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="1" y="11" width="22" height="6" rx="2" />
-                    <path d="M5 11l2-5h10l2 5" />
-                    <circle cx="7" cy="18" r="2" />
-                    <circle cx="17" cy="18" r="2" />
-                </svg>
-                <span>Kendaraan Saya</span>
-            </a>
-
-            <div class="sb-section-label" style="margin-top:16px">Parkir</div>
-
-            <a href="#" class="sb-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                    <path d="M8 17V7h5a3 3 0 0 1 0 6H8" />
-                    <line x1="8" y1="13" x2="14" y2="13" />
-                </svg>
-                <span>Cek Area Parkir</span>
-            </a>
-
-            <a href="#" class="sb-item">
+            <a href="{{ route('petugas.parking-records.index') }}"
+                class="sb-item {{ request()->routeIs('petugas.parking-records.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="4" width="18" height="18" rx="2" />
                     <line x1="16" y1="2" x2="16" y2="6" />
                     <line x1="8" y1="2" x2="8" y2="6" />
                     <line x1="3" y1="10" x2="21" y2="10" />
+                    <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
                 </svg>
-                <span>Riwayat Parkir</span>
-            </a>
-
-            <div class="sb-section-label" style="margin-top:16px">Akun</div>
-
-            <a href="#" class="sb-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                </svg>
-                <span>Profil Saya</span>
+                <span>Parking Records</span>
             </a>
         @endif
 
-        {{-- ══════════════════════════════════════
-             SISTEM — tampil untuk semua role
-        ══════════════════════════════════════ --}}
+        {{-- ══ SISTEM ══ --}}
         <div class="sb-section-label" style="margin-top:16px">Sistem</div>
 
         <form method="POST" action="{{ route('logout') }}" id="logout-form">
@@ -347,12 +298,10 @@
             <div class="lm-title">Keluar dari sistem?</div>
             <div class="lm-sub">Sesi Anda akan diakhiri dan Anda perlu login kembali.</div>
             <div class="lm-actions">
-                <button class="lm-cancel" onclick="document.getElementById('logout-modal').classList.remove('show')">
-                    Batal
-                </button>
-                <button class="lm-confirm" onclick="document.getElementById('logout-form').submit()">
-                    Ya, Keluar
-                </button>
+                <button class="lm-cancel"
+                    onclick="document.getElementById('logout-modal').classList.remove('show')">Batal</button>
+                <button class="lm-confirm"
+                    onclick="document.getElementById('logout-form').submit()">Ya, Keluar</button>
             </div>
         </div>
     </div>

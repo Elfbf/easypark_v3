@@ -91,11 +91,7 @@
             flex-shrink: 0;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg)
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg) } }
 
         body {
             font-family: 'DM Sans', sans-serif;
@@ -116,11 +112,7 @@
             padding: 3rem;
         }
 
-        @media(min-width:1024px) {
-            .lp {
-                display: flex;
-            }
-        }
+        @media(min-width:1024px) { .lp { display: flex; } }
 
         .lp-bg {
             position: absolute;
@@ -137,13 +129,8 @@
         }
 
         @keyframes gridD {
-            from {
-                background-position: 0 0
-            }
-
-            to {
-                background-position: 56px 56px
-            }
+            from { background-position: 0 0 }
+            to   { background-position: 56px 56px }
         }
 
         .orb {
@@ -153,45 +140,15 @@
             animation: brth 7s ease-in-out infinite alternate;
         }
 
-        .o1 {
-            width: 420px;
-            height: 420px;
-            background: rgba(59, 111, 212, 0.28);
-            top: -100px;
-            left: -100px;
-        }
-
-        .o2 {
-            width: 300px;
-            height: 300px;
-            background: rgba(232, 183, 64, 0.15);
-            bottom: 80px;
-            right: -60px;
-            animation-delay: 2.5s;
-        }
-
-        .o3 {
-            width: 220px;
-            height: 220px;
-            background: rgba(59, 111, 212, 0.18);
-            top: 45%;
-            left: 38%;
-            animation-delay: 4.5s;
-        }
+        .o1 { width: 420px; height: 420px; background: rgba(59, 111, 212, 0.28); top: -100px; left: -100px; }
+        .o2 { width: 300px; height: 300px; background: rgba(232, 183, 64, 0.15); bottom: 80px; right: -60px; animation-delay: 2.5s; }
+        .o3 { width: 220px; height: 220px; background: rgba(59, 111, 212, 0.18); top: 45%; left: 38%; animation-delay: 4.5s; }
 
         @keyframes brth {
-            0% {
-                opacity: .5;
-                transform: scale(1)
-            }
-
-            100% {
-                opacity: 1;
-                transform: scale(1.18)
-            }
+            0%   { opacity: .5; transform: scale(1) }
+            100% { opacity: 1;  transform: scale(1.18) }
         }
 
-        /* Lock illustration */
         .lock-scene {
             position: absolute;
             inset: 0;
@@ -200,42 +157,20 @@
             justify-content: center;
         }
 
-        .pr1,
-        .pr2,
-        .pr3 {
+        .pr1, .pr2, .pr3 {
             position: absolute;
             border-radius: 50%;
             border: 1.5px solid rgba(59, 111, 212, 0.22);
             animation: pring 3s ease-out infinite;
         }
 
-        .pr1 {
-            width: 200px;
-            height: 200px;
-        }
-
-        .pr2 {
-            width: 290px;
-            height: 290px;
-            animation-delay: 1s;
-        }
-
-        .pr3 {
-            width: 380px;
-            height: 380px;
-            animation-delay: 2s;
-        }
+        .pr1 { width: 200px; height: 200px; }
+        .pr2 { width: 290px; height: 290px; animation-delay: 1s; }
+        .pr3 { width: 380px; height: 380px; animation-delay: 2s; }
 
         @keyframes pring {
-            0% {
-                opacity: .8;
-                transform: scale(.7)
-            }
-
-            100% {
-                opacity: 0;
-                transform: scale(1)
-            }
+            0%   { opacity: .8; transform: scale(.7) }
+            100% { opacity: 0;  transform: scale(1) }
         }
 
         .lock-wrap {
@@ -246,13 +181,8 @@
         }
 
         @keyframes lkflt {
-            from {
-                transform: translateY(0)
-            }
-
-            to {
-                transform: translateY(-16px)
-            }
+            from { transform: translateY(0) }
+            to   { transform: translateY(-16px) }
         }
 
         .lock-arch {
@@ -304,27 +234,13 @@
         }
 
         @keyframes kflt {
-            from {
-                transform: translate(0, 0) rotate(-15deg)
-            }
-
-            to {
-                transform: translate(20px, -20px) rotate(15deg)
-            }
+            from { transform: translate(0, 0) rotate(-15deg) }
+            to   { transform: translate(20px, -20px) rotate(15deg) }
         }
 
-        /* Left copy */
-        .lc {
-            position: relative;
-            z-index: 10;
-        }
+        .lc { position: relative; z-index: 10; }
 
-        .pmk {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 28px;
-        }
+        .pmk { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
 
         .pem {
             width: 48px;
@@ -337,22 +253,10 @@
             justify-content: center;
         }
 
-        .pem svg {
-            width: 28px;
-            height: 28px;
-        }
+        .pem svg { width: 28px; height: 28px; }
 
-        .pnm p:first-child {
-            font-size: 13px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .pnm p:last-child {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.4);
-            margin-top: 2px;
-        }
+        .pnm p:first-child { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); }
+        .pnm p:last-child  { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
 
         .cbdg {
             display: inline-flex;
@@ -376,7 +280,7 @@
         .cbdg span {
             font-size: 11px;
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255,255,255,0.7);
             letter-spacing: .1em;
             text-transform: uppercase;
         }
@@ -390,30 +294,19 @@
             margin-bottom: 14px;
         }
 
-        .lh em {
-            font-style: normal;
-            color: var(--g-400);
-        }
+        .lh em { font-style: normal; color: var(--g-400); }
 
         .ls {
             font-size: 14.5px;
-            color: rgba(255, 255, 255, 0.46);
+            color: rgba(255,255,255,0.46);
             line-height: 1.75;
             max-width: 340px;
             margin-bottom: 36px;
         }
 
-        .steps-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .steps-list { display: flex; flex-direction: column; gap: 16px; }
 
-        .stp {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-        }
+        .stp { display: flex; align-items: flex-start; gap: 14px; }
 
         .snum {
             width: 28px;
@@ -427,22 +320,13 @@
             font-family: 'Syne', sans-serif;
             font-size: 12px;
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255,255,255,0.8);
             flex-shrink: 0;
             margin-top: 1px;
         }
 
-        .stxt p:first-child {
-            font-size: 13px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.85);
-        }
-
-        .stxt p:last-child {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.38);
-            margin-top: 2px;
-        }
+        .stxt p:first-child { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85); }
+        .stxt p:last-child  { font-size: 12px; color: rgba(255,255,255,0.38); margin-top: 2px; }
 
         /* RIGHT */
         .rp {
@@ -456,24 +340,11 @@
             overflow-y: auto;
         }
 
-        @media(min-width:1024px) {
-            .rp {
-                width: 560px;
-                flex-shrink: 0;
-            }
-        }
+        @media(min-width:1024px) { .rp { width: 560px; flex-shrink: 0; } }
 
-        .ri {
-            width: 100%;
-            max-width: 460px;
-        }
+        .ri { width: 100%; max-width: 460px; }
 
-        .logo-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 32px;
-        }
+        .logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
 
         .logo-box {
             width: 40px;
@@ -485,10 +356,7 @@
             justify-content: center;
         }
 
-        .logo-box svg {
-            width: 24px;
-            height: 24px;
-        }
+        .logo-box svg { width: 24px; height: 24px; }
 
         .lw {
             font-family: 'Syne', sans-serif;
@@ -498,29 +366,12 @@
             letter-spacing: -.02em;
         }
 
-        .lw span {
-            color: var(--p-600);
-        }
+        .lw span { color: var(--p-600); }
 
-        .lsep {
-            width: 1px;
-            height: 22px;
-            background: var(--n-200);
-            margin: 0 2px;
-        }
+        .lsep { width: 1px; height: 22px; background: var(--n-200); margin: 0 2px; }
 
-        .lcamp {
-            font-size: 11.5px;
-            color: var(--n-400);
-            line-height: 1.35;
-        }
-
-        .lcamp strong {
-            display: block;
-            color: var(--n-600);
-            font-weight: 600;
-            font-size: 12px;
-        }
+        .lcamp { font-size: 11.5px; color: var(--n-400); line-height: 1.35; }
+        .lcamp strong { display: block; color: var(--n-600); font-weight: 600; font-size: 12px; }
 
         .back-lnk {
             display: inline-flex;
@@ -534,14 +385,8 @@
             transition: color .18s;
         }
 
-        .back-lnk:hover {
-            color: var(--p-600);
-        }
-
-        .back-lnk svg {
-            width: 15px;
-            height: 15px;
-        }
+        .back-lnk:hover { color: var(--p-600); }
+        .back-lnk svg { width: 15px; height: 15px; }
 
         .card {
             background: #fff;
@@ -551,12 +396,7 @@
         }
 
         /* Step indicator */
-        .si {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            margin-bottom: 24px;
-        }
+        .si { display: flex; align-items: center; gap: 0; margin-bottom: 24px; }
 
         .sd {
             display: flex;
@@ -574,84 +414,27 @@
             flex-shrink: 0;
         }
 
-        .sd.done {
-            background: var(--p-600);
-            color: #fff;
-            border-color: var(--p-600);
-        }
+        .sd.done   { background: var(--p-600); color: #fff; border-color: var(--p-600); }
+        .sd.active { background: var(--p-50); color: var(--p-800); border-color: var(--p-600); font-weight: 700; }
+        .sd.done svg { width: 12px; height: 12px; }
 
-        .sd.active {
-            background: var(--p-50);
-            color: var(--p-800);
-            border-color: var(--p-600);
-            font-weight: 700;
-        }
+        .sl { flex: 1; height: 2px; background: var(--n-200); margin: 0 4px; transition: background .3s; }
+        .sl.done { background: var(--p-600); }
 
-        .sd.done svg {
-            width: 12px;
-            height: 12px;
-        }
+        .slr { display: flex; justify-content: space-between; margin-bottom: 22px; margin-top: -18px; }
 
-        .sl {
-            flex: 1;
-            height: 2px;
-            background: var(--n-200);
-            margin: 0 4px;
-            transition: background .3s;
-        }
+        .slb { font-size: 11px; color: var(--n-400); text-align: center; flex: 1; }
+        .slb.active { color: var(--p-600); font-weight: 500; }
 
-        .sl.done {
-            background: var(--p-600);
-        }
+        .view { display: none; }
+        .view.active { display: block; }
 
-        .slr {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 22px;
-            margin-top: -18px;
-        }
+        .ft { font-family: 'Syne', sans-serif; font-size: 1.45rem; font-weight: 700; color: var(--n-900); margin-bottom: 5px; }
 
-        .slb {
-            font-size: 11px;
-            color: var(--n-400);
-            text-align: center;
-            flex: 1;
-        }
+        .fsub { font-size: 14px; color: var(--n-400); line-height: 1.55; margin-bottom: 24px; }
 
-        .slb.active {
-            color: var(--p-600);
-            font-weight: 500;
-        }
-
-        .view {
-            display: none;
-        }
-
-        .view.active {
-            display: block;
-        }
-
-        .ft {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: var(--n-900);
-            margin-bottom: 5px;
-        }
-
-        .fsub {
-            font-size: 14px;
-            color: var(--n-400);
-            line-height: 1.55;
-            margin-bottom: 24px;
-        }
-
-        /* Role chips */
-        .chips {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
+        /* Role chips — hanya 2 */
+        .chips { display: flex; gap: 8px; margin-bottom: 20px; }
 
         .chip {
             padding: 7px 16px;
@@ -666,11 +449,7 @@
             transition: all .18s;
         }
 
-        .chip:hover {
-            border-color: var(--p-200);
-            background: var(--p-50);
-            color: var(--p-800);
-        }
+        .chip:hover { border-color: var(--p-200); background: var(--p-50); color: var(--p-800); }
 
         .chip.active {
             border-color: var(--p-600);
@@ -679,21 +458,11 @@
             font-weight: 600;
         }
 
-        .fld {
-            margin-bottom: 18px;
-        }
+        .fld { margin-bottom: 18px; }
 
-        .fld label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--n-600);
-            margin-bottom: 6px;
-        }
+        .fld label { display: block; font-size: 13px; font-weight: 500; color: var(--n-600); margin-bottom: 6px; }
 
-        .iw {
-            position: relative;
-        }
+        .iw { position: relative; }
 
         .iic {
             position: absolute;
@@ -721,9 +490,7 @@
             transition: border-color .2s, background .2s, box-shadow .2s;
         }
 
-        .iw input::placeholder {
-            color: #B3BBCC;
-        }
+        .iw input::placeholder { color: #B3BBCC; }
 
         .iw input:focus {
             border-color: var(--p-400);
@@ -744,11 +511,9 @@
             transition: color .2s;
         }
 
-        .eyb:hover {
-            color: var(--n-600);
-        }
+        .eyb:hover { color: var(--n-600); }
 
-        /* OTP — FIXED: kotak tetap kecil, tidak melebar */
+        /* OTP */
         .otp-row {
             display: flex;
             gap: 8px;
@@ -773,65 +538,25 @@
             transition: border-color .2s, background .2s, box-shadow .2s;
         }
 
-        .otp-row input:focus {
-            border-color: var(--p-400);
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(59, 111, 212, 0.1);
-        }
+        .otp-row input:focus { border-color: var(--p-400); background: #fff; box-shadow: 0 0 0 4px rgba(59, 111, 212, 0.1); }
 
-        .otp-row input.filled {
-            border-color: var(--p-600);
-            background: var(--p-50);
-            color: var(--p-800);
-        }
+        .otp-row input.filled { border-color: var(--p-600); background: var(--p-50); color: var(--p-800); }
 
         /* Strength */
-        .pws {
-            margin-top: 8px;
-            margin-bottom: 6px;
-        }
+        .pws { margin-top: 8px; margin-bottom: 6px; }
 
-        .pwsb {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 5px;
-        }
+        .pwsb { display: flex; gap: 4px; margin-bottom: 5px; }
 
-        .pwb {
-            flex: 1;
-            height: 3px;
-            border-radius: 2px;
-            background: var(--n-200);
-            transition: background .3s;
-        }
+        .pwb { flex: 1; height: 3px; border-radius: 2px; background: var(--n-200); transition: background .3s; }
+        .pwb.weak   { background: #E24B4A; }
+        .pwb.medium { background: var(--g-400); }
+        .pwb.strong { background: #27a06b; }
 
-        .pwb.weak {
-            background: #E24B4A;
-        }
-
-        .pwb.medium {
-            background: var(--g-400);
-        }
-
-        .pwb.strong {
-            background: #27a06b;
-        }
-
-        .pwst {
-            font-size: 11.5px;
-            color: var(--n-400);
-        }
+        .pwst { font-size: 11.5px; color: var(--n-400); }
 
         /* Resend */
-        .rsr {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .rsr p {
-            font-size: 13px;
-            color: var(--n-400);
-        }
+        .rsr { text-align: center; margin-bottom: 20px; }
+        .rsr p { font-size: 13px; color: var(--n-400); }
 
         .rsbtn {
             background: none;
@@ -844,20 +569,10 @@
             padding: 0;
         }
 
-        .rsbtn:hover {
-            text-decoration: underline;
-        }
+        .rsbtn:hover { text-decoration: underline; }
+        .rsbtn:disabled { color: var(--n-400); cursor: not-allowed; text-decoration: none; }
 
-        .rsbtn:disabled {
-            color: var(--n-400);
-            cursor: not-allowed;
-            text-decoration: none;
-        }
-
-        .cntd {
-            font-weight: 600;
-            color: var(--p-600);
-        }
+        .cntd { font-weight: 600; color: var(--p-600); }
 
         /* Info strip */
         .is {
@@ -871,19 +586,9 @@
             margin-bottom: 20px;
         }
 
-        .is svg {
-            width: 15px;
-            height: 15px;
-            color: var(--p-600);
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
+        .is svg { width: 15px; height: 15px; color: var(--p-600); flex-shrink: 0; margin-top: 1px; }
 
-        .is p {
-            font-size: 12.5px;
-            color: var(--p-800);
-            line-height: 1.5;
-        }
+        .is p { font-size: 12.5px; color: var(--p-800); line-height: 1.5; }
 
         /* Success */
         .sic {
@@ -900,39 +605,15 @@
         }
 
         @keyframes spop {
-            from {
-                opacity: 0;
-                transform: scale(.5)
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1)
-            }
+            from { opacity: 0; transform: scale(.5) }
+            to   { opacity: 1; transform: scale(1) }
         }
 
-        .sic svg {
-            width: 32px;
-            height: 32px;
-            color: var(--s-600);
-        }
+        .sic svg { width: 32px; height: 32px; color: var(--s-600); }
 
-        .stl {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--n-900);
-            text-align: center;
-            margin-bottom: 8px;
-        }
+        .stl { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--n-900); text-align: center; margin-bottom: 8px; }
 
-        .ssb {
-            font-size: 14px;
-            color: var(--n-400);
-            text-align: center;
-            line-height: 1.6;
-            margin-bottom: 28px;
-        }
+        .ssb { font-size: 14px; color: var(--n-400); text-align: center; line-height: 1.6; margin-bottom: 28px; }
 
         /* Buttons */
         .btn {
@@ -954,29 +635,10 @@
             gap: 8px;
         }
 
-        .btn:hover {
-            background: var(--p-900);
-            box-shadow: 0 8px 28px rgba(7, 28, 82, 0.32);
-            transform: translateY(-1px);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-            box-shadow: none;
-        }
-
-        .btn:disabled {
-            background: var(--n-200);
-            color: var(--n-400);
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-        .btn svg {
-            width: 18px;
-            height: 18px;
-        }
+        .btn:hover { background: var(--p-900); box-shadow: 0 8px 28px rgba(7,28,82,0.32); transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); box-shadow: none; }
+        .btn:disabled { background: var(--n-200); color: var(--n-400); cursor: not-allowed; box-shadow: none; transform: none; }
+        .btn svg { width: 18px; height: 18px; }
 
         .btn2 {
             width: 100%;
@@ -993,50 +655,20 @@
             margin-top: 10px;
         }
 
-        .btn2:hover {
-            background: var(--p-50);
-            border-color: var(--p-400);
-        }
+        .btn2:hover { background: var(--p-50); border-color: var(--p-400); }
 
         /* Animate */
-        .ai {
-            animation: fdup .45s ease both;
-        }
-
-        .ai:nth-child(1) {
-            animation-delay: .04s;
-        }
-
-        .ai:nth-child(2) {
-            animation-delay: .09s;
-        }
-
-        .ai:nth-child(3) {
-            animation-delay: .14s;
-        }
-
-        .ai:nth-child(4) {
-            animation-delay: .19s;
-        }
-
-        .ai:nth-child(5) {
-            animation-delay: .24s;
-        }
-
-        .ai:nth-child(6) {
-            animation-delay: .29s;
-        }
+        .ai { animation: fdup .45s ease both; }
+        .ai:nth-child(1) { animation-delay: .04s; }
+        .ai:nth-child(2) { animation-delay: .09s; }
+        .ai:nth-child(3) { animation-delay: .14s; }
+        .ai:nth-child(4) { animation-delay: .19s; }
+        .ai:nth-child(5) { animation-delay: .24s; }
+        .ai:nth-child(6) { animation-delay: .29s; }
 
         @keyframes fdup {
-            from {
-                opacity: 0;
-                transform: translateY(12px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
+            from { opacity: 0; transform: translateY(12px) }
+            to   { opacity: 1; transform: translateY(0) }
         }
     </style>
 </head>
@@ -1062,8 +694,7 @@
                 </div>
             </div>
             <div class="key-float">
-                <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(59,111,212,0.65)"
-                    stroke-width="1.5">
+                <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(59,111,212,0.65)" stroke-width="1.5">
                     <circle cx="7.5" cy="15.5" r="5.5" />
                     <path d="M21 2l-9.6 9.6M15.5 7.5l3 3M13 10l3 3" />
                 </svg>
@@ -1076,8 +707,7 @@
                     <svg viewBox="0 0 28 28" fill="none">
                         <path d="M14 2L3 7.5v6.5c0 5.5 4.7 9.8 11 11 6.3-1.2 11-5.5 11-11V7.5L14 2z"
                             stroke="rgba(255,255,255,0.75)" stroke-width="1.5" fill="rgba(255,255,255,0.07)" />
-                        <path d="M9 14h10M14 10v8" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"
-                            stroke-linecap="round" />
+                        <path d="M9 14h10M14 10v8" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" stroke-linecap="round" />
                     </svg>
                 </div>
                 <div class="pnm">
@@ -1095,7 +725,7 @@
                     <div class="snum">1</div>
                     <div class="stxt">
                         <p>Verifikasi Identitas</p>
-                        <p>Masukkan email atau NIM/ID terdaftar</p>
+                        <p>Masukkan email atau ID yang terdaftar</p>
                     </div>
                 </div>
                 <div class="stp">
@@ -1158,30 +788,26 @@
 
                 <!-- VIEW 1 -->
                 <div class="view active" id="v1">
-                    <div id="alert1"></div> {{-- ← tambah ini --}}
+                    <div id="alert1"></div>
                     <div class="ai">
                         <h2 class="ft">Verifikasi identitas 🔑</h2>
                         <p class="fsub">Pilih peran Anda dan masukkan email atau ID yang terdaftar di sistem</p>
                     </div>
                     <div class="ai">
-                        <p style="font-size:13px;font-weight:500;color:var(--n-600);margin-bottom:10px;">Saya adalah
-                        </p>
+                        <p style="font-size:13px;font-weight:500;color:var(--n-600);margin-bottom:10px;">Saya adalah</p>
                         <div class="chips">
-                            <button class="chip active" data-role="mahasiswa"
-                                onclick="pickChip(this)">Mahasiswa</button>
-                            <button class="chip" data-role="petugas" onclick="pickChip(this)">Petugas</button>
+                            <button class="chip active" data-role="petugas" onclick="pickChip(this)">Petugas</button>
                             <button class="chip" data-role="admin" onclick="pickChip(this)">Admin</button>
                         </div>
                     </div>
                     <div class="fld ai">
-                        <label id="lbl_id" for="ident">Email / NIM Mahasiswa</label>
+                        <label id="lbl_id" for="ident">Email / ID Petugas</label>
                         <div class="iw">
-                            <svg class="iic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
+                            <svg class="iic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                                 <polyline points="22,6 12,13 2,6" />
                             </svg>
-                            <input type="text" id="ident" placeholder="Masukkan email atau NIM Anda">
+                            <input type="text" id="ident" placeholder="Masukkan email atau ID petugas">
                         </div>
                     </div>
                     <div class="is ai">
@@ -1190,13 +816,11 @@
                             <line x1="12" y1="8" x2="12" y2="12" />
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
-                        <p id="info1">Kode OTP akan dikirimkan ke email yang terdaftar sesuai NIM Anda di SIAKAD.
-                        </p>
+                        <p id="info1">Kode OTP dikirim ke email yang didaftarkan saat registrasi akun petugas.</p>
                     </div>
                     <button class="btn ai" id="btnSendOtp" onclick="sendOtp()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path
-                                d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .82h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.68a16 16 0 006.29 6.29l1.42-1.42a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .82h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.68a16 16 0 006.29 6.29l1.42-1.42a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
                         </svg>
                         Kirim Kode OTP
                     </button>
@@ -1204,11 +828,10 @@
 
                 <!-- VIEW 2 -->
                 <div class="view" id="v2">
-                    <div id="alert2"></div> {{-- ← tambah ini --}}
+                    <div id="alert2"></div>
                     <div class="ai">
                         <h2 class="ft">Masukkan kode OTP 📩</h2>
-                        <p class="fsub">Kode 6 digit telah dikirim ke email Anda. Berlaku selama <strong>5
-                                menit</strong>.</p>
+                        <p class="fsub">Kode 6 digit telah dikirim ke email Anda. Berlaku selama <strong>5 menit</strong>.</p>
                     </div>
                     <div class="otp-row ai">
                         <input type="text" maxlength="1" class="oi" inputmode="numeric">
@@ -1220,8 +843,7 @@
                     </div>
                     <div class="rsr ai">
                         <p>Tidak menerima kode?&nbsp;
-                            <button class="rsbtn" id="rsBtn" disabled onclick="resendOtp()">Kirim ulang (<span
-                                    class="cntd" id="cd">60</span>s)</button>
+                            <button class="rsbtn" id="rsBtn" disabled onclick="resendOtp()">Kirim ulang (<span class="cntd" id="cd">60</span>s)</button>
                         </p>
                     </div>
                     <button class="btn ai" id="vBtn" onclick="verifyOtp()" disabled>
@@ -1230,12 +852,12 @@
                         </svg>
                         Verifikasi Kode
                     </button>
-                    <button class="btn2" onclick="go(1)">Ubah email / NIM</button>
+                    <button class="btn2" onclick="go(1)">Ubah email / ID</button>
                 </div>
 
                 <!-- VIEW 3 -->
                 <div class="view" id="v3">
-                    <div id="alert3"></div> {{-- ← tambah ini --}}
+                    <div id="alert3"></div>
                     <div class="ai">
                         <h2 class="ft">Buat password baru 🔒</h2>
                         <p class="fsub">Password harus minimal 8 karakter, mengandung huruf kapital dan angka</p>
@@ -1243,19 +865,17 @@
                     <div class="fld ai">
                         <label for="npw">Password Baru</label>
                         <div class="iw">
-                            <svg class="iic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
+                            <svg class="iic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="11" width="18" height="11" rx="2" />
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                             </svg>
-                            <input type="password" id="npw" placeholder="Minimal 8 karakter"
-                                oninput="chkStr(this.value)">
-                            <button type="button" class="eyb" onclick="togPw(this)"><svg viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2"
-                                    style="width:16px;height:16px;">
+                            <input type="password" id="npw" placeholder="Minimal 8 karakter" oninput="chkStr(this.value)">
+                            <button type="button" class="eyb" onclick="togPw(this)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                     <circle cx="12" cy="12" r="3" />
-                                </svg></button>
+                                </svg>
+                            </button>
                         </div>
                         <div class="pws">
                             <div class="pwsb">
@@ -1270,17 +890,16 @@
                     <div class="fld ai">
                         <label for="cpw">Konfirmasi Password</label>
                         <div class="iw">
-                            <svg class="iic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
+                            <svg class="iic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                             </svg>
                             <input type="password" id="cpw" placeholder="Ulangi password baru">
-                            <button type="button" class="eyb" onclick="togPw(this)"><svg viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2"
-                                    style="width:16px;height:16px;">
+                            <button type="button" class="eyb" onclick="togPw(this)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                     <circle cx="12" cy="12" r="3" />
-                                </svg></button>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                     <button class="btn ai" id="btnSavePass" onclick="savePassword()">
@@ -1296,17 +915,16 @@
                 <!-- VIEW 4: Sukses -->
                 <div class="view" id="v4">
                     <div style="text-align:center;padding:1rem 0 .5rem;">
-                        <div class="sic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
+                        <div class="sic">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <polyline points="20 6 9 17 4 12" />
-                            </svg></div>
+                            </svg>
+                        </div>
                         <h2 class="stl">Password Berhasil Diubah!</h2>
-                        <p class="ssb">Password akun EasyPark Anda telah diperbarui. Silakan login kembali
-                            menggunakan password baru Anda.</p>
+                        <p class="ssb">Password akun EasyPark Anda telah diperbarui. Silakan login kembali menggunakan password baru Anda.</p>
                         <a href="/login" style="text-decoration:none;">
                             <button class="btn" style="max-width:280px;margin:0 auto;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    style="width:18px;height:18px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
                                     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
                                     <polyline points="10 17 15 12 10 7" />
                                     <line x1="15" y1="12" x2="3" y2="12" />
@@ -1325,11 +943,6 @@
         const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
         const chipCfg = {
-            mahasiswa: {
-                label: 'Email / NIM Mahasiswa',
-                ph: 'Masukkan email atau NIM',
-                info: 'Kode OTP dikirim ke email yang terdaftar sesuai NIM di SIAKAD.'
-            },
             petugas: {
                 label: 'Email / ID Petugas',
                 ph: 'Masukkan email atau ID petugas',
@@ -1355,22 +968,17 @@
             [1, 2, 3, 4].forEach(i => document.getElementById('v' + i).classList.remove('active'));
             document.getElementById('v' + n).classList.add('active');
             updStep(n);
-            if (n === 2) {
-                startCD();
-                initOTP();
-            }
+            if (n === 2) { startCD(); initOTP(); }
         }
 
         function updStep(n) {
             for (let i = 1; i <= 3; i++) {
-                const d = document.getElementById('d' + i),
-                    l = document.getElementById('lb' + i);
+                const d = document.getElementById('d' + i), l = document.getElementById('lb' + i);
                 d.classList.remove('active', 'done');
                 l.classList.remove('active');
                 if (i < n) {
                     d.classList.add('done');
-                    d.innerHTML =
-                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+                    d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
                 } else if (i === n) {
                     d.classList.add('active');
                     d.textContent = i;
@@ -1382,58 +990,43 @@
             for (let i = 1; i <= 2; i++) document.getElementById('l' + i).classList.toggle('done', i < n);
         }
 
-        // ── Alert helpers ──
         function showAlert(zone, type, msg) {
-            const icon = type === 'error' ?
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' :
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+            const icon = type === 'error'
+                ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
             document.getElementById(zone).innerHTML =
                 `<div class="alert alert-${type}">${icon}<span>${msg}</span></div>`;
         }
 
-        function clearAlert(zone) {
-            document.getElementById(zone).innerHTML = '';
-        }
+        function clearAlert(zone) { document.getElementById(zone).innerHTML = ''; }
 
-        // ── Loading state ──
         function setLoading(btn, loading, orig) {
             btn.disabled = loading;
             btn.innerHTML = loading ? '<div class="spin"></div> Memproses...' : orig;
         }
 
-        // ── STEP 1: Kirim OTP ──
         async function sendOtp() {
             clearAlert('alert1');
             const email = document.getElementById('ident').value.trim();
             if (!email) {
-                showAlert('alert1', 'error', 'Email / NIM tidak boleh kosong.');
+                showAlert('alert1', 'error', 'Email / ID tidak boleh kosong.');
                 document.getElementById('ident').classList.add('error');
                 return;
             }
             document.getElementById('ident').classList.remove('error');
 
-            const btn = document.getElementById('btnSendOtp'),
-                orig = btn.innerHTML;
+            const btn = document.getElementById('btnSendOtp'), orig = btn.innerHTML;
             setLoading(btn, true, orig);
 
             try {
                 const res = await fetch('{{ route('password.email') }}', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email
-                    })
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                    body: JSON.stringify({ email })
                 });
                 const data = await res.json();
-                if (res.ok) {
-                    go(2);
-                } else {
-                    showAlert('alert1', 'error', data.errors?.email?.[0] ?? data.message ?? 'Terjadi kesalahan.');
-                }
+                if (res.ok) { go(2); }
+                else { showAlert('alert1', 'error', data.errors?.email?.[0] ?? data.message ?? 'Terjadi kesalahan.'); }
             } catch {
                 showAlert('alert1', 'error', 'Koneksi gagal, periksa jaringan Anda.');
             } finally {
@@ -1446,7 +1039,7 @@
             ins.forEach((inp, idx) => {
                 inp.value = '';
                 inp.classList.remove('filled', 'error');
-                inp.oninput = function() {
+                inp.oninput = function () {
                     this.value = this.value.replace(/\D/g, '').slice(0, 1);
                     if (this.value.length === 1) {
                         this.classList.add('filled');
@@ -1454,21 +1047,18 @@
                     } else this.classList.remove('filled');
                     document.getElementById('vBtn').disabled = [...ins].some(i => i.value.length !== 1);
                 };
-                inp.onkeydown = function(e) {
+                inp.onkeydown = function (e) {
                     if (e.key === 'Backspace' && !this.value && idx > 0) {
                         ins[idx - 1].focus();
                         ins[idx - 1].value = '';
                         ins[idx - 1].classList.remove('filled');
                     }
                 };
-                inp.onpaste = function(e) {
+                inp.onpaste = function (e) {
                     e.preventDefault();
                     const p = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
                     [...p].slice(0, 6).forEach((ch, i) => {
-                        if (ins[i]) {
-                            ins[i].value = ch;
-                            ins[i].classList.add('filled');
-                        }
+                        if (ins[i]) { ins[i].value = ch; ins[i].classList.add('filled'); }
                     });
                     ins[Math.min(p.length, 5)].focus();
                     document.getElementById('vBtn').disabled = [...ins].some(i => i.value.length !== 1);
@@ -1482,8 +1072,7 @@
         function startCD() {
             clearInterval(cdTimer);
             let s = 60;
-            const btn = document.getElementById('rsBtn'),
-                el = () => document.getElementById('cd');
+            const btn = document.getElementById('rsBtn'), el = () => document.getElementById('cd');
             btn.disabled = true;
             btn.innerHTML = 'Kirim ulang (<span class="cntd" id="cd">' + s + '</span>s)';
             cdTimer = setInterval(() => {
@@ -1497,64 +1086,41 @@
             }, 1000);
         }
 
-        // ── Resend OTP ──
         async function resendOtp() {
             clearAlert('alert2');
             const email = document.getElementById('ident').value.trim();
             try {
                 const res = await fetch('{{ route('password.email') }}', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email
-                    })
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                    body: JSON.stringify({ email })
                 });
-                if (res.ok) {
-                    showAlert('alert2', 'success', 'Kode OTP baru telah dikirim ke email Anda.');
-                    startCD();
-                } else {
-                    showAlert('alert2', 'error', 'Gagal mengirim ulang kode, coba beberapa saat lagi.');
-                }
+                if (res.ok) { showAlert('alert2', 'success', 'Kode OTP baru telah dikirim ke email Anda.'); startCD(); }
+                else { showAlert('alert2', 'error', 'Gagal mengirim ulang kode, coba beberapa saat lagi.'); }
             } catch {
                 showAlert('alert2', 'error', 'Koneksi gagal.');
             }
         }
 
-        // ── STEP 2: Verifikasi OTP ──
         async function verifyOtp() {
             clearAlert('alert2');
             const ins = document.querySelectorAll('.oi');
             const otp = [...ins].map(i => i.value).join('');
 
-            const btn = document.getElementById('vBtn'),
-                orig = btn.innerHTML;
+            const btn = document.getElementById('vBtn'), orig = btn.innerHTML;
             setLoading(btn, true, orig);
 
             try {
                 const res = await fetch('{{ route('password.otp.verify') }}', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        otp
-                    })
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                    body: JSON.stringify({ otp })
                 });
                 const data = await res.json();
-                if (res.ok) {
-                    go(3);
-                } else {
+                if (res.ok) { go(3); }
+                else {
                     showAlert('alert2', 'error', data.errors?.otp?.[0] ?? data.message ?? 'Kode OTP tidak valid.');
-                    ins.forEach(i => {
-                        i.classList.remove('filled');
-                        i.classList.add('error');
-                    });
+                    ins.forEach(i => { i.classList.remove('filled'); i.classList.add('error'); });
                 }
             } catch {
                 showAlert('alert2', 'error', 'Koneksi gagal, periksa jaringan Anda.');
@@ -1563,7 +1129,6 @@
             }
         }
 
-        // ── STEP 3: Simpan Password ──
         async function savePassword() {
             clearAlert('alert3');
             const password = document.getElementById('npw').value;
@@ -1576,22 +1141,14 @@
             }
             document.getElementById('cpw').classList.remove('error');
 
-            const btn = document.getElementById('btnSavePass'),
-                orig = btn.innerHTML;
+            const btn = document.getElementById('btnSavePass'), orig = btn.innerHTML;
             setLoading(btn, true, orig);
 
             try {
                 const res = await fetch('{{ route('password.reset.update') }}', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        password,
-                        password_confirmation
-                    })
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                    body: JSON.stringify({ password, password_confirmation })
                 });
                 const data = await res.json();
                 if (res.ok) {
@@ -1600,8 +1157,7 @@
                     [1, 2, 3].forEach(i => document.getElementById('v' + i).classList.remove('active'));
                     document.getElementById('v4').classList.add('active');
                 } else {
-                    showAlert('alert3', 'error', data.errors?.password?.[0] ?? data.message ??
-                        'Gagal menyimpan password.');
+                    showAlert('alert3', 'error', data.errors?.password?.[0] ?? data.message ?? 'Gagal menyimpan password.');
                 }
             } catch {
                 showAlert('alert3', 'error', 'Koneksi gagal, periksa jaringan Anda.');
@@ -1614,38 +1170,32 @@
             const bs = [1, 2, 3, 4].map(i => document.getElementById('b' + i));
             const t = document.getElementById('sttxt');
             bs.forEach(b => b.className = 'pwb');
-            if (!v) {
-                t.textContent = 'Masukkan password untuk melihat kekuatannya';
-                t.style.color = '';
-                return;
-            }
+            if (!v) { t.textContent = 'Masukkan password untuk melihat kekuatannya'; t.style.color = ''; return; }
             let sc = 0;
             if (v.length >= 8) sc++;
             if (/[A-Z]/.test(v)) sc++;
             if (/[0-9]/.test(v)) sc++;
             if (/[^A-Za-z0-9]/.test(v)) sc++;
-            const cls = ['weak', 'weak', 'medium', 'strong'],
-                labs = ['Sangat lemah', 'Lemah', 'Sedang', 'Kuat'],
-                cols = ['#E24B4A', '#E24B4A', '#E8B740', '#27a06b'];
+            const cls  = ['weak', 'weak', 'medium', 'strong'];
+            const labs = ['Sangat lemah', 'Lemah', 'Sedang', 'Kuat'];
+            const cols = ['#E24B4A', '#E24B4A', '#E8B740', '#27a06b'];
             for (let i = 0; i < sc; i++) bs[i].className = 'pwb ' + cls[sc - 1];
             t.textContent = 'Kekuatan: ' + labs[sc - 1];
             t.style.color = cols[sc - 1];
         }
 
         function togPw(btn) {
-            const inp = btn.closest('.iw').querySelector('input'),
-                ic = btn.querySelector('svg');
+            const inp = btn.closest('.iw').querySelector('input'), ic = btn.querySelector('svg');
             if (inp.type === 'password') {
                 inp.type = 'text';
-                ic.innerHTML =
-                    '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+                ic.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
             } else {
                 inp.type = 'password';
                 ic.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
             }
         }
 
-        // ── Auto-fill OTP dari link email ──
+        // Auto-fill OTP dari link email
         const params = new URLSearchParams(window.location.search);
         const otpParam = params.get('otp');
         if (otpParam && otpParam.length === 6) {
@@ -1653,10 +1203,7 @@
             setTimeout(() => {
                 const ins = document.querySelectorAll('.oi');
                 [...otpParam].forEach((ch, i) => {
-                    if (ins[i]) {
-                        ins[i].value = ch;
-                        ins[i].classList.add('filled');
-                    }
+                    if (ins[i]) { ins[i].value = ch; ins[i].classList.add('filled'); }
                 });
                 document.getElementById('vBtn').disabled = false;
             }, 300);

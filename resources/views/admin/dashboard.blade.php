@@ -301,11 +301,14 @@
 @endsection
 
 @push('scripts')
+    {{-- jQuery (pastikan belum di-load di layout, kalau sudah ada hapus baris ini) --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <script>
         // ════════════════════════════════════════
         //  DATA AWAL dari PHP
         // ════════════════════════════════════════
-        let zonesData = @json($zonesWithSlots); // let — diupdate tiap AJAX poll
+        let zonesData = @json($zonesWithSlots);
         const hourData = @json($hourlyData);
         const weeklyData = @json($weeklyData);
         const totalSlots = {{ $totalSlots }};
@@ -315,8 +318,7 @@
         //  HELPER
         // ════════════════════════════════════════
         function setText(id, val) {
-            const el = document.getElementById(id);
-            if (el) el.textContent = val;
+            $('#' + id).text(val);
         }
 
         function pct(part, total) {
@@ -328,9 +330,8 @@
         //  GRUP 2 — Live Ring
         // ════════════════════════════════════════
         function renderLiveRing() {
-            const el = document.getElementById('slotLivePanel');
-            const taken = parseInt(document.getElementById('sc-takenSlots').textContent) || 0;
-            const free = parseInt(document.getElementById('sc-freeSlots').textContent) || 0;
+            const taken = parseInt($('#sc-takenSlots').text()) || 0;
+            const free = parseInt($('#sc-freeSlots').text()) || 0;
             const total = taken + free;
             const p = total > 0 ? Math.round((taken / total) * 100) : 0;
             const color = p >= 90 ? '#D92D20' : p >= 70 ? '#F79009' : '#12B76A';
@@ -341,49 +342,49 @@
                 const zp = z.total > 0 ? Math.round((z.taken / z.total) * 100) : 0;
                 const zc = zp >= 90 ? '#D92D20' : zp >= 70 ? '#F79009' : '#12B76A';
                 return `
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:10px;">
-                <span style="color:#4A5272;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;">${z.name}</span>
-                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                    <div style="width:72px;height:5px;background:#F0F2F8;border-radius:99px;overflow:hidden;">
-                        <div style="height:100%;width:${zp}%;background:${zc};border-radius:99px;"></div>
-                    </div>
-                    <span style="font-weight:700;color:${zc};min-width:34px;text-align:right;">${zp}%</span>
-                </div>
-            </div>`;
+                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;gap:10px;">
+                        <span style="color:#4A5272;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;">${z.name}</span>
+                        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                            <div style="width:72px;height:5px;background:#F0F2F8;border-radius:99px;overflow:hidden;">
+                                <div style="height:100%;width:${zp}%;background:${zc};border-radius:99px;"></div>
+                            </div>
+                            <span style="font-weight:700;color:${zc};min-width:34px;text-align:right;">${zp}%</span>
+                        </div>
+                    </div>`;
             }).join('');
 
-            el.innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;gap:18px;">
-            <div style="position:relative;width:130px;height:130px;">
-                <svg viewBox="0 0 100 100" width="130" height="130" style="transform:rotate(-90deg);">
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="#F0F2F8" stroke-width="8"/>
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="${color}" stroke-width="8"
-                        stroke-dasharray="${dash} ${circ - dash}" stroke-linecap="round"
-                        style="transition:stroke-dasharray .8s ease;"/>
-                </svg>
-                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.3;">
-                    <div style="font-size:26px;font-weight:800;color:${color};">${p}%</div>
-                    <div style="font-size:10px;color:#8A93AE;">terisi</div>
-                </div>
-            </div>
-            <div style="display:flex;gap:24px;">
-                <div style="text-align:center;">
-                    <div style="font-weight:700;color:#1A2340;font-size:16px;">${taken}</div>
-                    <div style="color:#8A93AE;font-size:11px;margin-top:2px;">Terisi</div>
-                </div>
-                <div style="text-align:center;">
-                    <div style="font-weight:700;color:#1A2340;font-size:16px;">${free}</div>
-                    <div style="color:#8A93AE;font-size:11px;margin-top:2px;">Kosong</div>
-                </div>
-                <div style="text-align:center;">
-                    <div style="font-weight:700;color:#1A2340;font-size:16px;">${total}</div>
-                    <div style="color:#8A93AE;font-size:11px;margin-top:2px;">Total</div>
-                </div>
-            </div>
-            <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
-                ${zonaRows || '<div style="text-align:center;color:#8A93AE;font-size:12px;">Belum ada zona.</div>'}
-            </div>
-        </div>`;
+            $('#slotLivePanel').html(`
+                <div style="display:flex;flex-direction:column;align-items:center;gap:18px;">
+                    <div style="position:relative;width:130px;height:130px;">
+                        <svg viewBox="0 0 100 100" width="130" height="130" style="transform:rotate(-90deg);">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#F0F2F8" stroke-width="8"/>
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="${color}" stroke-width="8"
+                                stroke-dasharray="${dash} ${circ - dash}" stroke-linecap="round"
+                                style="transition:stroke-dasharray .8s ease;"/>
+                        </svg>
+                        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.3;">
+                            <div style="font-size:26px;font-weight:800;color:${color};">${p}%</div>
+                            <div style="font-size:10px;color:#8A93AE;">terisi</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:24px;">
+                        <div style="text-align:center;">
+                            <div style="font-weight:700;color:#1A2340;font-size:16px;">${taken}</div>
+                            <div style="color:#8A93AE;font-size:11px;margin-top:2px;">Terisi</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-weight:700;color:#1A2340;font-size:16px;">${free}</div>
+                            <div style="color:#8A93AE;font-size:11px;margin-top:2px;">Kosong</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-weight:700;color:#1A2340;font-size:16px;">${total}</div>
+                            <div style="color:#8A93AE;font-size:11px;margin-top:2px;">Total</div>
+                        </div>
+                    </div>
+                    <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
+                        ${zonaRows || '<div style="text-align:center;color:#8A93AE;font-size:12px;">Belum ada zona.</div>'}
+                    </div>
+                </div>`);
         }
 
 
@@ -393,17 +394,16 @@
         let g2ActiveZone = 0;
 
         function renderMapSlotPanel() {
-            const el = document.getElementById('slotMapPanel');
             if (!zonesData.length) {
-                el.innerHTML =
-                    `<div style="text-align:center;color:#8A93AE;padding:24px 0;font-size:13px;">Belum ada data zona.</div>`;
+                $('#slotMapPanel').html(
+                    `<div style="text-align:center;color:#8A93AE;padding:24px 0;font-size:13px;">Belum ada data zona.</div>`
+                );
                 return;
             }
             buildMapSlot(g2ActiveZone);
         }
 
         function buildMapSlot(idx) {
-            const el = document.getElementById('slotMapPanel');
             const z = zonesData[idx];
             if (!z) return;
 
@@ -419,35 +419,35 @@
             zonesData.forEach((zone, i) => {
                 const active = i === idx;
                 tabs += `<button onclick="window._g2Zone(${i})"
-            style="padding:4px 12px;border-radius:20px;border:1.5px solid ${active ? '#3B6FD4' : '#E2E6F0'};
-            background:${active ? '#3B6FD4' : '#F8F9FC'};color:${active ? '#fff' : '#8A93AE'};
-            font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;">${zone.name}</button>`;
+                    style="padding:4px 12px;border-radius:20px;border:1.5px solid ${active ? '#3B6FD4' : '#E2E6F0'};
+                    background:${active ? '#3B6FD4' : '#F8F9FC'};color:${active ? '#fff' : '#8A93AE'};
+                    font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;">${zone.name}</button>`;
             });
             tabs += `</div>`;
 
             // Stats row
             const stats = `
-        <div style="display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
-            <div style="display:flex;align-items:center;gap:6px;">
-                <div style="width:10px;height:10px;border-radius:3px;background:rgba(59,111,212,.25);border:1.5px solid #3B6FD4;"></div>
-                <span style="font-size:11px;color:#4A5272;">Terisi <strong style="color:#1A2340;">${taken}</strong></span>
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;">
-                <div style="width:10px;height:10px;border-radius:3px;background:rgba(18,183,106,.2);border:1.5px solid #12B76A;"></div>
-                <span style="font-size:11px;color:#4A5272;">Kosong <strong style="color:#1A2340;">${free}</strong></span>
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;">
-                <div style="width:10px;height:10px;border-radius:3px;background:#FEF3F2;border:1.5px solid #D92D20;"></div>
-                <span style="font-size:11px;color:#4A5272;">Maintenance <strong style="color:#1A2340;">${maint}</strong></span>
-            </div>
-            <div style="margin-left:auto;font-size:11px;font-weight:700;color:${color};">${p}% terisi</div>
-        </div>`;
+                <div style="display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <div style="width:10px;height:10px;border-radius:3px;background:rgba(59,111,212,.25);border:1.5px solid #3B6FD4;"></div>
+                        <span style="font-size:11px;color:#4A5272;">Terisi <strong style="color:#1A2340;">${taken}</strong></span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <div style="width:10px;height:10px;border-radius:3px;background:rgba(18,183,106,.2);border:1.5px solid #12B76A;"></div>
+                        <span style="font-size:11px;color:#4A5272;">Kosong <strong style="color:#1A2340;">${free}</strong></span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <div style="width:10px;height:10px;border-radius:3px;background:#FEF3F2;border:1.5px solid #D92D20;"></div>
+                        <span style="font-size:11px;color:#4A5272;">Maintenance <strong style="color:#1A2340;">${maint}</strong></span>
+                    </div>
+                    <div style="margin-left:auto;font-size:11px;font-weight:700;color:${color};">${p}% terisi</div>
+                </div>`;
 
             // Progress bar
             const bar = `
-        <div style="height:6px;background:#F0F2F8;border-radius:99px;overflow:hidden;margin-bottom:14px;">
-            <div style="height:100%;width:${p}%;background:${color};border-radius:99px;transition:width .6s ease;"></div>
-        </div>`;
+                <div style="height:6px;background:#F0F2F8;border-radius:99px;overflow:hidden;margin-bottom:14px;">
+                    <div style="height:100%;width:${p}%;background:${color};border-radius:99px;transition:width .6s ease;"></div>
+                </div>`;
 
             // Slot grid
             let grid =
@@ -463,13 +463,13 @@
                         'background:rgba(18,183,106,.12);border-color:#12B76A;color:#0A7A47;';
                     const label = s.status === 'taken' ? 'Terisi' : s.status === 'free' ? 'Kosong' : 'Maintenance';
                     grid += `<div title="${s.id} — ${label}"
-                style="width:36px;height:30px;border-radius:5px;border:1.5px solid;display:flex;align-items:center;
-                justify-content:center;font-size:9px;font-weight:600;cursor:default;${bg}">${s.id}</div>`;
+                        style="width:36px;height:30px;border-radius:5px;border:1.5px solid;display:flex;align-items:center;
+                        justify-content:center;font-size:9px;font-weight:600;cursor:default;${bg}">${s.id}</div>`;
                 });
             }
             grid += `</div>`;
 
-            el.innerHTML = tabs + stats + bar + grid;
+            $('#slotMapPanel').html(tabs + stats + bar + grid);
 
             window._g2Zone = (i) => {
                 g2ActiveZone = i;
@@ -483,91 +483,82 @@
         // ════════════════════════════════════════
         function _iconMotor() {
             return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 17H5a2 2 0 0 1-2-2V7l2-4h10l2 4h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2z"/>
-        <circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/>
-    </svg>`;
+                <path d="M19 17H5a2 2 0 0 1-2-2V7l2-4h10l2 4h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2z"/>
+                <circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/>
+            </svg>`;
         }
 
         function _iconCar() {
             return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="1" y="3" width="15" height="13" rx="2"/>
-        <path d="M16 8h4l3 3v5h-7V8z"/>
-        <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-    </svg>`;
+                <rect x="1" y="3" width="15" height="13" rx="2"/>
+                <path d="M16 8h4l3 3v5h-7V8z"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>`;
         }
 
         function _avatar(fotoUrl) {
             if (fotoUrl) {
                 return `<img src="${fotoUrl}" alt="foto"
-            style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid #E2E6F0;flex-shrink:0;">`;
+                    style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid #E2E6F0;flex-shrink:0;">`;
             }
             return `<div style="width:30px;height:30px;border-radius:50%;background:#E8F0FB;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#3B6FD4" stroke-width="2" style="width:14px;height:14px;">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-        </svg>
-    </div>`;
+                <svg viewBox="0 0 24 24" fill="none" stroke="#3B6FD4" stroke-width="2" style="width:14px;height:14px;">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>`;
         }
 
         function updateActivityTable(activities) {
-            const tbody = document.getElementById('activityBody');
-            if (!tbody) return;
+            const $tbody = $('#activityBody');
 
-            // Jika kosong
             if (!activities || !activities.length) {
-                tbody.innerHTML = `<tr id="emptyRow">
-            <td colspan="5" style="text-align:center;color:#8A93AE;padding:20px 0;font-size:13px;">
-                Belum ada aktivitas hari ini.
-            </td>
-        </tr>`;
+                $tbody.html(`<tr id="emptyRow">
+                    <td colspan="5" style="text-align:center;color:#8A93AE;padding:20px 0;font-size:13px;">
+                        Belum ada aktivitas hari ini.
+                    </td>
+                </tr>`);
                 return;
             }
 
             // Hapus baris empty jika ada
-            const emptyRow = document.getElementById('emptyRow');
-            if (emptyRow) emptyRow.remove();
+            $('#emptyRow').remove();
 
-            const existingRows = Array.from(tbody.querySelectorAll('tr[data-row]'));
+            const $rows = $tbody.find('tr[data-row]');
 
-            // Tambah baris baru jika jumlah data lebih banyak dari baris yang ada
-            while (tbody.querySelectorAll('tr[data-row]').length < activities.length) {
-                const tr = document.createElement('tr');
-                tr.setAttribute('data-row', '');
-                tbody.appendChild(tr);
+            // Tambah baris baru jika kurang
+            while ($tbody.find('tr[data-row]').length < activities.length) {
+                $tbody.append('<tr data-row></tr>');
             }
 
-            // Hapus baris lebih jika data lebih sedikit
-            const allRows = Array.from(tbody.querySelectorAll('tr[data-row]'));
-            while (allRows.length > activities.length) {
-                allRows.pop().remove();
-            }
+            // Hapus baris lebih jika data berkurang
+            $tbody.find('tr[data-row]').slice(activities.length).remove();
 
             // Update isi tiap baris in-place
-            Array.from(tbody.querySelectorAll('tr[data-row]')).forEach((tr, i) => {
+            $tbody.find('tr[data-row]').each(function(i) {
                 const a = activities[i];
-                tr.setAttribute('data-type', a.vehType);
-                tr.innerHTML = `
-            <td style="color:#8A93AE;font-size:12px;font-weight:600;">${i + 1}</td>
-            <td>
-                <div class="td-vehicle">
-                    <div class="veh-icon">${a.vehType === 'motor' ? _iconMotor() : _iconCar()}</div>
-                    <div>
-                        <div class="veh-plate">${a.plate}</div>
-                        <div class="veh-type">${a.vehLabel}</div>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    ${_avatar(a.fotoUrl)}
-                    <span>${a.name}</span>
-                </div>
-            </td>
-            <td>${a.time}</td>
-            <td>${a.type === 'in'
-                ? '<span class="badge badge-in">Masuk</span>'
-                : '<span class="badge badge-out">Keluar</span>'
-            }</td>`;
+                $(this).attr('data-type', a.vehType).html(`
+                    <td style="color:#8A93AE;font-size:12px;font-weight:600;">${i + 1}</td>
+                    <td>
+                        <div class="td-vehicle">
+                            <div class="veh-icon">${a.vehType === 'motor' ? _iconMotor() : _iconCar()}</div>
+                            <div>
+                                <div class="veh-plate">${a.plate}</div>
+                                <div class="veh-type">${a.vehLabel}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            ${_avatar(a.fotoUrl)}
+                            <span>${a.name}</span>
+                        </div>
+                    </td>
+                    <td>${a.time}</td>
+                    <td>${a.type === 'in'
+                        ? '<span class="badge badge-in">Masuk</span>'
+                        : '<span class="badge badge-out">Keluar</span>'
+                    }</td>`);
             });
         }
 
@@ -576,13 +567,11 @@
         //  GRUP 4 — Chart Kepadatan
         // ════════════════════════════════════════
         function renderChart(mode) {
-            const chartEl = document.getElementById('hourChart');
-            const labelsEl = document.getElementById('hourLabels');
-            chartEl.innerHTML = '';
-            labelsEl.innerHTML = '';
+            const $chart = $('#hourChart').empty();
+            const $labels = $('#hourLabels').empty();
 
             if (mode === 'harian') {
-                document.getElementById('chartSub').textContent = 'Kendaraan masuk hari ini';
+                $('#chartSub').text('Kendaraan masuk hari ini');
                 const values = Object.values(hourData);
                 const maxVal = Math.max(...values, 1);
                 const nowHour = new Date().getHours();
@@ -592,35 +581,26 @@
                     const p = val / maxVal;
                     const isNow = h === nowHour;
 
-                    const barWrap = document.createElement('div');
-                    barWrap.style.cssText =
-                        `flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:0;`;
-
-                    const valLabel = document.createElement('div');
-                    valLabel.style.cssText = `font-size:9px;font-weight:600;color:#4A5272;min-height:11px;`;
-                    valLabel.textContent = val > 0 ? val : '';
-
-                    const bar = document.createElement('div');
-                    const barH = val > 0 ? Math.max(p * 110, 8) : 4;
                     let bg = 'linear-gradient(180deg,#DCE7FA,#B7CDF5)';
                     if (isNow) bg = 'linear-gradient(180deg,#3B6FD4,#1A4BAD)';
                     else if (val === Math.max(...values) && val) bg = 'linear-gradient(180deg,#5B8DEF,#3B6FD4)';
-                    bar.style.cssText =
-                        `width:100%;max-width:22px;height:${barH}px;border-radius:6px 6px 0 0;background:${bg};cursor:pointer;`;
-                    bar.title = `${String(h).padStart(2,'0')}:00 — ${val} kendaraan`;
 
-                    barWrap.appendChild(valLabel);
-                    barWrap.appendChild(bar);
-                    chartEl.appendChild(barWrap);
+                    const barH = val > 0 ? Math.max(p * 110, 8) : 4;
 
-                    const lbl = document.createElement('div');
-                    lbl.style.cssText =
-                        `flex:1;text-align:center;font-size:9px;color:${isNow ? '#1A4BAD' : '#8A93AE'};font-weight:${isNow ? '700' : '500'};min-width:0;`;
-                    lbl.textContent = String(h).padStart(2, '0');
-                    labelsEl.appendChild(lbl);
+                    $chart.append(`
+                        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:0;">
+                            <div style="font-size:9px;font-weight:600;color:#4A5272;min-height:11px;">${val > 0 ? val : ''}</div>
+                            <div style="width:100%;max-width:22px;height:${barH}px;border-radius:6px 6px 0 0;background:${bg};cursor:pointer;"
+                                title="${String(h).padStart(2,'0')}:00 — ${val} kendaraan"></div>
+                        </div>`);
+
+                    $labels.append(`
+                        <div style="flex:1;text-align:center;font-size:9px;color:${isNow ? '#1A4BAD' : '#8A93AE'};font-weight:${isNow ? '700' : '500'};min-width:0;">
+                            ${String(h).padStart(2,'0')}
+                        </div>`);
                 }
             } else {
-                document.getElementById('chartSub').textContent = '7 hari terakhir';
+                $('#chartSub').text('7 hari terakhir');
                 const labels = Object.keys(weeklyData);
                 const vals = Object.values(weeklyData);
                 const maxVal = Math.max(...vals, 1);
@@ -629,39 +609,29 @@
                     const val = vals[i];
                     const p = val / maxVal;
                     const isToday = i === labels.length - 1;
-
-                    const barWrap = document.createElement('div');
-                    barWrap.style.cssText =
-                        `flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:0;`;
-
-                    const valLabel = document.createElement('div');
-                    valLabel.style.cssText = `font-size:9px;font-weight:600;color:#4A5272;min-height:11px;`;
-                    valLabel.textContent = val > 0 ? val : '';
-
-                    const bar = document.createElement('div');
                     const barH = val > 0 ? Math.max(p * 110, 8) : 4;
-                    const bg = isToday ? 'linear-gradient(180deg,#3B6FD4,#1A4BAD)' :
+                    const bg = isToday ?
+                        'linear-gradient(180deg,#3B6FD4,#1A4BAD)' :
                         'linear-gradient(180deg,#DCE7FA,#B7CDF5)';
-                    bar.style.cssText =
-                        `width:100%;max-width:32px;height:${barH}px;border-radius:6px 6px 0 0;background:${bg};`;
-                    bar.title = `${lbl} — ${val} kendaraan`;
 
-                    barWrap.appendChild(valLabel);
-                    barWrap.appendChild(bar);
-                    chartEl.appendChild(barWrap);
+                    $chart.append(`
+                        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:0;">
+                            <div style="font-size:9px;font-weight:600;color:#4A5272;min-height:11px;">${val > 0 ? val : ''}</div>
+                            <div style="width:100%;max-width:32px;height:${barH}px;border-radius:6px 6px 0 0;background:${bg};"
+                                title="${lbl} — ${val} kendaraan"></div>
+                        </div>`);
 
-                    const l = document.createElement('div');
-                    l.style.cssText =
-                        `flex:1;text-align:center;font-size:9px;color:${isToday ? '#1A4BAD' : '#8A93AE'};font-weight:${isToday ? '700' : '500'};min-width:0;`;
-                    l.textContent = lbl;
-                    labelsEl.appendChild(l);
+                    $labels.append(`
+                        <div style="flex:1;text-align:center;font-size:9px;color:${isToday ? '#1A4BAD' : '#8A93AE'};font-weight:${isToday ? '700' : '500'};min-width:0;">
+                            ${lbl}
+                        </div>`);
                 });
             }
         }
 
         function switchChart(mode) {
-            document.getElementById('btnHarian').classList.toggle('active', mode === 'harian');
-            document.getElementById('btnMingguan').classList.toggle('active', mode === 'mingguan');
+            $('#btnHarian').toggleClass('active', mode === 'harian');
+            $('#btnMingguan').toggleClass('active', mode === 'mingguan');
             renderChart(mode);
         }
 
@@ -672,23 +642,22 @@
         //  GRUP 4 — Insight: Heatmap / Durasi / Zona
         // ════════════════════════════════════════
         function switchInsight(mode) {
-            document.querySelectorAll('#insightCard .toggle-btn').forEach(b => {
-                b.classList.toggle('active', b.getAttribute('onclick') === `switchInsight('${mode}')`);
+            $('#insightCard .toggle-btn').each(function() {
+                $(this).toggleClass('active', $(this).attr('onclick') === `switchInsight('${mode}')`);
             });
             const subMap = {
                 heatmap: 'Kepadatan 7 hari × jam',
                 durasi: 'Rata-rata durasi parkir per jam',
                 zona: 'Okupansi per zona saat ini',
             };
-            document.getElementById('insightSub').textContent = subMap[mode];
-            const body = document.getElementById('insightBody');
-            body.innerHTML = '';
-            if (mode === 'heatmap') renderHeatmap(body);
-            if (mode === 'durasi') renderDurasi(body);
-            if (mode === 'zona') renderZona(body);
+            $('#insightSub').text(subMap[mode]);
+            const $body = $('#insightBody').empty();
+            if (mode === 'heatmap') renderHeatmap($body);
+            if (mode === 'durasi') renderDurasi($body);
+            if (mode === 'zona') renderZona($body);
         }
 
-        function renderHeatmap(el) {
+        function renderHeatmap($el) {
             const days = Object.keys(weeklyData);
             const vals7 = Object.values(weeklyData);
             const hours = [6, 8, 10, 12, 14, 16, 18, 20, 22];
@@ -696,8 +665,8 @@
             const maxWeek = Math.max(...vals7, 1);
 
             let html = `<div style="overflow-x:auto;">
-        <div style="display:grid;grid-template-columns:32px repeat(${hours.length},1fr);gap:2px;min-width:220px;">
-        <div></div>`;
+                <div style="display:grid;grid-template-columns:32px repeat(${hours.length},1fr);gap:2px;min-width:220px;">
+                <div></div>`;
 
             hours.forEach(h => {
                 html +=
@@ -713,32 +682,33 @@
                     const ratio = val / maxHour;
                     const alpha = ratio < 0.1 ? 0.08 : ratio < 0.3 ? 0.2 : ratio < 0.6 ? 0.45 : ratio <
                         0.85 ? 0.7 : 1;
-                    html += `<div title="${day} ${String(h).padStart(2,'0')}:00 — ±${val} kendaraan"
-                style="height:18px;border-radius:3px;background:rgba(59,111,212,${alpha});cursor:default;"></div>`;
+                    html +=
+                        `<div title="${day} ${String(h).padStart(2,'0')}:00 — ±${val} kendaraan"
+                        style="height:18px;border-radius:3px;background:rgba(59,111,212,${alpha});cursor:default;"></div>`;
                 });
             });
 
             html += `</div>
-        <div style="display:flex;align-items:center;gap:6px;margin-top:10px;justify-content:flex-end;">
-            <span style="font-size:10px;color:#8A93AE;">Sepi</span>
-            ${[0.08,0.2,0.45,0.7,1].map(a =>
-                `<div style="width:14px;height:14px;border-radius:3px;background:rgba(59,111,212,${a});"></div>`
-            ).join('')}
-            <span style="font-size:10px;color:#8A93AE;">Padat</span>
-        </div>
-    </div>`;
-            el.innerHTML = html;
+                <div style="display:flex;align-items:center;gap:6px;margin-top:10px;justify-content:flex-end;">
+                    <span style="font-size:10px;color:#8A93AE;">Sepi</span>
+                    ${[0.08,0.2,0.45,0.7,1].map(a =>
+                        `<div style="width:14px;height:14px;border-radius:3px;background:rgba(59,111,212,${a});"></div>`
+                    ).join('')}
+                    <span style="font-size:10px;color:#8A93AE;">Padat</span>
+                </div>
+            </div>`;
+            $el.html(html);
         }
 
-        function renderDurasi(el) {
+        function renderDurasi($el) {
             const baseAvg = {{ $avgDurasiMins ?? 'null' }};
             const hours = [];
             for (let h = 6; h <= 22; h++) hours.push(h);
 
             if (!baseAvg) {
-                el.innerHTML = `<div style="text-align:center;color:#8A93AE;padding:32px 0;font-size:13px;">
-            Belum ada data durasi parkir hari ini.
-        </div>`;
+                $el.html(`<div style="text-align:center;color:#8A93AE;padding:32px 0;font-size:13px;">
+                    Belum ada data durasi parkir hari ini.
+                </div>`);
                 return;
             }
 
@@ -748,11 +718,10 @@
                 const f = h < 9 ? 0.7 : h < 12 ? 1.1 : h < 14 ? 1.3 : h < 17 ? 1.0 : h < 20 ? 0.9 : 0.75;
                 return Math.round(baseAvg * f);
             });
-
             const maxVal = Math.max(...vals, 1);
+
             let bars = '',
                 labels = '';
-
             hours.forEach((h, i) => {
                 const val = vals[i];
                 const p = val / maxVal;
@@ -767,32 +736,33 @@
                     '';
 
                 bars += `
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0;">
-                <div style="font-size:8px;font-weight:600;color:#4A5272;min-height:10px;">${mnt}</div>
-                <div style="width:100%;max-width:20px;height:${barH}px;border-radius:5px 5px 0 0;background:${bg};"
-                    title="${String(h).padStart(2,'00')}:00 — ~${val} mnt"></div>
-            </div>`;
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0;">
+                        <div style="font-size:8px;font-weight:600;color:#4A5272;min-height:10px;">${mnt}</div>
+                        <div style="width:100%;max-width:20px;height:${barH}px;border-radius:5px 5px 0 0;background:${bg};"
+                            title="${String(h).padStart(2,'0')}:00 — ~${val} mnt"></div>
+                    </div>`;
                 labels += `
-            <div style="flex:1;text-align:center;font-size:9px;color:${isNow ? '#7C3AED' : '#8A93AE'};font-weight:${isNow ? '700' : '500'};min-width:0;">
-                ${String(h).padStart(2,'0')}
-            </div>`;
+                    <div style="flex:1;text-align:center;font-size:9px;color:${isNow ? '#7C3AED' : '#8A93AE'};font-weight:${isNow ? '700' : '500'};min-width:0;">
+                        ${String(h).padStart(2,'0')}
+                    </div>`;
             });
 
-            el.innerHTML = `
-        <div>
-            <div style="display:flex;align-items:flex-end;gap:3px;height:130px;padding:0 2px;">${bars}</div>
-            <div style="display:flex;gap:3px;margin-top:6px;padding:0 2px;">${labels}</div>
-            <div style="margin-top:10px;font-size:11px;color:#8A93AE;text-align:center;">
-                Rata-rata keseluruhan: <strong style="color:#7C3AED;">{{ $avgDurasi ?: '-' }}</strong>
-            </div>
-            <div style="font-size:10px;color:#C4C9D8;text-align:center;margin-top:2px;">*estimasi berdasarkan pola hari ini</div>
-        </div>`;
+            $el.html(`
+                <div>
+                    <div style="display:flex;align-items:flex-end;gap:3px;height:130px;padding:0 2px;">${bars}</div>
+                    <div style="display:flex;gap:3px;margin-top:6px;padding:0 2px;">${labels}</div>
+                    <div style="margin-top:10px;font-size:11px;color:#8A93AE;text-align:center;">
+                        Rata-rata keseluruhan: <strong style="color:#7C3AED;">{{ $avgDurasi ?: '-' }}</strong>
+                    </div>
+                    <div style="font-size:10px;color:#C4C9D8;text-align:center;margin-top:2px;">*estimasi berdasarkan pola hari ini</div>
+                </div>`);
         }
 
-        function renderZona(el) {
+        function renderZona($el) {
             if (!zonesData.length) {
-                el.innerHTML =
-                    `<div style="text-align:center;color:#8A93AE;padding:24px 0;font-size:13px;">Belum ada data zona.</div>`;
+                $el.html(
+                    `<div style="text-align:center;color:#8A93AE;padding:24px 0;font-size:13px;">Belum ada data zona.</div>`
+                    );
                 return;
             }
             let html = `<div style="display:flex;flex-direction:column;gap:12px;">`;
@@ -800,33 +770,33 @@
                 const p = z.total > 0 ? Math.round((z.taken / z.total) * 100) : 0;
                 const color = p >= 90 ? '#D92D20' : p >= 70 ? '#F79009' : '#12B76A';
                 html += `
-            <div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                    <span style="font-size:13px;font-weight:600;color:#1A2340;">${z.name}</span>
-                    <div style="display:flex;gap:8px;align-items:center;">
-                        <span style="font-size:11px;color:#8A93AE;">${z.taken}/${z.total} slot</span>
-                        <span style="font-size:12px;font-weight:700;color:${color};">${p}%</span>
-                    </div>
-                </div>
-                <div style="height:8px;background:#F0F2F8;border-radius:99px;overflow:hidden;">
-                    <div style="height:100%;width:${p}%;background:${color};border-radius:99px;transition:width .6s ease;"></div>
-                </div>
-            </div>`;
+                    <div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                            <span style="font-size:13px;font-weight:600;color:#1A2340;">${z.name}</span>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <span style="font-size:11px;color:#8A93AE;">${z.taken}/${z.total} slot</span>
+                                <span style="font-size:12px;font-weight:700;color:${color};">${p}%</span>
+                            </div>
+                        </div>
+                        <div style="height:8px;background:#F0F2F8;border-radius:99px;overflow:hidden;">
+                            <div style="height:100%;width:${p}%;background:${color};border-radius:99px;transition:width .6s ease;"></div>
+                        </div>
+                    </div>`;
             });
             html += `
-        <div style="display:flex;gap:12px;margin-top:4px;padding-top:10px;border-top:1.5px solid #F0F2F8;flex-wrap:wrap;">
-            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#8A93AE;">
-                <div style="width:9px;height:9px;border-radius:3px;background:#12B76A;"></div> Normal &lt;70%
-            </div>
-            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#8A93AE;">
-                <div style="width:9px;height:9px;border-radius:3px;background:#F79009;"></div> Padat 70–90%
-            </div>
-            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#8A93AE;">
-                <div style="width:9px;height:9px;border-radius:3px;background:#D92D20;"></div> Penuh &gt;90%
-            </div>
-        </div>
-    </div>`;
-            el.innerHTML = html;
+                <div style="display:flex;gap:12px;margin-top:4px;padding-top:10px;border-top:1.5px solid #F0F2F8;flex-wrap:wrap;">
+                    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#8A93AE;">
+                        <div style="width:9px;height:9px;border-radius:3px;background:#12B76A;"></div> Normal &lt;70%
+                    </div>
+                    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#8A93AE;">
+                        <div style="width:9px;height:9px;border-radius:3px;background:#F79009;"></div> Padat 70–90%
+                    </div>
+                    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#8A93AE;">
+                        <div style="width:9px;height:9px;border-radius:3px;background:#D92D20;"></div> Penuh &gt;90%
+                    </div>
+                </div>
+            </div>`;
+            $el.html(html);
         }
 
         // Render awal semua panel
@@ -836,10 +806,8 @@
 
 
         // ════════════════════════════════════════
-        //  AJAX POLLING — update data in-place
-        //  Tidak ada reload halaman, tidak ada
-        //  replace innerHTML besar-besaran.
-        //  Setiap bagian diupdate secara targetted.
+        //  AJAX POLLING — jQuery $.ajax
+        //  Update data tanpa reload halaman
         // ════════════════════════════════════════
         const POLL_INTERVAL = 30000; // 30 detik
         const POLL_URL = '{{ url('dashboard/refresh') }}';
@@ -850,22 +818,18 @@
         }
 
         function fetchAndUpdate() {
-            const badge = document.getElementById('liveBadge');
-            if (badge) badge.classList.add('refreshing');
+            const $badge = $('#liveBadge');
+            $badge.addClass('refreshing');
 
-            fetch(POLL_URL, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
-                    },
-                })
-                .then(r => {
-                    if (!r.ok) throw new Error('HTTP ' + r.status);
-                    return r.json();
-                })
-                .then(d => {
+            $.ajax({
+                url: POLL_URL,
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') ?? '',
+                },
+                success: function(d) {
                     // ── 1. Stat cards ──────────────────────────────
                     setText('sc-todayIn', d.todayIn);
                     setText('sc-takenSlots', d.takenSlots);
@@ -890,19 +854,20 @@
                     if (Array.isArray(d.recentActivities)) {
                         updateActivityTable(d.recentActivities);
                     }
-
-                    if (badge) badge.classList.remove('refreshing');
-                })
-                .catch(err => {
-                    console.warn('[Dashboard] AJAX poll error:', err);
-                    if (badge) badge.classList.remove('refreshing');
-                });
+                },
+                error: function(xhr, status, err) {
+                    console.warn('[Dashboard] AJAX poll error:', status, err);
+                },
+                complete: function() {
+                    $badge.removeClass('refreshing');
+                }
+            });
         }
 
         startPolling();
 
         // Pause saat tab tidak aktif, resume + langsung update saat kembali aktif
-        document.addEventListener('visibilitychange', () => {
+        $(document).on('visibilitychange', function() {
             if (document.hidden) {
                 clearInterval(pollTimer);
                 pollTimer = null;
