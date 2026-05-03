@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\VehicleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,39 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/password', [
         ProfileController::class,
         'updatePassword'
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vehicles
+    |--------------------------------------------------------------------------
+    */
+
+    // Get all vehicles
+    Route::get('/vehicles', [VehicleController::class, 'index']);
+
+    // Get detail vehicle
+    Route::get('/vehicles/{vehicle}', [
+        VehicleController::class,
+        'show'
+    ]);
+
+    // Create vehicle
+    Route::post('/vehicles', [
+        VehicleController::class,
+        'store'
+    ]);
+
+    // Update vehicle
+    Route::post('/vehicles/{vehicle}', [
+        VehicleController::class,
+        'update'
+    ]);
+
+    // Delete vehicle
+    Route::delete('/vehicles/{vehicle}', [
+        VehicleController::class,
+        'destroy'
     ]);
 
 });
