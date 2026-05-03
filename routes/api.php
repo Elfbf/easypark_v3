@@ -58,6 +58,12 @@ Route::middleware('auth:sanctum')->group(function () {
         'updatePassword'
     ]);
 
+    // Update face data
+    Route::post('/profile/face', [
+        ProfileController::class,
+        'updateFace'
+    ]);
+
     /*
     |--------------------------------------------------------------------------
     | Vehicles
