@@ -17,7 +17,7 @@ class DashboardController extends Controller
         return view('admin.dashboard', $this->getDashboardData());
     }
 
-    // ── Endpoint AJAX — hanya kembalikan primitif, tidak ada Eloquent Collection ──
+    // ── Endpoint AJAX ──
     public function refresh(): JsonResponse
     {
         $totalSlots     = ParkingSlot::where('is_active', true)->count();
@@ -26,7 +26,7 @@ class DashboardController extends Controller
         $todayIn        = ParkingRecord::whereDate('entry_time', today())->count();
         $todayCompleted = ParkingRecord::whereDate('entry_time', today())->where('status', 'completed')->count();
 
-        // Zona — di-map ke plain array agar JSON bersih
+        // Zona
         $zonesWithSlots = ParkingArea::with([
             'parkingSlots' => fn($q) => $q->where('is_active', true)
                 ->select('id', 'parking_area_id', 'slot_code', 'status'),
@@ -49,7 +49,7 @@ class DashboardController extends Controller
             ];
         })->values()->toArray();
 
-        // Aktivitas terkini — sudah jadi array biasa, tidak ada model object
+        // Aktivitas terkini
         $rawRecords = ParkingRecord::with([
             'vehicle.user',
             'vehicle.type',
@@ -111,57 +111,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    // ── Export CSV ──
-    public function exportCsv()
-    {
-        $records = ParkingRecord::with([
-            'vehicle.user', 'vehicle.type', 'vehicle.brand', 'vehicle.model',
-        ])
-            ->whereDate('entry_time', today())
-            ->latest('entry_time')
-            ->get();
-
-        $filename = 'aktivitas-parkir-' . today()->format('Y-m-d') . '.csv';
-        $headers  = [
-            'Content-Type'        => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
-        $callback = function () use ($records) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, [
-                'No', 'Plat Nomor', 'Tipe', 'Merek', 'Model',
-                'Pengemudi', 'Waktu Masuk', 'Waktu Keluar', 'Durasi', 'Status',
-            ]);
-
-            foreach ($records as $i => $rec) {
-                $start    = $rec->entry_time;
-                $end      = $rec->exit_time;
-                $diffMins = ($start && $end) ? (int) $start->diffInMinutes($end) : null;
-                $durasi   = $diffMins === null ? '-'
-                    : ($diffMins < 60 ? $diffMins . ' mnt'
-                        : floor($diffMins / 60) . ' jam ' . ($diffMins % 60) . ' mnt');
-
-                fputcsv($handle, [
-                    $i + 1,
-                    $rec->plate_number,
-                    optional(optional($rec->vehicle)->type)->name  ?? '-',
-                    optional(optional($rec->vehicle)->brand)->name ?? '-',
-                    optional(optional($rec->vehicle)->model)->name ?? '-',
-                    optional(optional($rec->vehicle)->user)->name  ?? '-',
-                    $start ? $start->format('H:i') : '-',
-                    $end   ? $end->format('H:i')   : '-',
-                    $durasi,
-                    $rec->status ?? '-',
-                ]);
-            }
-            fclose($handle);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
-
-    // ── Core data builder — hanya dipanggil sekali saat page load ──
+    // ── Core data builder ──
     private function getDashboardData(): array
     {
         $totalSlots   = ParkingSlot::where('is_active', true)->count();
@@ -199,6 +149,7 @@ class DashboardController extends Controller
         $todayIn        = ParkingRecord::whereDate('entry_time', today())->count();
         $todayCompleted = ParkingRecord::whereDate('entry_time', today())->where('status', 'completed')->count();
 
+        // ── Rata-rata durasi ──
         $avgDurasiMins = ParkingRecord::whereDate('entry_time', today())
             ->whereNotNull('exit_time')
             ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, entry_time, exit_time)) as avg_mins')
@@ -206,11 +157,12 @@ class DashboardController extends Controller
 
         $avgDurasiMins = $avgDurasiMins ? (int) $avgDurasiMins : null;
         $avgDurasi     = match (true) {
-            $avgDurasiMins === null  => '-',
-            $avgDurasiMins < 60     => $avgDurasiMins . ' mnt',
-            default                 => floor($avgDurasiMins / 60) . ' jam ' . ($avgDurasiMins % 60) . ' mnt',
+            $avgDurasiMins === null => '-',
+            $avgDurasiMins < 60    => $avgDurasiMins . ' mnt',
+            default                => floor($avgDurasiMins / 60) . ' jam ' . ($avgDurasiMins % 60) . ' mnt',
         };
 
+        // ── Aktivitas terkini ──
         $rawRecords = ParkingRecord::with([
             'vehicle.user', 'vehicle.type', 'vehicle.brand', 'vehicle.model',
         ])
@@ -231,26 +183,43 @@ class DashboardController extends Controller
             ->values()
             ->take(5);
 
-        $hourlyData = ParkingRecord::selectRaw('HOUR(entry_time) as hour, COUNT(*) as total')
+        // ── Hourly (hari ini) ──
+        $hourlyRaw = ParkingRecord::selectRaw('HOUR(entry_time) as hour, COUNT(*) as total')
             ->whereDate('entry_time', today())
             ->groupBy('hour')
             ->pluck('total', 'hour')
             ->toArray();
 
+        $hourlyData = [];
         for ($i = 0; $i <= 23; $i++) {
-            $hourlyData[$i] = $hourlyData[$i] ?? 0;
+            $hourlyData[$i] = $hourlyRaw[$i] ?? 0;
         }
         ksort($hourlyData);
 
-        $peakHour      = array_search(max($hourlyData), $hourlyData);
-        $peakHourLabel = str_pad($peakHour, 2, '0', STR_PAD_LEFT) . ':00';
+        // ── Peak hour — tampilkan '-' jika belum ada kendaraan ──
+        $maxVal        = max($hourlyData);
+        $peakHour      = $maxVal > 0 ? array_search($maxVal, $hourlyData) : null;
+        $peakHourLabel = $peakHour !== null
+            ? str_pad($peakHour, 2, '0', STR_PAD_LEFT) . ':00'
+            : '-';
 
+        // ── Weekly (7 hari terakhir) ──
         $weeklyData = [];
         for ($d = 6; $d >= 0; $d--) {
-            $label              = now()->subDays($d)->format('d/m');
-            $weeklyData[$label] = ParkingRecord::whereDate('entry_time', now()->subDays($d)->format('Y-m-d'))->count();
+            $date               = now()->subDays($d);
+            $label              = $date->format('d/m');
+            $weeklyData[$label] = ParkingRecord::whereDate('entry_time', $date->format('Y-m-d'))->count();
         }
 
+        // ── Monthly (30 hari terakhir) ──
+        $monthlyData = [];
+        for ($d = 29; $d >= 0; $d--) {
+            $date                = now()->subDays($d);
+            $label               = $date->format('m/d');
+            $monthlyData[$label] = ParkingRecord::whereDate('entry_time', $date->format('Y-m-d'))->count();
+        }
+
+        // ── Statistik per tipe kendaraan ──
         $vehicleTypeStats = ParkingRecord::with('vehicle.type')
             ->whereDate('entry_time', today())
             ->get()
@@ -268,7 +237,8 @@ class DashboardController extends Controller
             'avgDurasi', 'avgDurasiMins',
             'recentActivities',
             'hourlyData', 'peakHour', 'peakHourLabel',
-            'weeklyData', 'vehicleTypeStats',
+            'weeklyData', 'monthlyData',
+            'vehicleTypeStats',
             'capacityAlert',
         );
     }

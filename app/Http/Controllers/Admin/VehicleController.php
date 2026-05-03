@@ -26,7 +26,6 @@ class VehicleController extends Controller
                 'type',
                 'brand',
                 'model',
-                'parkingSlot'
             ])
             ->when($search, function ($query, $search) {
                 $query->where('plate_number', 'like', '%' . $search . '%')

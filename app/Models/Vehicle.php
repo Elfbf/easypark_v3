@@ -46,9 +46,4 @@ class Vehicle extends Model
     {
         return $this->belongsTo(VehicleModel::class, 'vehicle_model_id');
     }
-
-    public function parkingSlot()
-    {
-        return $this->belongsTo(ParkingSlot::class);
-    }
 }

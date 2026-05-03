@@ -5,11 +5,16 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
 use App\Http\Middleware\RoleMiddleware;
-use App\Http\Middleware\Authenticate; // 🔥 tambah ini
+use App\Http\Middleware\Authenticate;
 
 return Application::configure(basePath: dirname(__DIR__))
+
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+
+        // 🔥 tambah ini
+        api: __DIR__.'/../routes/api.php',
+
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
@@ -18,13 +23,14 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
 
-            // 🔥 auth custom
+            // 🔥 auth middleware
             'auth' => Authenticate::class,
 
             // 🔥 role middleware
             'role' => RoleMiddleware::class,
 
         ]);
+
     })
 
     ->withExceptions(function (Exceptions $exceptions): void {

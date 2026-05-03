@@ -61,10 +61,6 @@ class AuthenticatedSessionController extends Controller
                 route('petugas.dashboard')
             ),
 
-            'mahasiswa' => redirect()->intended(
-                route('mahasiswa.dashboard')
-            ),
-
             default => abort(403, 'Role tidak dikenali.'),
         };
     }

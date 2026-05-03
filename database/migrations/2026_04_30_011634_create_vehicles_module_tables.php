@@ -56,7 +56,6 @@ return new class extends Migration
             $table->foreignId('vehicle_type_id')->constrained()->cascadeOnDelete();
             $table->foreignId('vehicle_brand_id')->constrained()->cascadeOnDelete();
             $table->foreignId('vehicle_model_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('parking_slot_id')->nullable()->constrained()->nullOnDelete();
 
             $table->string('plate_number')->unique();
             $table->string('color')->nullable();
