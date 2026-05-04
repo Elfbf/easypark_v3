@@ -22,13 +22,12 @@
 
     @php
         $nameParts = explode(' ', Auth::user()->name);
-        $initials  = strtoupper($nameParts[0][0] ?? '') . strtoupper(end($nameParts)[0] ?? '');
-        $role      = Auth::user()->role->name;
+        $initials = strtoupper($nameParts[0][0] ?? '') . strtoupper(end($nameParts)[0] ?? '');
+        $role = Auth::user()->role->name;
     @endphp
 
     <!-- User — klik ke halaman profil -->
-    <a href="{{ route('profile.show') }}"
-        class="sb-user {{ request()->routeIs('profile.*') ? 'sb-user-active' : '' }}"
+    <a href="{{ route('profile.show') }}" class="sb-user {{ request()->routeIs('profile.*') ? 'sb-user-active' : '' }}"
         style="text-decoration:none;display:flex;align-items:center;gap:10px;
                margin:0 10px;padding:10px;border-radius:10px;
                border:1px solid {{ request()->routeIs('profile.*') ? 'rgba(255,255,255,0.15)' : 'transparent' }};
@@ -37,8 +36,8 @@
         onmouseover="this.style.background='rgba(255,255,255,0.06)'"
         onmouseout="this.style.background='{{ request()->routeIs('profile.*') ? 'rgba(255,255,255,0.08)' : 'transparent' }}'">
         <div class="sb-avatar" style="flex-shrink:0;">
-            @if(Auth::user()->photo)
-                <img src="{{ asset('storage/'.Auth::user()->photo) }}"
+            @if (Auth::user()->photo)
+                <img src="{{ asset('storage/' . Auth::user()->photo) }}"
                     style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
             @else
                 {{ $initials }}
@@ -52,7 +51,7 @@
         </div>
         <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"
             style="width:13px;height:13px;flex-shrink:0;">
-            <polyline points="9 18 15 12 9 6"/>
+            <polyline points="9 18 15 12 9 6" />
         </svg>
     </a>
 
@@ -208,7 +207,7 @@
                 <span>Parking Records</span>
             </a>
 
-        {{-- ══ PETUGAS ══ --}}
+            {{-- ══ PETUGAS ══ --}}
         @elseif ($role === 'petugas')
             <div class="sb-section-label">Utama</div>
 
@@ -224,6 +223,17 @@
             </a>
 
             <div class="sb-section-label" style="margin-top:16px">Parkir</div>
+
+            <a href="{{ route('petugas.kiosk') }}"
+                class="sb-item {{ request()->routeIs('petugas.kiosk*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <path d="M8 21h8" />
+                    <path d="M12 17v4" />
+                    <path d="M9 10l2 2 4-4" />
+                </svg>
+                <span>Scan Masuk</span>
+            </a>
 
             <a href="{{ route('petugas.parking-areas.index') }}"
                 class="sb-item {{ request()->routeIs('petugas.parking-areas.*') ? 'active' : '' }}">
@@ -300,8 +310,8 @@
             <div class="lm-actions">
                 <button class="lm-cancel"
                     onclick="document.getElementById('logout-modal').classList.remove('show')">Batal</button>
-                <button class="lm-confirm"
-                    onclick="document.getElementById('logout-form').submit()">Ya, Keluar</button>
+                <button class="lm-confirm" onclick="document.getElementById('logout-form').submit()">Ya,
+                    Keluar</button>
             </div>
         </div>
     </div>

@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\ParkingRecordController;
 use App\Http\Controllers\Petugas\ParkingAreaController as PetugasParkingAreaController;
 use App\Http\Controllers\Petugas\ParkingSlotController as PetugasParkingSlotController;
 use App\Http\Controllers\Petugas\ParkingRecordController as PetugasParkingRecordController;
+use App\Http\Controllers\Petugas\KioskController;
 
 // Auth Controllers
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -119,13 +120,17 @@ Route::prefix('petugas')
         Route::get('/dashboard', [PetugasDashboardController::class, 'index'])
             ->name('dashboard');
 
+        // Kiosk
+        Route::get('/kiosk', [KioskController::class, 'index'])
+            ->name('kiosk');
+
         Route::resource('/parking-areas', PetugasParkingAreaController::class)
             ->only(['index']);
 
         Route::resource('/parking-slots', PetugasParkingSlotController::class)
             ->only(['index']);
 
-        // Parking Records — tambah ini
+        // Parking Records
         Route::get('/parking-records', [PetugasParkingRecordController::class, 'index'])
             ->name('parking-records.index');
         Route::post('/parking-records/entry', [PetugasParkingRecordController::class, 'entry'])
