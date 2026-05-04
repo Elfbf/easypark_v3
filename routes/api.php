@@ -6,27 +6,20 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\ScanPlatController;
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-*/
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/scan-plat', [ScanPlatController::class, 'terima']); // tambah ini
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes
 |--------------------------------------------------------------------------
 */
-
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/scan-plat', [ScanPlatController::class, 'terima']);
 
 /*
 |--------------------------------------------------------------------------
 | Protected Routes
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth:sanctum')->group(function () {
 
     /*
@@ -34,11 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     | Authentication
     |--------------------------------------------------------------------------
     */
-
-    // Get authenticated user
     Route::get('/me', [AuthController::class, 'me']);
-
-    // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
     /*
@@ -46,56 +35,30 @@ Route::middleware('auth:sanctum')->group(function () {
     | Profile
     |--------------------------------------------------------------------------
     */
-
-    // Get profile
     Route::get('/profile', [ProfileController::class, 'me']);
-
-    // Update profile
     Route::post('/profile/update', [ProfileController::class, 'update']);
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword']);
+    Route::post('/profile/face', [ProfileController::class, 'updateFace']);
 
-    // Update password
-    Route::post('/profile/password', [
-        ProfileController::class,
-        'updatePassword'
-    ]);
-
-    // Update face data
-    Route::post('/profile/face', [
-        ProfileController::class,
-        'updateFace'
-    ]);
+    /*
+    |--------------------------------------------------------------------------
+    | Vehicle References
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/vehicle-types', [VehicleController::class, 'types']);
+    Route::get('/vehicle-brands/by-type/{typeId}', [VehicleController::class, 'brandsByType']);
+    Route::get('/vehicle-models/by-brand/{brandId}', [VehicleController::class, 'modelsByBrand']);
+    Route::post('/vehicle-models', [VehicleController::class, 'storeModel']);
 
     /*
     |--------------------------------------------------------------------------
     | Vehicles
     |--------------------------------------------------------------------------
     */
-
-    // Get all vehicles
     Route::get('/vehicles', [VehicleController::class, 'index']);
-
-    // Get detail vehicle
-    Route::get('/vehicles/{vehicle}', [
-        VehicleController::class,
-        'show'
-    ]);
-
-    // Create vehicle
-    Route::post('/vehicles', [
-        VehicleController::class,
-        'store'
-    ]);
-
-    // Update vehicle
-    Route::post('/vehicles/{vehicle}', [
-        VehicleController::class,
-        'update'
-    ]);
-
-    // Delete vehicle
-    Route::delete('/vehicles/{vehicle}', [
-        VehicleController::class,
-        'destroy'
-    ]);
+    Route::get('/vehicles/{vehicle}', [VehicleController::class, 'show']);
+    Route::post('/vehicles', [VehicleController::class, 'store']);
+    Route::post('/vehicles/{vehicle}', [VehicleController::class, 'update']);
+    Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy']);
 
 });

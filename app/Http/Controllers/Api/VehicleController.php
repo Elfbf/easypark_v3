@@ -5,24 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Vehicle;
+use App\Models\VehicleBrand;
+use App\Models\VehicleModel;
+use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class VehicleController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | List Kendaraan Mahasiswa
-    |--------------------------------------------------------------------------
-    */
-
     public function index(Request $request)
     {
-        $vehicles = Vehicle::with([
-                'type',
-                'brand',
-                'model',
-            ])
+        $vehicles = Vehicle::with(['type', 'brand', 'model'])
             ->where('user_id', $request->user()->id)
             ->latest()
             ->get();
@@ -33,27 +26,16 @@ class VehicleController extends Controller
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Detail Kendaraan
-    |--------------------------------------------------------------------------
-    */
-
     public function show(Request $request, Vehicle $vehicle)
     {
         if ($vehicle->user_id !== $request->user()->id) {
-
             return response()->json([
                 'success' => false,
                 'message' => 'Kendaraan tidak ditemukan.',
             ], 403);
         }
 
-        $vehicle->load([
-            'type',
-            'brand',
-            'model',
-        ]);
+        $vehicle->load(['type', 'brand', 'model']);
 
         return response()->json([
             'success' => true,
@@ -61,118 +43,66 @@ class VehicleController extends Controller
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Tambah Kendaraan
-    |--------------------------------------------------------------------------
-    */
-
     public function store(Request $request)
     {
         $request->validate([
-
-            'vehicle_type_id'   => 'required|exists:vehicle_types,id',
-            'vehicle_brand_id'  => 'required|exists:vehicle_brands,id',
-            'vehicle_model_id'  => 'nullable|exists:vehicle_models,id',
-
-            'plate_number'      => 'required|string|max:20|unique:vehicles,plate_number',
-            'color'             => 'nullable|string|max:100',
-
-            'vehicle_photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'stnk_photo'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-
+            'vehicle_type_id'  => 'required|exists:vehicle_types,id',
+            'vehicle_brand_id' => 'required|exists:vehicle_brands,id',
+            'vehicle_model_id' => 'nullable|exists:vehicle_models,id',
+            'plate_number'     => 'required|string|max:20|unique:vehicles,plate_number',
+            'color'            => 'nullable|string|max:100',
+            'vehicle_photo'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'stnk_photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $vehiclePhotoPath = null;
         $stnkPhotoPath = null;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Upload Vehicle Photo
-        |--------------------------------------------------------------------------
-        */
-
         if ($request->hasFile('vehicle_photo')) {
-
             $vehiclePhotoPath = $request->file('vehicle_photo')
                 ->store('vehicles/photos', 'public');
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Upload STNK Photo
-        |--------------------------------------------------------------------------
-        */
-
         if ($request->hasFile('stnk_photo')) {
-
             $stnkPhotoPath = $request->file('stnk_photo')
                 ->store('vehicles/stnk', 'public');
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Create Vehicle
-        |--------------------------------------------------------------------------
-        */
-
         $vehicle = Vehicle::create([
-
-            'user_id'           => $request->user()->id,
-
-            'vehicle_type_id'   => $request->vehicle_type_id,
-            'vehicle_brand_id'  => $request->vehicle_brand_id,
-            'vehicle_model_id'  => $request->vehicle_model_id,
-
-            'plate_number'      => strtoupper($request->plate_number),
-            'color'             => $request->color,
-
-            'vehicle_photo'     => $vehiclePhotoPath,
-            'stnk_photo'        => $stnkPhotoPath,
-
-            'is_parked'         => false,
-            'parked_at'         => null,
-            'is_active'         => true,
+            'user_id'          => $request->user()->id,
+            'vehicle_type_id'  => $request->vehicle_type_id,
+            'vehicle_brand_id' => $request->vehicle_brand_id,
+            'vehicle_model_id' => $request->vehicle_model_id,
+            'plate_number'     => strtoupper($request->plate_number),
+            'color'            => $request->color,
+            'vehicle_photo'    => $vehiclePhotoPath,
+            'stnk_photo'       => $stnkPhotoPath,
+            'is_parked'        => false,
+            'parked_at'        => null,
+            'is_active'        => true,
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
-
         ActivityLog::create([
-            'user_id' => $request->user()->id,
-            'module' => 'Vehicle API',
-            'activity' => 'create_vehicle',
+            'user_id'     => $request->user()->id,
+            'module'      => 'Vehicle API',
+            'activity'    => 'create_vehicle',
             'description' => 'Menambahkan kendaraan ' . $vehicle->plate_number,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'url' => $request->url(),
-            'method' => $request->method(),
+            'ip_address'  => $request->ip(),
+            'user_agent'  => $request->userAgent(),
+            'url'         => $request->url(),
+            'method'      => $request->method(),
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Kendaraan berhasil ditambahkan.',
-            'vehicle' => $vehicle->load([
-                'type',
-                'brand',
-                'model',
-            ]),
+            'vehicle' => $vehicle->load(['type', 'brand', 'model']),
         ]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Kendaraan
-    |--------------------------------------------------------------------------
-    */
 
     public function update(Request $request, Vehicle $vehicle)
     {
         if ($vehicle->user_id !== $request->user()->id) {
-
             return response()->json([
                 'success' => false,
                 'message' => 'Kendaraan tidak ditemukan.',
@@ -180,136 +110,66 @@ class VehicleController extends Controller
         }
 
         $request->validate([
-
-            'vehicle_type_id'   => 'required|exists:vehicle_types,id',
-            'vehicle_brand_id'  => 'required|exists:vehicle_brands,id',
-            'vehicle_model_id'  => 'nullable|exists:vehicle_models,id',
-
-            'plate_number'      => 'required|string|max:20|unique:vehicles,plate_number,' . $vehicle->id,
-            'color'             => 'nullable|string|max:100',
-
-            'vehicle_photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'stnk_photo'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-
+            'vehicle_type_id'  => 'required|exists:vehicle_types,id',
+            'vehicle_brand_id' => 'required|exists:vehicle_brands,id',
+            'vehicle_model_id' => 'nullable|exists:vehicle_models,id',
+            'plate_number'     => 'required|string|max:20|unique:vehicles,plate_number,' . $vehicle->id,
+            'color'            => 'nullable|string|max:100',
+            'vehicle_photo'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'stnk_photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Update Vehicle Photo
-        |--------------------------------------------------------------------------
-        */
-
         $vehiclePhotoPath = $vehicle->vehicle_photo;
-
         if ($request->hasFile('vehicle_photo')) {
-
-            if (
-                $vehicle->vehicle_photo &&
-                Storage::disk('public')->exists($vehicle->vehicle_photo)
-            ) {
-
+            if ($vehicle->vehicle_photo && Storage::disk('public')->exists($vehicle->vehicle_photo)) {
                 Storage::disk('public')->delete($vehicle->vehicle_photo);
             }
-
             $vehiclePhotoPath = $request->file('vehicle_photo')
                 ->store('vehicles/photos', 'public');
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Update STNK Photo
-        |--------------------------------------------------------------------------
-        */
-
         $stnkPhotoPath = $vehicle->stnk_photo;
-
         if ($request->hasFile('stnk_photo')) {
-
-            if (
-                $vehicle->stnk_photo &&
-                Storage::disk('public')->exists($vehicle->stnk_photo)
-            ) {
-
+            if ($vehicle->stnk_photo && Storage::disk('public')->exists($vehicle->stnk_photo)) {
                 Storage::disk('public')->delete($vehicle->stnk_photo);
             }
-
             $stnkPhotoPath = $request->file('stnk_photo')
                 ->store('vehicles/stnk', 'public');
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Update Vehicle
-        |--------------------------------------------------------------------------
-        */
-
         $vehicle->update([
-
-            'vehicle_type_id'   => $request->vehicle_type_id,
-            'vehicle_brand_id'  => $request->vehicle_brand_id,
-            'vehicle_model_id'  => $request->vehicle_model_id,
-
-            'plate_number'      => strtoupper($request->plate_number),
-            'color'             => $request->color,
-
-            'vehicle_photo'     => $vehiclePhotoPath,
-            'stnk_photo'        => $stnkPhotoPath,
+            'vehicle_type_id'  => $request->vehicle_type_id,
+            'vehicle_brand_id' => $request->vehicle_brand_id,
+            'vehicle_model_id' => $request->vehicle_model_id,
+            'plate_number'     => strtoupper($request->plate_number),
+            'color'            => $request->color,
+            'vehicle_photo'    => $vehiclePhotoPath,
+            'stnk_photo'       => $stnkPhotoPath,
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Kendaraan berhasil diperbarui.',
-            'vehicle' => $vehicle->fresh()->load([
-                'type',
-                'brand',
-                'model',
-            ]),
+            'vehicle' => $vehicle->fresh()->load(['type', 'brand', 'model']),
         ]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Hapus Kendaraan
-    |--------------------------------------------------------------------------
-    */
 
     public function destroy(Request $request, Vehicle $vehicle)
     {
         if ($vehicle->user_id !== $request->user()->id) {
-
             return response()->json([
                 'success' => false,
                 'message' => 'Kendaraan tidak ditemukan.',
             ], 403);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Delete Files
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $vehicle->vehicle_photo &&
-            Storage::disk('public')->exists($vehicle->vehicle_photo)
-        ) {
-
+        if ($vehicle->vehicle_photo && Storage::disk('public')->exists($vehicle->vehicle_photo)) {
             Storage::disk('public')->delete($vehicle->vehicle_photo);
         }
 
-        if (
-            $vehicle->stnk_photo &&
-            Storage::disk('public')->exists($vehicle->stnk_photo)
-        ) {
-
+        if ($vehicle->stnk_photo && Storage::disk('public')->exists($vehicle->stnk_photo)) {
             Storage::disk('public')->delete($vehicle->stnk_photo);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Delete Vehicle
-        |--------------------------------------------------------------------------
-        */
 
         $vehicle->delete();
 
@@ -317,5 +177,60 @@ class VehicleController extends Controller
             'success' => true,
             'message' => 'Kendaraan berhasil dihapus.',
         ]);
+    }
+
+    // vehicle_brands tidak punya vehicle_type_id — kembalikan semua brand
+    public function types()
+    {
+        $types = VehicleType::orderBy('name')->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $types,
+        ]);
+    }
+
+    public function brandsByType(int $typeId)
+    {
+        // vehicle_brands tidak punya vehicle_type_id di migration
+        // kembalikan semua brand
+        $brands = VehicleBrand::orderBy('name')->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $brands,
+        ]);
+    }
+
+    public function modelsByBrand(int $brandId)
+    {
+        $models = VehicleModel::where('vehicle_brand_id', $brandId)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $models,
+        ]);
+    }
+
+    // vehicle_models tidak punya vehicle_type_id di migration
+    public function storeModel(Request $request)
+    {
+        $request->validate([
+            'name'             => 'required|string|max:100',
+            'vehicle_brand_id' => 'required|exists:vehicle_brands,id',
+        ]);
+
+        $model = VehicleModel::firstOrCreate([
+            'name'             => $request->name,
+            'vehicle_brand_id' => $request->vehicle_brand_id,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Model kendaraan berhasil disimpan.',
+            'data'    => $model,
+        ], 201);
     }
 }
