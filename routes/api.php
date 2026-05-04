@@ -5,13 +5,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\VehicleController;
-
+use App\Http\Controllers\Api\ScanPlatController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 */
-
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/scan-plat', [ScanPlatController::class, 'terima']); // tambah ini
 /*
 |--------------------------------------------------------------------------
 | Public Routes
