@@ -10,12 +10,35 @@ use Illuminate\Support\Facades\Storage;
 
 class ScanPlatController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Helper — cari path face photo berdasarkan user_id
+    | Support format lama: {user_id}.jpg
+    | Support format baru: {user_id}_{nama}.jpg
+    |--------------------------------------------------------------------------
+    */
+    private function findFacePath(int $userId): ?string
+    {
+        $files = Storage::disk('private')->files('faces');
+
+        return collect($files)->first(function ($file) use ($userId) {
+            $basename = basename($file);
+            return $basename === $userId . '.jpg'
+                || str_starts_with($basename, $userId . '_');
+        });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Terima plat dari Python
+    |--------------------------------------------------------------------------
+    */
     public function terima(Request $request)
     {
         $token = "KIOSK-PLAT";
         $plat  = strtoupper(trim($request->plat));
 
-        $history = Cache::get('plat_history_' . $token, []);
+        $history   = Cache::get('plat_history_' . $token, []);
         $history[] = $plat;
 
         if (count($history) > 5) {
@@ -27,13 +50,13 @@ class ScanPlatController extends Controller
         $counts = array_count_values($history);
         arsort($counts);
 
-        $best = array_key_first($counts);
+        $best      = array_key_first($counts);
         $bestCount = $counts[$best];
 
         if ($bestCount < 3) {
             return response()->json([
                 'status' => 'collecting',
-                'plat' => $best,
+                'plat'   => $best,
                 'muncul' => $bestCount,
             ]);
         }
@@ -44,43 +67,54 @@ class ScanPlatController extends Controller
             ->first();
 
         if (!$vehicle || !$vehicle->user) {
+            Cache::forget('plat_history_' . $token);
             return response()->json([
                 'status' => 'not_found',
-                'plat' => $best,
-                'pesan' => 'Kendaraan tidak terdaftar',
+                'plat'   => $best,
+                'pesan'  => 'Kendaraan tidak terdaftar',
             ]);
         }
 
         $user = $vehicle->user;
 
-        // foto di: storage/app/private/faces/{user_id}.jpg
-        $facePath = 'faces/' . $user->id . '.jpg';
-        $hasFace = Storage::disk('private')->exists($facePath);
+        // ✅ Support format lama dan baru
+        $facePath = $this->findFacePath($user->id);
+        $hasFace  = $facePath !== null;
+
+        Cache::forget('plat_history_' . $token);
 
         return response()->json([
-            'status' => 'found',
-            'plat' => $best,
-            'muncul' => $bestCount,
-            'vehicle_id' => $vehicle->id,
-            'user_id' => $user->id,
-            'has_face' => $hasFace,
-            'face_photo_url' => $hasFace ? url('/api/face-photo/' . $user->id) : null,
+            'status'          => 'found',
+            'plat'            => $best,
+            'muncul'          => $bestCount,
+            'vehicle_id'      => $vehicle->id,
+            'user_id'         => $user->id,
+            'has_face'        => $hasFace,
+            'face_photo_url'  => $hasFace
+                ? url('/api/face-photo/' . $user->id)
+                : null,
             'mahasiswa' => [
-                'nama' => $user->name,
+                'nama'    => $user->name,
                 'nim_nip' => $user->nim_nip ?? '-',
             ],
             'kendaraan' => [
-                'plat' => $vehicle->plate_number,
-                'warna' => $vehicle->color,
+                'plat'   => $vehicle->plate_number,
+                'warna'  => $vehicle->color,
             ],
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Download face photo — untuk Python
+    |--------------------------------------------------------------------------
+    */
     public function getFacePhoto(int $userId)
     {
-        $facePath = 'faces/' . $userId . '.jpg';
+        // ✅ Support format lama dan baru
+        $facePath = $this->findFacePath($userId);
 
-        if (!Storage::disk('private')->exists($facePath)) {
+        if (!$facePath) {
             return response()->json([
                 'success' => false,
                 'message' => 'Face photo tidak ditemukan.',

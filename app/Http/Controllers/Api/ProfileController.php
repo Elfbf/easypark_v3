@@ -104,82 +104,69 @@ class ProfileController extends Controller
 
     public function updateFace(Request $request)
     {
-        $request->validate([
+    $request->validate([
+        'face_photo' => [
+            'required',
+            'image',
+            'mimes:jpg,jpeg,png',
+            'max:2048'
+        ],
+        'face_embedding' => [
+            'nullable',
+            'string'
+        ],
+    ]);
 
-            'face_photo' => [
-                'required',
-                'image',
-                'mimes:jpg,jpeg,png',
-                'max:2048'
-            ],
+    $user = $request->user();
 
-            'face_embedding' => [
-                'nullable',
-                'string'
-            ],
+    /*
+    |--------------------------------------------------------------------------
+    | Delete Old Face Photo
+    |--------------------------------------------------------------------------
+    */
 
-        ]);
+    // Hapus format lama: {user_id}.jpg
+    $oldPath = 'faces/' . $user->id . '.jpg';
+    if (Storage::disk('private')->exists($oldPath)) {
+        Storage::disk('private')->delete($oldPath);
+    }
 
-        $user = $request->user();
+    // Hapus format baru kalau sudah pernah upload sebelumnya
+    if ($user->face_photo && Storage::disk('private')->exists($user->face_photo)) {
+        Storage::disk('private')->delete($user->face_photo);
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Delete Old Face Photo
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Save Face Photo — format: {user_id}_{nama}.jpg
+    |--------------------------------------------------------------------------
+    */
 
-        $oldPath = 'faces/' . $user->id . '.jpg';
+    $nama         = str_replace(' ', '_', $user->name);
+    $fileName     = $user->id . '_' . $nama . '.jpg';
 
-        if (Storage::disk('private')->exists($oldPath)) {
+    $facePhotoPath = $request->file('face_photo')
+        ->storeAs('faces', $fileName, 'private');
 
-            Storage::disk('private')->delete($oldPath);
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | Update Face Data
+    |--------------------------------------------------------------------------
+    */
 
-        /*
-        |--------------------------------------------------------------------------
-        | Save Face Photo
-        |--------------------------------------------------------------------------
-        */
+    $user->update([
+        'face_photo'      => $facePhotoPath,
+        'face_embedding'  => $request->face_embedding,
+    ]);
 
-        $facePhotoPath = $request->file('face_photo')
-            ->storeAs(
-
-                'faces',
-
-                $user->id . '.jpg',
-
-                'private'
-            );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Update Face Data
-        |--------------------------------------------------------------------------
-        */
-
-        $user->update([
-
-            'face_photo' => $facePhotoPath,
-
-            // vector AI embedding
-            'face_embedding' => $request->face_embedding,
-        ]);
-
-        return response()->json([
-
-            'success' => true,
-
-            'message' => 'Data wajah berhasil diperbarui.',
-
-            'data' => [
-
-                'face_photo' => $facePhotoPath,
-
-                'has_embedding' => !empty(
-                    $user->face_embedding
-                ),
-            ]
-        ]);
+    return response()->json([
+        'success' => true,
+        'message' => 'Data wajah berhasil diperbarui.',
+        'data'    => [
+            'face_photo'    => $facePhotoPath,
+            'has_embedding' => !empty($user->face_embedding),
+        ]
+    ]);
     }
 
     /*
