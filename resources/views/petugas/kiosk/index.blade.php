@@ -85,7 +85,7 @@
                         <div class="role-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="1.8" style="width:24px;height:24px;"><path d="M22 10L12 4 2 10l10 6 10-6z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                         </div>
-                        <div><div class="role-label">Mahasiswa</div><div class="role-desc">Verifikasi wajah<br>+ plat nomor</div></div>
+                        <div><div class="role-label">Mahasiswa</div><div class="role-desc">Scan plat nomor<br>+ verifikasi wajah</div></div>
                     </button>
                     <button onclick="chooseRole('tamu')" class="role-btn">
                         <div class="role-icon">
@@ -99,41 +99,17 @@
                 </div>
             </div>
 
-            {{-- S1M: Scan Wajah --}}
+            {{-- ✅ S1M: PLAT DULU (bukan wajah) --}}
             <div class="kscreen" id="s1m">
                 <div class="step-bar">
-                    <button class="back-btn" onclick="showScreen('s0')">← Kembali</button>
-                    <div class="steps"><div class="step done"></div><div class="step-line done"></div><div class="step"></div><div class="step-line"></div><div class="step"></div></div>
-                </div>
-                <div style="text-align:center;">
-                    <div class="screen-title">Scan Wajah</div>
-                    <div class="screen-sub">Hadapkan wajah ke kamera dengan jelas</div>
-                    <div class="cam-box" style="width:220px;height:220px;margin:0 auto 16px;">
-                        <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
-                        <div style="width:72px;height:72px;border-radius:50%;background:#E8F0FB;display:flex;align-items:center;justify-content:center;animation:facePulse 1.8s ease-in-out infinite;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="1.5" style="width:34px;height:34px;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-                        </div>
-                        <div class="scan-line"></div>
+                    <button class="back-btn" onclick="stopPolling(); showScreen('s0')">← Kembali</button>
+                    <div class="steps">
+                        <div class="step done"></div>
+                        <div class="step-line"></div>
+                        <div class="step"></div>
+                        <div class="step-line"></div>
+                        <div class="step"></div>
                     </div>
-                    <div class="btn-row">
-                        <button class="btn-out" onclick="showScreen('s0')">Batal</button>
-                        <button class="btn-prim" onclick="simulateFaceScan()">Ambil Foto</button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- S1.5M: Processing --}}
-            <div class="kscreen" id="s15m" style="text-align:center;padding:3.5rem 0;">
-                <div style="width:46px;height:46px;border:3px solid #E8F0FB;border-top-color:#1A4BAD;border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 18px;"></div>
-                <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:#181D35;margin-bottom:5px;">Memproses wajah...</div>
-                <div style="font-size:12.5px;color:#8A93AE;">Sedang memverifikasi identitas mahasiswa</div>
-            </div>
-
-            {{-- S2M: Input Plat Mahasiswa --}}
-            <div class="kscreen" id="s2m">
-                <div class="step-bar">
-                    <button class="back-btn" onclick="showScreen('s1m')">← Kembali</button>
-                    <div class="steps"><div class="step done"></div><div class="step-line done"></div><div class="step done"></div><div class="step-line"></div><div class="step"></div></div>
                 </div>
                 <div style="text-align:center;">
                     <div class="screen-title">Scan Plat Nomor</div>
@@ -148,8 +124,46 @@
                     <input type="text" id="plateM" class="plate-input" placeholder="B 1234 XYZ" maxlength="12" oninput="this.value=this.value.toUpperCase()">
                     <div style="font-size:11.5px;color:#8A93AE;margin:.6rem 0 1.2rem;">Ketik plat nomor jika scan tidak berhasil</div>
                     <div class="btn-row">
-                        <button class="btn-out" onclick="showScreen('s1m')">Kembali</button>
+                        <button class="btn-out" onclick="stopPolling(); showScreen('s0')">Batal</button>
                         <button class="btn-prim" onclick="submitPlateM()">Verifikasi →</button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- S1.5M: Processing plat --}}
+            <div class="kscreen" id="s15m" style="text-align:center;padding:3.5rem 0;">
+                <div style="width:46px;height:46px;border:3px solid #E8F0FB;border-top-color:#1A4BAD;border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 18px;"></div>
+                <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:#181D35;margin-bottom:5px;">Memverifikasi plat...</div>
+                <div style="font-size:12.5px;color:#8A93AE;">Sedang mencari data kendaraan</div>
+            </div>
+
+            {{-- ✅ S2M: WAJAH KEDUA (bukan plat) --}}
+            <div class="kscreen" id="s2m">
+                <div class="step-bar">
+                    <button class="back-btn" onclick="showScreen('s1m'); startPolling()">← Kembali</button>
+                    <div class="steps">
+                        <div class="step done"></div>
+                        <div class="step-line done"></div>
+                        <div class="step done"></div>
+                        <div class="step-line"></div>
+                        <div class="step"></div>
+                    </div>
+                </div>
+                <div style="text-align:center;">
+                    <div class="screen-title">Scan Wajah</div>
+                    <div class="screen-sub" id="faceSubText">Hadapkan wajah ke kamera dengan jelas</div>
+                    <div class="cam-box" style="width:220px;height:220px;margin:0 auto 16px;">
+                        <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+                        <div style="width:72px;height:72px;border-radius:50%;background:#E8F0FB;display:flex;align-items:center;justify-content:center;animation:facePulse 1.8s ease-in-out infinite;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#1A4BAD" stroke-width="1.5" style="width:34px;height:34px;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        </div>
+                        <div class="scan-line"></div>
+                    </div>
+                    {{-- Info mahasiswa dari plat --}}
+                    <div id="faceInfoBox" style="display:none;background:#E8F0FB;border-radius:8px;padding:8px 16px;margin-bottom:12px;font-size:12.5px;color:#1A4BAD;font-weight:600;"></div>
+                    <div class="btn-row">
+                        <button class="btn-out" onclick="showScreen('s1m'); startPolling()">Kembali</button>
+                        <button class="btn-prim" id="faceBtn" onclick="doFaceScan()">Ambil Foto</button>
                     </div>
                 </div>
             </div>
@@ -158,7 +172,13 @@
             <div class="kscreen" id="s3m">
                 <div class="step-bar">
                     <button class="back-btn" onclick="showScreen('s2m')">← Kembali</button>
-                    <div class="steps"><div class="step done"></div><div class="step-line done"></div><div class="step done"></div><div class="step-line done"></div><div class="step done"></div></div>
+                    <div class="steps">
+                        <div class="step done"></div>
+                        <div class="step-line done"></div>
+                        <div class="step done"></div>
+                        <div class="step-line done"></div>
+                        <div class="step done"></div>
+                    </div>
                 </div>
                 <div class="screen-title" style="text-align:center;margin-bottom:16px;">Konfirmasi Data</div>
                 <div class="info-card">
@@ -171,7 +191,8 @@
                     </div>
                     <div class="info-row"><div class="info-lbl">Plat Nomor</div><div id="plateMDisplay" class="info-val mono"></div></div>
                     <div class="info-row alt"><div class="info-lbl">Warna</div><div id="mWarnaDisplay" class="info-val">-</div></div>
-                    <div class="info-row"><div class="info-lbl">Waktu Masuk</div><div id="mEntryTime" class="info-val mono small"></div></div>
+                    <div class="info-row"><div class="info-lbl">Verifikasi Wajah</div><div id="mFaceStatus" class="info-val"></div></div>
+                    <div class="info-row alt"><div class="info-lbl">Waktu Masuk</div><div id="mEntryTime" class="info-val mono small"></div></div>
                 </div>
                 <div class="btn-row">
                     <button class="btn-out" onclick="resetKiosk()">Batal</button>
@@ -179,7 +200,7 @@
                 </div>
             </div>
 
-            {{-- S1T: Input Plat Tamu --}}
+            {{-- S1T: Input Plat Tamu (tidak berubah) --}}
             <div class="kscreen" id="s1t">
                 <div class="step-bar">
                     <button class="back-btn" onclick="showScreen('s0')">← Kembali</button>
@@ -204,7 +225,7 @@
                 </div>
             </div>
 
-            {{-- S2T: Konfirmasi Tamu --}}
+            {{-- S2T: Konfirmasi Tamu (tidak berubah) --}}
             <div class="kscreen" id="s2t">
                 <div class="step-bar">
                     <button class="back-btn" onclick="showScreen('s1t')">← Kembali</button>
@@ -229,7 +250,7 @@
                 </div>
             </div>
 
-            {{-- Success --}}
+            {{-- Success (tidak berubah) --}}
             <div class="kscreen" id="sSuccess" style="text-align:center;">
                 <div style="width:58px;height:58px;border-radius:50%;background:#ECFDF3;border:1.5px solid #6CE9A6;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#027A48" stroke-width="2.5" style="width:26px;height:26px;"><polyline points="20 6 9 17 4 12"/></svg>
@@ -252,56 +273,48 @@
 
 <script>
 let currentToken = 'KIOSK-PLAT';
-let foundData = null;
-let autoTimer = null;
+let foundData    = null;
 let scanInterval = null;
+let faceVerified = false; // ✅ track status wajah
 
 // ── Live Clock ────────────────────────────────────────────────
-(function(){ 
-    const el=document.getElementById('liveClock');
+(function(){
+    const el = document.getElementById('liveClock');
     function tick(){
-        const now=new Date();
-        el.textContent=now.toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})+' · '+now.toLocaleTimeString('id-ID');
+        const now = new Date();
+        el.textContent = now.toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})
+            + ' · ' + now.toLocaleTimeString('id-ID');
     }
     tick();
-    setInterval(tick,1000);
+    setInterval(tick, 1000);
 })();
 
 // ── Screen navigation ─────────────────────────────────────────
 function showScreen(id){
-    document.querySelectorAll('.kscreen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.kscreen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
 
 // ── Role selection ────────────────────────────────────────────
 function chooseRole(role){
     stopPolling();
+    faceVerified = false;
 
     if(role === 'mahasiswa'){
+        // ✅ PLAT DULU — langsung ke s1m dan mulai polling
         showScreen('s1m');
+        startPolling();
     } else {
         showScreen('s1t');
-
-        setTimeout(()=>{
-            startPollingTamu();
-        }, 300);
+        setTimeout(() => startPollingTamu(), 300);
     }
 }
 
-// ── Face scan simulate ────────────────────────────────────────
-function simulateFaceScan(){
-    showScreen('s15m');
-    setTimeout(()=>{
-        showScreen('s2m');
-        startPolling(); // mulai polling setelah scan wajah
-    }, 2200);
-}
-
-// ── Polling ke cek-plat ───────────────────────────────────────
+// ── ✅ Polling mahasiswa — cari plat dulu ─────────────────────
 function startPolling(){
     stopPolling();
 
-    scanInterval = setInterval(()=>{
+    scanInterval = setInterval(() => {
         fetch('/petugas/kiosk/cek-plat')
         .then(r => r.json())
         .then(data => {
@@ -309,79 +322,156 @@ function startPolling(){
 
             if(data.status === 'collecting'){
                 const scanText = document.getElementById('scanResultM');
-                const input = document.getElementById('plateM');
-
+                const input    = document.getElementById('plateM');
                 if(scanText) scanText.textContent = data.plat ?? '-';
-                if(input) input.value = data.plat ?? '';
+                if(input)    input.value = data.plat ?? '';
             }
 
             else if(data.status === 'found'){
                 stopPolling();
-
                 foundData = data;
 
                 const scanText = document.getElementById('scanResultM');
-                const input = document.getElementById('plateM');
-
+                const input    = document.getElementById('plateM');
                 if(scanText) scanText.textContent = data.plat ?? '-';
-                if(input) input.value = data.plat ?? '';
+                if(input)    input.value = data.plat ?? '';
 
-                autoSubmitPlateM(data);
+                // ✅ Plat ditemukan → tampilkan s15m sebentar → lanjut ke wajah
+                showScreen('s15m');
+                setTimeout(() => goToFaceScan(data), 1500);
             }
 
             else if(data.status === 'not_found'){
                 stopPolling();
-
                 const scanText = document.getElementById('scanResultM');
-                const input = document.getElementById('plateM');
-
+                const input    = document.getElementById('plateM');
                 if(scanText) scanText.textContent = data.plat ?? '-';
-                if(input) input.value = data.plat ?? '';
-
+                if(input)    input.value = data.plat ?? '';
                 showToast('❌ Kendaraan tidak terdaftar: ' + (data.plat ?? '-'));
             }
-
-            else if(data.status === 'waiting'){
-                console.log('Menunggu scan...');
-            }
         })
-        .catch(err => {
-            console.log('Polling error:', err);
-        });
+        .catch(err => console.log('Polling error:', err));
     }, 2000);
 }
 
+// ── ✅ Setelah plat ditemukan → siapkan screen wajah ──────────
+function goToFaceScan(data){
+    const hasFace = data.has_face ?? false;
+    const nama    = data.mahasiswa?.nama ?? '-';
+
+    // Tampilkan info mahasiswa di screen wajah
+    const infoBox = document.getElementById('faceInfoBox');
+    infoBox.textContent = nama + ' — ' + (data.mahasiswa?.nim_nip ?? '-');
+    infoBox.style.display = 'block';
+
+    if(!hasFace){
+        // Tidak punya foto wajah — skip verifikasi wajah, langsung konfirmasi
+        faceVerified = false;
+        document.getElementById('faceSubText').textContent = 'Foto wajah tidak tersedia — lewati verifikasi';
+        document.getElementById('faceBtn').textContent = 'Lewati →';
+        document.getElementById('faceBtn').onclick = () => goToConfirm(false);
+    } else {
+        faceVerified = false;
+        document.getElementById('faceSubText').textContent = 'Hadapkan wajah ke kamera dengan jelas';
+        document.getElementById('faceBtn').textContent = 'Ambil Foto';
+        document.getElementById('faceBtn').onclick = doFaceScan;
+    }
+
+    showScreen('s2m');
+}
+
+// ── ✅ Face scan (simulate — Python handles actual verification) ──
+function doFaceScan(){
+    showToast('📸 Mengambil foto wajah...');
+
+    // Di implementasi nyata, Python yang verifikasi wajah
+    // Di sini kita simulate sukses setelah 2 detik
+    setTimeout(() => {
+        faceVerified = true;
+        goToConfirm(true);
+    }, 2000);
+}
+
+// ── ✅ Ke konfirmasi dengan status wajah ──────────────────────
+function goToConfirm(faceMatch){
+    if(!foundData) return;
+
+    const data = foundData;
+
+    document.getElementById('plateMDisplay').textContent = data.plat;
+    document.getElementById('mNamaDisplay').textContent  = (data.mahasiswa?.nama ?? '-') + ' — ' + (data.mahasiswa?.nim_nip ?? '-');
+    document.getElementById('mWarnaDisplay').textContent = data.kendaraan?.warna ?? '-';
+    document.getElementById('mEntryTime').textContent    = nowString();
+
+    // ✅ Status wajah
+    const faceStatusEl = document.getElementById('mFaceStatus');
+    if(faceMatch){
+        faceStatusEl.innerHTML = '<span class="badge-green">✓ Terverifikasi</span>';
+    } else {
+        faceStatusEl.innerHTML = '<span class="badge-blue">— Dilewati</span>';
+    }
+
+    showScreen('s3m');
+}
+
+// ── Manual submit mahasiswa ───────────────────────────────────
+function submitPlateM(){
+    const val = document.getElementById('plateM').value.trim().toUpperCase();
+    if(!val){ showToast('Masukkan plat nomor terlebih dahulu'); return; }
+
+    showToast('Memverifikasi...');
+    stopPolling();
+
+    const payload = JSON.stringify({ token: currentToken, plat: val, confidence: 1.0, manual: true });
+    const opts = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: payload
+    };
+
+    Promise.all([
+        fetch('/petugas/kiosk/scan-plat', opts),
+        fetch('/petugas/kiosk/scan-plat', opts),
+        fetch('/petugas/kiosk/scan-plat', opts),
+    ])
+    .then(r => r[2].json())
+    .then(data => {
+        if(data.status === 'found'){
+            foundData = data;
+            showScreen('s15m');
+            setTimeout(() => goToFaceScan(data), 1500);
+        } else {
+            showToast('❌ Kendaraan tidak terdaftar: ' + val);
+        }
+    })
+    .catch(() => showToast('❌ Gagal konek ke server'));
+}
+
+// ── Tamu polling (tidak berubah) ──────────────────────────────
 function startPollingTamu(){
     stopPolling();
 
-    scanInterval = setInterval(()=>{
+    scanInterval = setInterval(() => {
         fetch('/petugas/kiosk/cek-plat')
         .then(r => r.json())
         .then(data => {
-            console.log('cek-plat tamu:', data);
-
             if(data.plat){
                 const plat = data.plat ?? '';
-
                 document.getElementById('scanResultT').textContent = plat;
                 document.getElementById('plateT').value = plat;
 
-                // Untuk tamu, sekali kebaca langsung lanjut konfirmasi
                 if(data.status === 'collecting' || data.status === 'found' || data.status === 'not_found'){
                     stopPolling();
-
                     document.getElementById('plateTDisplay').textContent = plat;
                     document.getElementById('tEntryTime').textContent = nowString();
-
-                    setTimeout(()=>{
-                        showScreen('s2t');
-                    }, 700);
+                    setTimeout(() => showScreen('s2t'), 700);
                 }
             }
         })
-        .catch(err => {
-            console.log('Polling tamu error:', err);
-        });
+        .catch(err => console.log('Polling tamu error:', err));
     }, 1000);
 }
 
@@ -392,58 +482,22 @@ function stopPolling(){
     }
 }
 
-// ── Auto submit dari polling ──────────────────────────────────
-function autoSubmitPlateM(data){
-    foundData = data;
-    document.getElementById('plateMDisplay').textContent = data.plat;
-    document.getElementById('mNamaDisplay').textContent = data.mahasiswa.nama + ' — ' + data.mahasiswa.nim_nip;
-    document.getElementById('mWarnaDisplay').textContent = data.kendaraan.warna;
-    document.getElementById('mEntryTime').textContent = nowString();
-    showScreen('s3m');
-}
-
-// ── Manual submit mahasiswa ───────────────────────────────────
-function submitPlateM(){
-    const val=document.getElementById('plateM').value.trim().toUpperCase();
-    if(!val){showToast('Masukkan plat nomor terlebih dahulu');return;}
-    showToast('Memverifikasi...');
-    const payload=JSON.stringify({token:currentToken,plat:val,confidence:1.0,manual:true});
-    const opts={method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content},body:payload};
-    Promise.all([
-        fetch('/petugas/kiosk/scan-plat',opts),
-        fetch('/petugas/kiosk/scan-plat',opts),
-        fetch('/petugas/kiosk/scan-plat',opts),
-    ])
-    .then(r=>r[2].json())
-    .then(data=>{
-        if(data.status==='found'){
-            stopPolling();
-            autoSubmitPlateM(data);
-        } else {
-            showToast('❌ Kendaraan tidak terdaftar: '+val);
-        }
-    }).catch(()=>showToast('❌ Gagal konek ke server'));
-}
-
 // ── Tamu submit ───────────────────────────────────────────────
 function submitPlateT(){
-    const val=document.getElementById('plateT').value.trim().toUpperCase();
-    if(!val){showToast('Masukkan plat nomor terlebih dahulu');return;}
-    document.getElementById('plateTDisplay').textContent=val;
-    document.getElementById('tEntryTime').textContent=nowString();
+    const val = document.getElementById('plateT').value.trim().toUpperCase();
+    if(!val){ showToast('Masukkan plat nomor terlebih dahulu'); return; }
+    document.getElementById('plateTDisplay').textContent = val;
+    document.getElementById('tEntryTime').textContent = nowString();
     showScreen('s2t');
 }
 
-// ── Confirm entry ─────────────────────────────────────────────
+// ── Confirm entry (tidak berubah) ─────────────────────────────
 function confirmEntry(role){
     const plate = role === 'mahasiswa'
         ? document.getElementById('plateMDisplay').textContent.trim()
         : document.getElementById('plateTDisplay').textContent.trim();
 
-    if(!plate){
-        showToast('Plat nomor kosong');
-        return;
-    }
+    if(!plate){ showToast('Plat nomor kosong'); return; }
 
     fetch('/petugas/kiosk/konfirmasi-masuk', {
         method: 'POST',
@@ -451,85 +505,81 @@ function confirmEntry(role){
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({
-            role: role,
-            plate_number: plate
-        })
+        body: JSON.stringify({ role: role, plate_number: plate })
     })
     .then(async r => {
         const data = await r.json();
-
-        if(!r.ok){
-            throw data;
-        }
-
+        if(!r.ok) throw data;
         return data;
     })
     .then(data => {
         const ticket = 'EP-' + String(data.record_id).padStart(6, '0');
-
-        document.getElementById('ticketNum').textContent = ticket;
+        document.getElementById('ticketNum').textContent  = ticket;
         document.getElementById('ticketTime').textContent = nowString();
 
         if(role === 'mahasiswa'){
             const nama = foundData ? foundData.mahasiswa.nama : '-';
-
             document.getElementById('successTitle').textContent = 'Selamat datang, ' + nama + '!';
-            document.getElementById('successSub').textContent = 'Kendaraan ' + plate + ' berhasil masuk';
-            document.getElementById('successNote').textContent = 'Data parkir berhasil disimpan.';
+            document.getElementById('successSub').textContent   = 'Kendaraan ' + plate + ' berhasil masuk';
+            document.getElementById('successNote').textContent  = faceVerified
+                ? 'Identitas terverifikasi. Data parkir berhasil disimpan.'
+                : 'Data parkir berhasil disimpan.';
         } else {
             document.getElementById('successTitle').textContent = 'Tiket berhasil dibuat!';
-            document.getElementById('successSub').textContent = 'Kendaraan ' + plate + ' berhasil masuk';
-            document.getElementById('successNote').textContent = 'Data tamu berhasil disimpan.';
+            document.getElementById('successSub').textContent   = 'Kendaraan ' + plate + ' berhasil masuk';
+            document.getElementById('successNote').textContent  = 'Data tamu berhasil disimpan.';
         }
 
         showScreen('sSuccess');
         startAutoReset();
     })
-    .catch(err => {
-        showToast('❌ ' + (err.message ?? 'Gagal menyimpan parkir'));
-    });
+    .catch(err => showToast('❌ ' + (err.message ?? 'Gagal menyimpan parkir')));
 }
 
 // ── Auto reset ────────────────────────────────────────────────
 let autoTimerr;
 function startAutoReset(){
-    let sec=15;
-    const el=document.getElementById('autoResetLabel');
-    el.textContent='Layar akan reset dalam '+sec+' detik';
+    let sec = 15;
+    const el = document.getElementById('autoResetLabel');
+    el.textContent = 'Layar akan reset dalam ' + sec + ' detik';
     clearInterval(autoTimerr);
-    autoTimerr=setInterval(()=>{
+    autoTimerr = setInterval(() => {
         sec--;
-        el.textContent='Layar akan reset dalam '+sec+' detik';
-        if(sec<=0){clearInterval(autoTimerr);resetKiosk();}
-    },1000);
+        el.textContent = 'Layar akan reset dalam ' + sec + ' detik';
+        if(sec <= 0){ clearInterval(autoTimerr); resetKiosk(); }
+    }, 1000);
 }
 
 function resetKiosk(){
     clearInterval(autoTimerr);
     stopPolling();
-    foundData=null;
-    document.getElementById('plateM').value='';
-    document.getElementById('plateT').value='';
+    foundData    = null;
+    faceVerified = false;
+    document.getElementById('plateM').value = '';
+    document.getElementById('plateT').value = '';
+    document.getElementById('faceInfoBox').style.display = 'none';
     showScreen('s0');
 }
 
 // ── Helpers ───────────────────────────────────────────────────
 function nowString(){
-    return new Date().toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'})+' WIB';
+    return new Date().toLocaleString('id-ID',{
+        day:'2-digit', month:'short', year:'numeric',
+        hour:'2-digit', minute:'2-digit', second:'2-digit'
+    }) + ' WIB';
 }
 
 function showToast(msg){
-    let el=document.getElementById('_kToast');
+    let el = document.getElementById('_kToast');
     if(!el){
-        el=document.createElement('div');
-        el.id='_kToast';
-        el.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#181D35;color:#fff;font-size:13px;padding:10px 20px;border-radius:10px;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;';
+        el = document.createElement('div');
+        el.id = '_kToast';
+        el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#181D35;color:#fff;font-size:13px;padding:10px 20px;border-radius:10px;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;';
         document.body.appendChild(el);
     }
-    el.textContent=msg;
-    el.style.opacity='1';
+    el.textContent = msg;
+    el.style.opacity = '1';
     clearTimeout(el._t);
-    el._t=setTimeout(()=>{el.style.opacity='0';},2400);
+    el._t = setTimeout(() => { el.style.opacity = '0'; }, 2400);
 }
 </script>
