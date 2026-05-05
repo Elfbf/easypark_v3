@@ -198,7 +198,7 @@
                     <input type="text" id="plateT" class="plate-input" placeholder="B 1234 XYZ" maxlength="12" oninput="this.value=this.value.toUpperCase()">
                     <div style="font-size:11.5px;color:#8A93AE;margin:.6rem 0 1.2rem;">Ketik plat nomor jika scan tidak berhasil</div>
                     <div class="btn-row">
-                        <button class="btn-out" onclick="showScreen('s0')">Kembali</button>
+                        <button class="btn-out" onclick="stopPolling(); showScreen('s0')">Kembali</button>
                         <button class="btn-prim" onclick="submitPlateT()">Lanjutkan →</button>
                     </div>
                 </div>
@@ -275,10 +275,16 @@ function showScreen(id){
 
 // ── Role selection ────────────────────────────────────────────
 function chooseRole(role){
-    if(role==='mahasiswa'){
+    stopPolling();
+
+    if(role === 'mahasiswa'){
         showScreen('s1m');
     } else {
         showScreen('s1t');
+
+        setTimeout(()=>{
+            startPollingTamu();
+        }, 300);
     }
 }
 
@@ -301,7 +307,6 @@ function startPolling(){
         .then(data => {
             console.log('cek-plat:', data);
 
-            // Saat baru kebaca 1-2x, tetap auto-fill input
             if(data.status === 'collecting'){
                 const scanText = document.getElementById('scanResultM');
                 const input = document.getElementById('plateM');
@@ -310,7 +315,6 @@ function startPolling(){
                 if(input) input.value = data.plat ?? '';
             }
 
-            // Saat sudah voting cukup / kendaraan ditemukan
             else if(data.status === 'found'){
                 stopPolling();
 
@@ -325,7 +329,6 @@ function startPolling(){
                 autoSubmitPlateM(data);
             }
 
-            // Kalau plat terbaca tapi tidak ada di DB
             else if(data.status === 'not_found'){
                 stopPolling();
 
@@ -338,7 +341,6 @@ function startPolling(){
                 showToast('❌ Kendaraan tidak terdaftar: ' + (data.plat ?? '-'));
             }
 
-            // Kalau masih waiting, jangan ngapa-ngapain
             else if(data.status === 'waiting'){
                 console.log('Menunggu scan...');
             }
@@ -347,6 +349,40 @@ function startPolling(){
             console.log('Polling error:', err);
         });
     }, 2000);
+}
+
+function startPollingTamu(){
+    stopPolling();
+
+    scanInterval = setInterval(()=>{
+        fetch('/petugas/kiosk/cek-plat')
+        .then(r => r.json())
+        .then(data => {
+            console.log('cek-plat tamu:', data);
+
+            if(data.plat){
+                const plat = data.plat ?? '';
+
+                document.getElementById('scanResultT').textContent = plat;
+                document.getElementById('plateT').value = plat;
+
+                // Untuk tamu, sekali kebaca langsung lanjut konfirmasi
+                if(data.status === 'collecting' || data.status === 'found' || data.status === 'not_found'){
+                    stopPolling();
+
+                    document.getElementById('plateTDisplay').textContent = plat;
+                    document.getElementById('tEntryTime').textContent = nowString();
+
+                    setTimeout(()=>{
+                        showScreen('s2t');
+                    }, 700);
+                }
+            }
+        })
+        .catch(err => {
+            console.log('Polling tamu error:', err);
+        });
+    }, 1000);
 }
 
 function stopPolling(){
@@ -400,24 +436,59 @@ function submitPlateT(){
 
 // ── Confirm entry ─────────────────────────────────────────────
 function confirmEntry(role){
-    const plate=role==='mahasiswa'
-        ?document.getElementById('plateMDisplay').textContent
-        :document.getElementById('plateTDisplay').textContent;
-    const ticket='EP-'+Date.now().toString().slice(-6);
-    document.getElementById('ticketNum').textContent=ticket;
-    document.getElementById('ticketTime').textContent=nowString();
-    if(role==='mahasiswa'){
-        const nama=foundData?foundData.mahasiswa.nama:'-';
-        document.getElementById('successTitle').textContent='Selamat datang, '+nama+'!';
-        document.getElementById('successSub').textContent='Kendaraan '+plate+' berhasil masuk';
-        document.getElementById('successNote').textContent='Wajah & kendaraan terverifikasi. Selamat belajar!';
-    } else {
-        document.getElementById('successTitle').textContent='Tiket berhasil dibuat!';
-        document.getElementById('successSub').textContent='Kendaraan '+plate+' berhasil masuk';
-        document.getElementById('successNote').textContent='Simpan nomor tiket untuk proses keluar.';
+    const plate = role === 'mahasiswa'
+        ? document.getElementById('plateMDisplay').textContent.trim()
+        : document.getElementById('plateTDisplay').textContent.trim();
+
+    if(!plate){
+        showToast('Plat nomor kosong');
+        return;
     }
-    showScreen('sSuccess');
-    startAutoReset();
+
+    fetch('/petugas/kiosk/konfirmasi-masuk', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            role: role,
+            plate_number: plate
+        })
+    })
+    .then(async r => {
+        const data = await r.json();
+
+        if(!r.ok){
+            throw data;
+        }
+
+        return data;
+    })
+    .then(data => {
+        const ticket = 'EP-' + String(data.record_id).padStart(6, '0');
+
+        document.getElementById('ticketNum').textContent = ticket;
+        document.getElementById('ticketTime').textContent = nowString();
+
+        if(role === 'mahasiswa'){
+            const nama = foundData ? foundData.mahasiswa.nama : '-';
+
+            document.getElementById('successTitle').textContent = 'Selamat datang, ' + nama + '!';
+            document.getElementById('successSub').textContent = 'Kendaraan ' + plate + ' berhasil masuk';
+            document.getElementById('successNote').textContent = 'Data parkir berhasil disimpan.';
+        } else {
+            document.getElementById('successTitle').textContent = 'Tiket berhasil dibuat!';
+            document.getElementById('successSub').textContent = 'Kendaraan ' + plate + ' berhasil masuk';
+            document.getElementById('successNote').textContent = 'Data tamu berhasil disimpan.';
+        }
+
+        showScreen('sSuccess');
+        startAutoReset();
+    })
+    .catch(err => {
+        showToast('❌ ' + (err.message ?? 'Gagal menyimpan parkir'));
+    });
 }
 
 // ── Auto reset ────────────────────────────────────────────────
