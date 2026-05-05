@@ -294,27 +294,58 @@ function simulateFaceScan(){
 // ── Polling ke cek-plat ───────────────────────────────────────
 function startPolling(){
     stopPolling();
+
     scanInterval = setInterval(()=>{
         fetch('/petugas/kiosk/cek-plat')
-        .then(r=>r.json())
-        .then(data=>{
-            if(data.status==='collecting'){
-                // Update tampilan kotak scan
-                const el = document.getElementById('scanResultM');
-                if(el) el.textContent = data.plat;
-            } else if(data.status==='found'){
+        .then(r => r.json())
+        .then(data => {
+            console.log('cek-plat:', data);
+
+            // Saat baru kebaca 1-2x, tetap auto-fill input
+            if(data.status === 'collecting'){
+                const scanText = document.getElementById('scanResultM');
+                const input = document.getElementById('plateM');
+
+                if(scanText) scanText.textContent = data.plat ?? '-';
+                if(input) input.value = data.plat ?? '';
+            }
+
+            // Saat sudah voting cukup / kendaraan ditemukan
+            else if(data.status === 'found'){
                 stopPolling();
+
                 foundData = data;
-                // Auto isi input
-                document.getElementById('plateM').value = data.plat;
-                // Auto submit
+
+                const scanText = document.getElementById('scanResultM');
+                const input = document.getElementById('plateM');
+
+                if(scanText) scanText.textContent = data.plat ?? '-';
+                if(input) input.value = data.plat ?? '';
+
                 autoSubmitPlateM(data);
-            } else if(data.status==='not_found'){
+            }
+
+            // Kalau plat terbaca tapi tidak ada di DB
+            else if(data.status === 'not_found'){
                 stopPolling();
-                showToast('❌ Kendaraan tidak terdaftar: ' + data.plat);
+
+                const scanText = document.getElementById('scanResultM');
+                const input = document.getElementById('plateM');
+
+                if(scanText) scanText.textContent = data.plat ?? '-';
+                if(input) input.value = data.plat ?? '';
+
+                showToast('❌ Kendaraan tidak terdaftar: ' + (data.plat ?? '-'));
+            }
+
+            // Kalau masih waiting, jangan ngapa-ngapain
+            else if(data.status === 'waiting'){
+                console.log('Menunggu scan...');
             }
         })
-        .catch(()=>{}); // silent fail
+        .catch(err => {
+            console.log('Polling error:', err);
+        });
     }, 2000);
 }
 
