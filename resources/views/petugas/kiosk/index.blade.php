@@ -631,7 +631,7 @@ function doFaceScan(){
     setTimeout(()=>{
         const isMatch = Math.random()>0.35; // simulasi — hapus saat pakai API asli
         handleFaceResult(isMatch);
-    },1500);
+    },12000); // 12 detik — cukup untuk API face recognition proses
 }
 
 function handleFaceResult(isMatch){
