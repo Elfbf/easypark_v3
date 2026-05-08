@@ -440,7 +440,7 @@ function validatePlate(raw){
 }
 function formatPlate(raw){
     const m = raw.replace(/\s+/g,'').toUpperCase().match(PLATE_RE);
-    return m ? (m[1]+m[2]+m[3]) : raw.toUpperCase().replace(/\s+/g,'');
+    return m ? (m[1]+' '+m[2]+' '+m[3]) : raw.toUpperCase();
 }
 
 // ── Live clock ─────────────────────────────────────────────────
