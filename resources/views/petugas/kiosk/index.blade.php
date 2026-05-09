@@ -627,11 +627,16 @@ function openFaceScan(data){
 function doFaceScan(){
     showLoading('Memindai wajah...','Mencocokkan dengan data terdaftar');
 
-    // TODO: ganti setTimeout ini dengan fetch ke API face recognition asli
-    setTimeout(()=>{
-        const isMatch = Math.random()>0.35; // simulasi — hapus saat pakai API asli
-        handleFaceResult(isMatch);
-    },12000); // 12 detik — cukup untuk API face recognition proses
+    fetch(`/api/face-check?user_id=${foundData.user_id}`)
+    .then(r=>r.json())
+    .then(data=>{
+        if(data.status==='waiting'){
+            setTimeout(doFaceScan, 1000);
+            return;
+        }
+        handleFaceResult(data.match);
+    })
+    .catch(()=>{ showScreen('sWajah'); });
 }
 
 function handleFaceResult(isMatch){

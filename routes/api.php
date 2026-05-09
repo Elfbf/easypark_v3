@@ -19,8 +19,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/scan-plat', [ScanPlatController::class, 'terima']);
 // Face photo untuk Python — public tapi pakai token fixed
 Route::get('/face-photo/{userId}', [ScanPlatController::class, 'getFacePhoto']);
-Route::post('/scan-plat', [ScanPlatController::class, 'terima']);
-Route::get('/face-photo/{userId}', [ScanPlatController::class, 'getFacePhoto']);
+Route::post('/face-result', [ScanPlatController::class, 'terimaFace']);
+Route::get('/face-check',   [ScanPlatController::class, 'cekFace']);
 
 /*
 |--------------------------------------------------------------------------

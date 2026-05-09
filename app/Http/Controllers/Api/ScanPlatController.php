@@ -126,4 +126,25 @@ class ScanPlatController extends Controller
             ['Content-Type' => 'image/jpeg']
         );
     }
+
+    public function terimaFace(Request $request)
+    {
+        Cache::put('face_result_KIOSK-PLAT', [
+            'user_id'  => $request->face_user_id,
+            'verified' => $request->face_verified ?? false,
+        ], 60);
+
+        return response()->json(['status' => 'ok']);
+    }
+
+    public function cekFace(Request $request)
+    {
+        $result = Cache::get('face_result_KIOSK-PLAT');
+        if (!$result) return response()->json(['status' => 'waiting']);
+
+        $match = (int)$result['user_id'] === (int)$request->user_id;
+        Cache::forget('face_result_KIOSK-PLAT');
+
+        return response()->json(['status' => 'done', 'match' => $match]);
+    }
 }
