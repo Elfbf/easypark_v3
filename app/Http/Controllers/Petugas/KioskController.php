@@ -70,14 +70,19 @@ class KioskController extends Controller
         $user = $vehicle->user;
 
         // Cek face photo di private storage
-        $facePath = 'faces/' . $user->id . '.jpg';
-        $hasFace  = Storage::disk('private')->exists($facePath);
+        $files    = Storage::disk('private')->files('faces');
+        $facePath = collect($files)->first(fn($f) =>
+            basename($f) === $user->id . '.jpg' ||
+            str_starts_with(basename($f), $user->id . '_')
+        );
+        $hasFace  = $facePath !== null;
 
         return response()->json([
             'status'   => 'found',
             'plat'     => $best,
             'aksi'     => $aksi,
             'has_face' => $hasFace,
+            'user_id'  => $user->id,
             'record_id' => $sedangParkir?->id,
             'mahasiswa' => [
                 'nama'    => $user->name,
@@ -148,15 +153,20 @@ class KioskController extends Controller
         }
 
         $user = $vehicle->user;
-
-        $facePath = 'faces/' . $user->id . '.jpg';
-        $hasFace  = Storage::disk('private')->exists($facePath);
+// ✅ scanPlat — ganti jadi ini
+$files    = Storage::disk('private')->files('faces');
+$facePath = collect($files)->first(fn($f) =>
+    basename($f) === $user->id . '.jpg' ||
+    str_starts_with(basename($f), $user->id . '_')
+);
+$hasFace  = $facePath !== null;
 
         return response()->json([
             'status'   => 'found',
             'plat'     => $best,
             'aksi'     => $aksi,
             'has_face' => $hasFace,
+            'user_id'  => $user->id,
             'record_id' => $sedangParkir?->id,
             'mahasiswa' => [
                 'nama'    => $user->name,

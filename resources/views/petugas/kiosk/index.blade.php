@@ -300,7 +300,7 @@
 
             <div class="btn-row">
                 <button class="btn-out" onclick="resetKiosk()">Batal</button>
-                <button class="btn-prim" id="btnFace" onclick="doFaceScan()">Ambil Foto</button>
+                <button class="btn-prim" id="btnFace" onclick="doFaceScan()" style="display:none;">Ambil Foto</button>
             </div>
         </div>
     </div>
@@ -622,16 +622,22 @@ function openFaceScan(data){
         ? 'Verifikasi wajah sebelum keluar' : 'Hadapkan wajah ke kamera';
     updateFaceRetryBar();
     showScreen('sWajah');
+
+    // ✅ Flush cache face lama dulu, baru mulai polling
+    fetch('/api/face-reset', {
+        method: 'POST',
+        headers: {'X-CSRF-TOKEN': csrfToken()}
+    }).finally(()=> setTimeout(()=>doFaceScan(false), 800));
 }
 
-function doFaceScan(){
-    showLoading('Memindai wajah...','Mencocokkan dengan data terdaftar');
+function doFaceScan(showLoad = true){
+    if(showLoad) showLoading('Memindai wajah...','Mencocokkan dengan data terdaftar');
 
     fetch(`/api/face-check?user_id=${foundData.user_id}`)
     .then(r=>r.json())
     .then(data=>{
         if(data.status==='waiting'){
-            setTimeout(doFaceScan, 1000);
+            setTimeout(()=>doFaceScan(false), 1000);
             return;
         }
         handleFaceResult(data.match);
@@ -662,8 +668,10 @@ function handleFaceResult(isMatch){
             foundData
         );
     } else {
-        // Kembali ke layar wajah, coba lagi
+        // Kembali ke layar wajah + trigger auto scan lagi
         showScreen('sWajah');
+        updateFaceRetryBar();
+        setTimeout(()=>doFaceScan(false), 800);
     }
 }
 

@@ -142,9 +142,17 @@ class ScanPlatController extends Controller
         $result = Cache::get('face_result_KIOSK-PLAT');
         if (!$result) return response()->json(['status' => 'waiting']);
 
-        $match = (int)$result['user_id'] === (int)$request->user_id;
+        $verified  = (bool)($result['verified'] ?? false);
+$userMatch = (int)$result['user_id'] === (int)$request->user_id;
+$match     = $verified && $userMatch;
         Cache::forget('face_result_KIOSK-PLAT');
 
         return response()->json(['status' => 'done', 'match' => $match]);
+    }
+
+        public function resetFace()
+    {
+        Cache::forget('face_result_KIOSK-PLAT');
+        return response()->json(['status' => 'ok']);
     }
 }
