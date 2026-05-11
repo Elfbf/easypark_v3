@@ -42,7 +42,6 @@ class KioskController extends Controller
             ]);
         }
 
-        // Cek apakah kendaraan sedang parkir (untuk logika masuk/keluar)
         $sedangParkir = ParkingRecord::where('plate_number', $best)
             ->where('status', 'parked')
             ->whereNull('exit_time')
@@ -57,19 +56,17 @@ class KioskController extends Controller
 
         Cache::forget('plat_history_' . $token);
 
-        // Tidak terdaftar → langsung tamu
         if (!$vehicle) {
             return response()->json([
-                'status'   => 'tamu',
-                'plat'     => $best,
-                'aksi'     => $aksi,
+                'status'    => 'tamu',
+                'plat'      => $best,
+                'aksi'      => $aksi,
                 'record_id' => $sedangParkir?->id,
             ]);
         }
 
         $user = $vehicle->user;
 
-        // Cek face photo di private storage
         $files    = Storage::disk('private')->files('faces');
         $facePath = collect($files)->first(fn($f) =>
             basename($f) === $user->id . '.jpg' ||
@@ -78,11 +75,11 @@ class KioskController extends Controller
         $hasFace  = $facePath !== null;
 
         return response()->json([
-            'status'   => 'found',
-            'plat'     => $best,
-            'aksi'     => $aksi,
-            'has_face' => $hasFace,
-            'user_id'  => $user->id,
+            'status'    => 'found',
+            'plat'      => $best,
+            'aksi'      => $aksi,
+            'has_face'  => $hasFace,
+            'user_id'   => $user->id,
             'record_id' => $sedangParkir?->id,
             'mahasiswa' => [
                 'nama'    => $user->name,
@@ -127,7 +124,6 @@ class KioskController extends Controller
             ]);
         }
 
-        // Cek apakah kendaraan sedang parkir (untuk logika masuk/keluar)
         $sedangParkir = ParkingRecord::where('plate_number', $best)
             ->where('status', 'parked')
             ->whereNull('exit_time')
@@ -142,31 +138,30 @@ class KioskController extends Controller
 
         Cache::forget('plat_history_' . $token);
 
-        // Tidak terdaftar → langsung tamu
         if (!$vehicle) {
             return response()->json([
-                'status'   => 'tamu',
-                'plat'     => $best,
-                'aksi'     => $aksi,
+                'status'    => 'tamu',
+                'plat'      => $best,
+                'aksi'      => $aksi,
                 'record_id' => $sedangParkir?->id,
             ]);
         }
 
         $user = $vehicle->user;
-// ✅ scanPlat — ganti jadi ini
-$files    = Storage::disk('private')->files('faces');
-$facePath = collect($files)->first(fn($f) =>
-    basename($f) === $user->id . '.jpg' ||
-    str_starts_with(basename($f), $user->id . '_')
-);
-$hasFace  = $facePath !== null;
+
+        $files    = Storage::disk('private')->files('faces');
+        $facePath = collect($files)->first(fn($f) =>
+            basename($f) === $user->id . '.jpg' ||
+            str_starts_with(basename($f), $user->id . '_')
+        );
+        $hasFace  = $facePath !== null;
 
         return response()->json([
-            'status'   => 'found',
-            'plat'     => $best,
-            'aksi'     => $aksi,
-            'has_face' => $hasFace,
-            'user_id'  => $user->id,
+            'status'    => 'found',
+            'plat'      => $best,
+            'aksi'      => $aksi,
+            'has_face'  => $hasFace,
+            'user_id'   => $user->id,
             'record_id' => $sedangParkir?->id,
             'mahasiswa' => [
                 'nama'    => $user->name,
@@ -182,10 +177,6 @@ $hasFace  = $facePath !== null;
         ]);
     }
 
-    /**
-     * Konfirmasi masuk — selalu create record baru (termasuk tamu).
-     * Tidak ada pengecekan already_parked karena logika sudah di frontend.
-     */
     public function konfirmasiMasuk(Request $request)
     {
         $request->validate([
@@ -201,15 +192,23 @@ $hasFace  = $facePath !== null;
             ->first();
 
         $record = ParkingRecord::create([
-            'vehicle_id'    => $vehicle?->id,
-            'plate_number'  => $plat,
-            'face_photo'    => null,
-            'entry_time'    => now(),
-            'exit_time'     => null,
-            'status'        => 'parked',
+            'vehicle_id'   => $vehicle?->id,
+            'plate_number' => $plat,
+            'face_photo'   => null,
+            'entry_time'   => now(),
+            'exit_time'    => null,
+            'status'       => 'parked',
         ]);
 
         Cache::forget('plat_history_KIOSK-PLAT');
+
+        // ── Set flag: kiosk baru saja konfirmasi ──────────────
+        Cache::put('kiosk_just_confirmed', [
+            'aksi'         => 'masuk',
+            'plate_number' => $plat,
+            'record_id'    => $record->id,
+            'at'           => now()->toISOString(),
+        ], now()->addSeconds(30)); // flag hidup 30 detik supaya landing.user sempat baca
 
         return response()->json([
             'status'       => 'success',
@@ -220,9 +219,6 @@ $hasFace  = $facePath !== null;
         ]);
     }
 
-    /**
-     * Konfirmasi keluar — update record yang sedang parkir.
-     */
     public function konfirmasiKeluar(Request $request)
     {
         $request->validate([
@@ -240,6 +236,14 @@ $hasFace  = $facePath !== null;
         ]);
 
         Cache::forget('plat_history_KIOSK-PLAT');
+
+        // ── Set flag: kiosk baru saja konfirmasi ──────────────
+        Cache::put('kiosk_just_confirmed', [
+            'aksi'         => 'keluar',
+            'plate_number' => $record->plate_number,
+            'record_id'    => $record->id,
+            'at'           => now()->toISOString(),
+        ], now()->addSeconds(30));
 
         return response()->json([
             'status'       => 'success',
