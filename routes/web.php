@@ -38,7 +38,11 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 
 // LANDING
 Route::get('/', [LandingController::class, 'index']);
-
+Route::prefix('user')->group(function () {
+    Route::get('/', [LandingController::class, 'user']);        // /user
+    Route::get('/cek-slot', [LandingController::class, 'cekSlot']); // /user/cek-slot
+    Route::get('/info', [LandingController::class, 'info']);    // /user/info
+});
 
 // FORGOT PASSWORD OTP
 Route::middleware('guest')->group(function () {

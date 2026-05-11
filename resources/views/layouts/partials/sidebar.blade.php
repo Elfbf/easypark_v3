@@ -20,11 +20,16 @@
         </div>
     </div>
 
-    @php
-        $nameParts = explode(' ', Auth::user()->name);
+@php
+    if(Auth::check()) {
+        $nameParts = explode(' ', Auth::user()->name ?? Auth::user()->nama);
         $initials = strtoupper($nameParts[0][0] ?? '') . strtoupper(end($nameParts)[0] ?? '');
-        $role = Auth::user()->role->name;
-    @endphp
+        $role = Auth::user()->role->name ?? 'guest';
+    } else {
+        $initials = 'GU';
+        $role = 'guest';
+    }
+@endphp
 
     <!-- User — klik ke halaman profil -->
     <a href="{{ route('profile.show') }}" class="sb-user {{ request()->routeIs('profile.*') ? 'sb-user-active' : '' }}"
@@ -36,8 +41,8 @@
         onmouseover="this.style.background='rgba(255,255,255,0.06)'"
         onmouseout="this.style.background='{{ request()->routeIs('profile.*') ? 'rgba(255,255,255,0.08)' : 'transparent' }}'">
         <div class="sb-avatar" style="flex-shrink:0;">
-            @if (Auth::user()->photo)
-                <img src="{{ asset('storage/' . Auth::user()->photo) }}"
+            @if (optional(Auth::user())->photo)
+                <img src="{{ asset('storage/' . optional(Auth::user())->photo) }}">
                     style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
             @else
                 {{ $initials }}
@@ -45,7 +50,7 @@
         </div>
         <div style="flex:1;min-width:0;">
             <div class="sb-uname" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                {{ Auth::user()->name }}
+                {{ Auth::check() ? (Auth::user()->name ?? Auth::user()->nama ?? 'User') : 'Guest' }}
             </div>
             <div class="sb-urole">{{ ucfirst($role) }}</div>
         </div>
