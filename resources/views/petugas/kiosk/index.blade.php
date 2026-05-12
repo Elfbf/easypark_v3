@@ -409,8 +409,7 @@
             <div id="ticketNum" style="font-family:monospace;font-size:22px;font-weight:700;color:#181D35;letter-spacing:.1em;"></div>
             <div id="ticketTime" style="font-size:11px;color:#8A93AE;margin-top:4px;"></div>
         </div>
-        <div><button onclick="resetKiosk()" class="btn-prim" style="margin:0 auto;">Selesai — Kembali ke Awal</button></div>
-        <div style="margin-top:14px;font-size:11.5px;color:#D4D9E8;" id="autoResetLabel"></div>
+        <div style="margin-top:14px;font-size:13px;font-weight:600;color:#8A93AE;" id="autoResetLabel"></div>
     </div>
 
     </div>{{-- /.max-w --}}
@@ -426,6 +425,9 @@ let plateRetry   = 0;
 const MAX_RETRY  = 3;
 let scanInterval = null;
 let autoReset    = null;
+let autoSubmitTimer = null;
+let autoSubmitCount = 3;
+let faceTimeout  = null;
 
 // Reason yang akan dikirim ke server saat officer confirm
 // agar bisa di-log (opsional)
@@ -470,6 +472,10 @@ function showLoading(title='Memverifikasi...', sub='Mohon tunggu sebentar'){
 }
 
 // ── Plate input ────────────────────────────────────────────────
+function clearAutoSubmit(){
+    if(autoSubmitTimer){ clearInterval(autoSubmitTimer); autoSubmitTimer=null; }
+}
+
 function onPlateInput(el){
     el.value = el.value.toUpperCase();
     const val = el.value.trim();
@@ -478,15 +484,28 @@ function onPlateInput(el){
     const msg = document.getElementById('plateValidMsg');
     const prv = document.getElementById('ocrPreview');
 
+    clearAutoSubmit();
+
     el.classList.toggle('valid',   ok && val.length>0);
     el.classList.toggle('invalid', !ok && val.length>2);
 
     if(ok){
         prv.textContent = formatPlate(val);
         prv.className   = 'plate-display valid';
-        msg.textContent = '✓ Format plat valid';
-        msg.style.color = '#027A48';
         btn.disabled    = false;
+
+        autoSubmitCount = 3;
+        msg.textContent = `✓ Format valid — submit otomatis dalam ${autoSubmitCount}s (atau klik Verifikasi)`;
+        msg.style.color = '#1A4BAD';
+        autoSubmitTimer = setInterval(()=>{
+            autoSubmitCount--;
+            if(autoSubmitCount > 0){
+                msg.textContent = `✓ Format valid — submit otomatis dalam ${autoSubmitCount}s (atau klik Verifikasi)`;
+            } else {
+                clearAutoSubmit();
+                submitPlate();
+            }
+        }, 1000);
     } else {
         prv.textContent = val.length ? val : '– – – –';
         prv.className   = 'plate-display'+(val.length>2?' invalid':'');
@@ -553,7 +572,6 @@ function processResult(data){
 
     if(data.status==='tamu'){
         if(aksi === 'keluar'){
-            // Ada record parkir aktif tapi tidak terdaftar → langsung officer
             goOfficer(
                 data.plat,
                 aksi,
@@ -561,7 +579,6 @@ function processResult(data){
                 `Plat <strong>${data.plat}</strong> tercatat sedang parkir namun tidak terdaftar dalam database.`
             );
         } else {
-            // Masuk, tidak terdaftar — cek retry
             plateRetry++;
             updatePlateRetryBar();
 
@@ -573,13 +590,15 @@ function processResult(data){
                     `Plat <strong>${data.plat}</strong> tidak ditemukan dalam database setelah ${MAX_RETRY} percobaan.`
                 );
             } else {
+                // Kembali ke s1, langsung auto-submit ulang plat yang sama
                 showScreen('s1');
-                startPolling();
+                const inp = document.getElementById('plateInput');
+                inp.value = data.plat;
+                onPlateInput(inp); // trigger countdown 3 detik → auto-submit
             }
         }
 
     } else if(data.status==='found'){
-        // Reset retry plat karena ketemu
         plateRetry = 0;
         updatePlateRetryBar();
 
@@ -613,6 +632,10 @@ function updatePlateRetryBar(){
 }
 
 // ── Face scan ──────────────────────────────────────────────────
+function clearFaceTimeout(){
+    if(faceTimeout){ clearTimeout(faceTimeout); faceTimeout=null; }
+}
+
 function openFaceScan(data){
     faceRetry    = 0;
     faceVerified = null;
@@ -622,6 +645,17 @@ function openFaceScan(data){
         ? 'Verifikasi wajah sebelum keluar' : 'Hadapkan wajah ke kamera';
     updateFaceRetryBar();
     showScreen('sWajah');
+
+    clearFaceTimeout();
+    faceTimeout = setTimeout(()=>{
+        goOfficer(
+            data.plat,
+            data.aksi ?? 'masuk',
+            'no-face',
+            `Tidak ada respons verifikasi wajah dalam 10 detik untuk kendaraan <strong>${data.plat}</strong> atas nama <strong>${data.mahasiswa?.nama??'-'}</strong>. Konfirmasi petugas diperlukan.`,
+            data
+        );
+    }, 10000);
 
     // ✅ Flush cache face lama dulu, baru mulai polling
     fetch('/api/face-reset', {
@@ -646,6 +680,7 @@ function doFaceScan(showLoad = true){
 }
 
 function handleFaceResult(isMatch){
+    clearFaceTimeout();
     faceVerified = isMatch;
 
     if(isMatch){
@@ -804,7 +839,7 @@ function showSuccess(res, aksi){
     }
     showScreen('sSuccess');
 
-    let sisa=15;
+    let sisa=3;
     const lbl=document.getElementById('autoResetLabel');
     lbl.textContent=`Kembali ke awal dalam ${sisa} detik...`;
     autoReset=setInterval(()=>{
@@ -817,6 +852,8 @@ function showSuccess(res, aksi){
 // ── Reset ──────────────────────────────────────────────────────
 function resetKiosk(){
     stopPolling();
+    clearAutoSubmit();
+    clearFaceTimeout();
     if(autoReset){clearInterval(autoReset);autoReset=null;}
     foundData=null; faceVerified=null; faceRetry=0; plateRetry=0; officerReason='';
 
