@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\ScanPlatController;
-
+use App\Http\Controllers\Api\ParkingRecordController;
 
 
 
@@ -21,7 +21,7 @@ Route::post('/scan-plat', [ScanPlatController::class, 'terima']);
 Route::get('/face-photo/{userId}', [ScanPlatController::class, 'getFacePhoto']);
 Route::post('/face-result', [ScanPlatController::class, 'terimaFace']);
 Route::get('/face-check',   [ScanPlatController::class, 'cekFace']);
-
+Route::post('/face-reset',  [ScanPlatController::class, 'resetFace']);
 /*
 |--------------------------------------------------------------------------
 | Protected Routes
@@ -68,4 +68,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/vehicles/{vehicle}', [VehicleController::class, 'update']);
     Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy']);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Parking Records
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/parking-records/history',         [ParkingRecordController::class, 'history']);
+    Route::get('/parking-records/last-status',     [ParkingRecordController::class, 'lastStatus']);
+    Route::get('/parking-records/last-entry-exit', [ParkingRecordController::class, 'lastEntryExit']);
 });
