@@ -38,8 +38,10 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 
 // LANDING
 // LANDING
+Route::get('/', [LandingController::class, 'index']);
+// LANDING
 Route::prefix('user')->group(function () {
-    Route::get('/', [LandingController::class, 'user']);
+   
     Route::get('/cek-slot', [LandingController::class, 'cekSlot']);
     Route::get('/info', [LandingController::class, 'info']);
     Route::get('/kiosk-status', [LandingController::class, 'kioskStatus'])->name('landing.kiosk-status');
