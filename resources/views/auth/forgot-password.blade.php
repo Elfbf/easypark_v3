@@ -433,31 +433,6 @@
 
         .fsub { font-size: 14px; color: var(--n-400); line-height: 1.55; margin-bottom: 24px; }
 
-        /* Role chips — hanya 2 */
-        .chips { display: flex; gap: 8px; margin-bottom: 20px; }
-
-        .chip {
-            padding: 7px 16px;
-            border-radius: 100px;
-            border: 1.5px solid var(--n-200);
-            background: var(--n-50);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--n-600);
-            cursor: pointer;
-            transition: all .18s;
-        }
-
-        .chip:hover { border-color: var(--p-200); background: var(--p-50); color: var(--p-800); }
-
-        .chip.active {
-            border-color: var(--p-600);
-            background: var(--p-50);
-            color: var(--p-800);
-            font-weight: 600;
-        }
-
         .fld { margin-bottom: 18px; }
 
         .fld label { display: block; font-size: 13px; font-weight: 500; color: var(--n-600); margin-bottom: 6px; }
@@ -791,23 +766,16 @@
                     <div id="alert1"></div>
                     <div class="ai">
                         <h2 class="ft">Verifikasi identitas 🔑</h2>
-                        <p class="fsub">Pilih peran Anda dan masukkan email atau ID yang terdaftar di sistem</p>
-                    </div>
-                    <div class="ai">
-                        <p style="font-size:13px;font-weight:500;color:var(--n-600);margin-bottom:10px;">Saya adalah</p>
-                        <div class="chips">
-                            <button class="chip active" data-role="petugas" onclick="pickChip(this)">Petugas</button>
-                            <button class="chip" data-role="admin" onclick="pickChip(this)">Admin</button>
-                        </div>
+                        <p class="fsub">Masukkan email atau ID pengguna yang terdaftar di sistem</p>
                     </div>
                     <div class="fld ai">
-                        <label id="lbl_id" for="ident">Email / ID Petugas</label>
+                        <label for="ident">Email / ID Pengguna</label>
                         <div class="iw">
                             <svg class="iic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                <polyline points="22,6 12,13 2,6" />
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M20 21a8 8 0 10-16 0" />
                             </svg>
-                            <input type="text" id="ident" placeholder="Masukkan email atau ID petugas">
+                            <input type="text" id="ident" placeholder="Masukkan email atau ID pengguna">
                         </div>
                     </div>
                     <div class="is ai">
@@ -816,7 +784,7 @@
                             <line x1="12" y1="8" x2="12" y2="12" />
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
-                        <p id="info1">Kode OTP dikirim ke email yang didaftarkan saat registrasi akun petugas.</p>
+                        <p>Kode OTP akan dikirim ke email yang terdaftar pada akun Anda.</p>
                     </div>
                     <button class="btn ai" id="btnSendOtp" onclick="sendOtp()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -941,28 +909,6 @@
 
     <script>
         const CSRF = document.querySelector('meta[name="csrf-token"]').content;
-
-        const chipCfg = {
-            petugas: {
-                label: 'Email / ID Petugas',
-                ph: 'Masukkan email atau ID petugas',
-                info: 'Kode OTP dikirim ke email yang didaftarkan saat registrasi akun petugas.'
-            },
-            admin: {
-                label: 'Email Admin',
-                ph: 'Masukkan email admin',
-                info: 'Hubungi UPT TIK Polije jika tidak punya akses ke email admin terdaftar.'
-            }
-        };
-
-        function pickChip(b) {
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            b.classList.add('active');
-            const cfg = chipCfg[b.dataset.role];
-            document.getElementById('lbl_id').textContent = cfg.label;
-            document.getElementById('ident').placeholder = cfg.ph;
-            document.getElementById('info1').textContent = cfg.info;
-        }
 
         function go(n) {
             [1, 2, 3, 4].forEach(i => document.getElementById('v' + i).classList.remove('active'));

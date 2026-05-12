@@ -396,100 +396,7 @@
             font-size: 14px;
             color: var(--n-400);
             line-height: 1.55;
-            margin-bottom: 24px;
-        }
-
-        /* Role selector */
-        .role-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--n-600);
-            margin-bottom: 10px;
-        }
-
-        .role-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .role-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 7px;
-            padding: 13px 8px;
-            border: 1.5px solid var(--n-200);
-            border-radius: 12px;
-            background: var(--n-50);
-            cursor: pointer;
-            position: relative;
-            transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
-        }
-
-        .role-btn:hover {
-            border-color: var(--p-200);
-            background: var(--p-50);
-        }
-
-        .role-btn.active {
-            border-color: var(--p-600);
-            background: var(--p-50);
-            box-shadow: 0 0 0 4px rgba(26, 75, 173, 0.1);
-        }
-
-        .role-btn.active .role-check { opacity: 1; }
-
-        .role-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--n-100);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.18s;
-        }
-
-        .role-btn.active .role-icon { background: var(--p-100); }
-
-        .role-icon svg {
-            width: 18px;
-            height: 18px;
-            color: var(--n-400);
-        }
-
-        .role-btn.active .role-icon svg { color: var(--p-800); }
-
-        .role-name {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--n-600);
-            text-align: center;
-        }
-
-        .role-btn.active .role-name { color: var(--p-800); }
-
-        .role-check {
-            position: absolute;
-            top: 7px;
-            right: 7px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--p-600);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.18s;
-        }
-
-        .role-check svg {
-            width: 9px;
-            height: 9px;
-            color: #fff;
+            margin-bottom: 28px;
         }
 
         /* Fields */
@@ -703,7 +610,6 @@
         .ai:nth-child(4) { animation-delay: 0.19s; }
         .ai:nth-child(5) { animation-delay: 0.24s; }
         .ai:nth-child(6) { animation-delay: 0.29s; }
-        .ai:nth-child(7) { animation-delay: 0.34s; }
 
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(14px); }
@@ -806,7 +712,7 @@
             <div class="form-card">
                 <div class="ai">
                     <h2 class="form-title">Masuk ke Sistem 👋</h2>
-                    <p class="form-subtitle">Pilih peran Anda, lalu masukkan kredensial akun</p>
+                    <p class="form-subtitle">Masukkan kredensial akun Anda untuk melanjutkan</p>
                 </div>
 
                 {{-- Global session error --}}
@@ -821,63 +727,21 @@
                     </div>
                 @endif
 
-                <!-- Role selector — hanya Petugas & Admin -->
-                <div class="ai">
-                    <p class="role-label">Login sebagai</p>
-                    <div class="role-grid">
-                        <button type="button"
-                            class="role-btn {{ old('role', 'petugas') === 'petugas' ? 'active' : '' }}"
-                            data-role="petugas" onclick="selectRole(this)">
-                            <div class="role-check">
-                                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="1.5,5 4,7.5 8.5,2.5" />
-                                </svg>
-                            </div>
-                            <div class="role-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                                </svg>
-                            </div>
-                            <span class="role-name">Petugas</span>
-                        </button>
-                        <button type="button"
-                            class="role-btn {{ old('role') === 'admin' ? 'active' : '' }}"
-                            data-role="admin" onclick="selectRole(this)">
-                            <div class="role-check">
-                                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="1.5,5 4,7.5 8.5,2.5" />
-                                </svg>
-                            </div>
-                            <div class="role-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                    <circle cx="12" cy="8" r="4" />
-                                    <path d="M20 21a8 8 0 10-16 0" />
-                                    <path d="M16 19l2 2 4-4" />
-                                </svg>
-                            </div>
-                            <span class="role-name">Admin</span>
-                        </button>
-                    </div>
-                </div>
-
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
-                    <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'petugas') }}">
 
                     <div class="field ai">
-                        <label id="idLabel" for="identifier">
-                            {{ old('role') === 'admin' ? 'Email Admin' : 'ID Petugas' }}
-                        </label>
+                        <label for="identifier">Email / ID Pengguna</label>
                         <div class="input-wrap">
                             <svg class="i-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="5" width="20" height="14" rx="2" />
-                                <path d="M2 10h20" />
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M20 21a8 8 0 10-16 0" />
                             </svg>
-                            <input type="{{ old('role') === 'admin' ? 'email' : 'text' }}"
+                            <input type="text"
                                 id="identifier"
                                 name="identifier"
                                 value="{{ old('identifier') }}"
-                                placeholder="{{ old('role') === 'admin' ? 'admin@polije.ac.id' : 'Masukkan ID petugas' }}"
+                                placeholder="Masukkan email atau ID pengguna"
                                 class="{{ $errors->has('identifier') ? 'is-error' : '' }}"
                                 autocomplete="username"
                                 required>
@@ -936,14 +800,14 @@
                         <a href="forgot-password" class="forgot-link">Lupa password?</a>
                     </div>
 
-                    <button type="submit" class="btn-submit ai" id="submitBtn">
+                    <button type="submit" class="btn-submit ai">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             style="width:18px;height:18px;">
                             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
                             <polyline points="10 17 15 12 10 7" />
                             <line x1="15" y1="12" x2="3" y2="12" />
                         </svg>
-                        Masuk sebagai {{ old('role') === 'admin' ? 'Admin' : 'Petugas' }}
+                        Masuk ke Sistem
                     </button>
 
                     <div class="info-strip ai">
@@ -952,13 +816,7 @@
                             <line x1="12" y1="8" x2="12" y2="12" />
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
-                        <p id="infoText">
-                            @if (old('role') === 'admin')
-                                Akses admin hanya untuk pengelola sistem. Hubungi UPT TIK jika lupa password.
-                            @else
-                                Gunakan ID dan password yang diberikan oleh Admin sistem parkir kampus.
-                            @endif
-                        </p>
+                        <p>Gunakan email atau ID yang telah diberikan oleh pengelola sistem parkir kampus.</p>
                     </div>
                 </form>
             </div>
@@ -967,48 +825,6 @@
     </div>
 
     <script>
-        const roleConfig = {
-            petugas: {
-                label: 'ID Petugas',
-                placeholder: 'Masukkan ID petugas',
-                btnText: 'Masuk sebagai Petugas',
-                info: 'Gunakan ID dan password yang diberikan oleh Admin sistem parkir kampus.',
-                inputType: 'text'
-            },
-            admin: {
-                label: 'Email Admin',
-                placeholder: 'admin@polije.ac.id',
-                btnText: 'Masuk sebagai Admin',
-                info: 'Akses admin hanya untuk pengelola sistem. Hubungi UPT TIK jika lupa password.',
-                inputType: 'email'
-            }
-        };
-
-        function selectRole(btn) {
-            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const role = btn.dataset.role;
-            const cfg = roleConfig[role];
-
-            document.getElementById('roleInput').value = role;
-            document.getElementById('idLabel').textContent = cfg.label;
-
-            const input = document.getElementById('identifier');
-            input.placeholder = cfg.placeholder;
-            input.type = cfg.inputType;
-            input.value = '';
-
-            document.getElementById('submitBtn').innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                    <polyline points="10 17 15 12 10 7"/>
-                    <line x1="15" y1="12" x2="3" y2="12"/>
-                </svg>
-                ${cfg.btnText}`;
-
-            document.getElementById('infoText').textContent = cfg.info;
-        }
-
         function togglePwd(btn) {
             const input = btn.closest('.input-wrap').querySelector('input');
             const icon = btn.querySelector('svg');
@@ -1021,18 +837,6 @@
                 icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
             }
         }
-
-        // Restore active role dari old() value saat ada validation error
-        (function () {
-            const savedRole = document.getElementById('roleInput').value;
-            if (savedRole) {
-                const btn = document.querySelector(`.role-btn[data-role="${savedRole}"]`);
-                if (btn) {
-                    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                }
-            }
-        })();
     </script>
 
 </body>

@@ -20,42 +20,53 @@
         </div>
     </div>
 
-@php
-    if(Auth::check()) {
-        $nameParts = explode(' ', Auth::user()->name ?? Auth::user()->nama);
-        $initials = strtoupper($nameParts[0][0] ?? '') . strtoupper(end($nameParts)[0] ?? '');
-        $role = Auth::user()->role->name ?? 'guest';
-    } else {
-        $initials = 'GU';
-        $role = 'guest';
-    }
-@endphp
+    @php
+        if (Auth::check()) {
+            $nameParts = explode(' ', Auth::user()->name ?? Auth::user()->nama ?? 'User');
+            $initials  = strtoupper($nameParts[0][0] ?? '');
+            $last      = end($nameParts);
+            $initials .= strtoupper($last[0] ?? '');
+            $role      = Auth::user()->role->name ?? 'guest';
+        } else {
+            $initials = 'GU';
+            $role     = 'guest';
+        }
+    @endphp
 
     <!-- User — klik ke halaman profil -->
-    <a href="{{ route('profile.show') }}" class="sb-user {{ request()->routeIs('profile.*') ? 'sb-user-active' : '' }}"
-        style="text-decoration:none;display:flex;align-items:center;gap:10px;
-               margin:0 10px;padding:10px;border-radius:10px;
+    <a href="{{ route('profile.show') }}"
+        class="sb-user {{ request()->routeIs('profile.*') ? 'sb-user-active' : '' }}"
+        style="text-decoration:none; display:flex; align-items:center; gap:10px;
+               margin:0 10px; padding:10px; border-radius:10px;
                border:1px solid {{ request()->routeIs('profile.*') ? 'rgba(255,255,255,0.15)' : 'transparent' }};
                background:{{ request()->routeIs('profile.*') ? 'rgba(255,255,255,0.08)' : 'transparent' }};
-               transition:background .15s,border-color .15s;"
+               transition:background .15s, border-color .15s;"
         onmouseover="this.style.background='rgba(255,255,255,0.06)'"
         onmouseout="this.style.background='{{ request()->routeIs('profile.*') ? 'rgba(255,255,255,0.08)' : 'transparent' }}'">
-        <div class="sb-avatar" style="flex-shrink:0;">
+
+        {{-- Avatar --}}
+        <div class="sb-avatar" style="flex-shrink:0; width:36px; height:36px; border-radius:50%;
+                                      overflow:hidden; display:flex; align-items:center;
+                                      justify-content:center; background:rgba(255,255,255,0.15);
+                                      font-size:13px; font-weight:600; color:#fff;">
             @if (optional(Auth::user())->photo)
-                <img src="{{ asset('storage/' . optional(Auth::user())->photo) }}">
-                    style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                <img src="{{ asset('storage/' . Auth::user()->photo) }}"
+                     alt="{{ Auth::user()->name }}"
+                     style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
             @else
                 {{ $initials }}
             @endif
         </div>
-        <div style="flex:1;min-width:0;">
-            <div class="sb-uname" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+
+        <div style="flex:1; min-width:0;">
+            <div class="sb-uname" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                 {{ Auth::check() ? (Auth::user()->name ?? Auth::user()->nama ?? 'User') : 'Guest' }}
             </div>
             <div class="sb-urole">{{ ucfirst($role) }}</div>
         </div>
+
         <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"
-            style="width:13px;height:13px;flex-shrink:0;">
+            style="width:13px; height:13px; flex-shrink:0;">
             <polyline points="9 18 15 12 9 6" />
         </svg>
     </a>
@@ -65,6 +76,7 @@
 
         {{-- ══ ADMIN ══ --}}
         @if ($role === 'admin')
+
             <div class="sb-section-label">Utama</div>
 
             <a href="{{ route('admin.dashboard') }}"
@@ -212,8 +224,9 @@
                 <span>Parking Records</span>
             </a>
 
-            {{-- ══ PETUGAS ══ --}}
+        {{-- ══ PETUGAS ══ --}}
         @elseif ($role === 'petugas')
+
             <div class="sb-section-label">Utama</div>
 
             <a href="{{ route('petugas.dashboard') }}"
@@ -272,6 +285,7 @@
                 </svg>
                 <span>Parking Records</span>
             </a>
+
         @endif
 
         {{-- ══ SISTEM ══ --}}
@@ -315,8 +329,8 @@
             <div class="lm-actions">
                 <button class="lm-cancel"
                     onclick="document.getElementById('logout-modal').classList.remove('show')">Batal</button>
-                <button class="lm-confirm" onclick="document.getElementById('logout-form').submit()">Ya,
-                    Keluar</button>
+                <button class="lm-confirm"
+                    onclick="document.getElementById('logout-form').submit()">Ya, Keluar</button>
             </div>
         </div>
     </div>
