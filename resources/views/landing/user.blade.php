@@ -158,25 +158,9 @@
             <div class="right-sub">Pastikan wajah Anda terlihat jelas sebelum memasuki area parkir</div>
 
             <div class="steps">
-                <div class="step-item"><div class="step-num">1</div><span>Berdiri di depan kiosk parkir</span></div>
-                <div class="step-item"><div class="step-num">2</div><span>Hadapkan wajah ke kamera selama 3 detik</span></div>
-                <div class="step-item"><div class="step-num">3</div><span>Masukkan plat nomor kendaraan</span></div>
-            </div>
-
-            <a href="{{ url('/user/cek-slot') }}" class="btn">
-                Lihat Rekomendasi Parkir
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="22" height="22">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-            </a>
-
-            <div class="notice">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2" width="24" height="24" style="flex-shrink:0;">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                Verifikasi wajah wajib dilakukan di kiosk sebelum parkir
+                <div class="step-item"><div class="step-num">1</div><span>Tolong menghadap ke kamera di kanan</span></div>
+                <div class="step-item"><div class="step-num">2</div><span>buka jendela atau kaca helm anda</span></div>
+                <div class="step-item"><div class="step-num">3</div><span>tolong sesuaikan posisi kendaraan dengan kamera</span></div>
             </div>
         </div>
     </div>
