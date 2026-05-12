@@ -524,7 +524,7 @@ function startPolling(){
         .then(data=>{
             if(data.status==='collecting' && data.plat){
                 const inp = document.getElementById('plateInput');
-                if(inp && document.activeElement!==inp){
+                if(inp && document.activeElement!==inp && inp.value !== data.plat){
                     inp.value = data.plat;
                     onPlateInput(inp);
                 }
@@ -866,6 +866,11 @@ function resetKiosk(){
     document.getElementById('btnVerif').disabled=true;
     document.getElementById('plateRetryBar').style.display='none';
     document.getElementById('faceRetryBar').style.display='none';
+    // Reset cache plat di server supaya plat lama tidak nongol lagi
+    fetch('/petugas/kiosk/reset-plat', {
+        method:'POST',
+        headers:{'X-CSRF-TOKEN':csrfToken()}
+    }).catch(()=>{});
 
     const wrap=document.getElementById('successIconWrap');
     wrap.style.background='#ECFDF3';wrap.style.borderColor='#6CE9A6';

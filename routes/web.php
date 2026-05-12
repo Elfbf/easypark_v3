@@ -136,7 +136,9 @@ Route::prefix('petugas')
         Route::get('/kiosk/cek-plat', [KioskController::class, 'cekPlat']);
         Route::post('/kiosk/konfirmasi-keluar', [KioskController::class, 'konfirmasiKeluar']);
         Route::post('/kiosk/konfirmasi-masuk', [KioskController::class, 'konfirmasiMasuk'])
-    ->name('petugas.kiosk.konfirmasiMasuk');
+            ->name('petugas.kiosk.konfirmasiMasuk');
+        Route::post('/kiosk/reset-plat', [KioskController::class, 'resetPlat'])
+            ->name('petugas.kiosk.reset-plat');
             
 
         Route::resource('/parking-areas', PetugasParkingAreaController::class)

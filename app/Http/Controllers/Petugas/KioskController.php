@@ -29,10 +29,8 @@ class KioskController extends Controller
             ]);
         }
 
-        $counts = array_count_values($history);
-        arsort($counts);
-        $best      = array_key_first($counts);
-        $bestCount = $counts[$best];
+        $best      = end($history);
+        $bestCount = count($history);
 
         if ($bestCount < 3) {
             return response()->json([
@@ -110,10 +108,8 @@ class KioskController extends Controller
             if (count($history) > 5) array_shift($history);
             Cache::put('plat_history_' . $token, $history, 60);
 
-            $counts = array_count_values($history);
-            arsort($counts);
-            $best      = array_key_first($counts);
-            $bestCount = $counts[$best];
+            $best      = end($history);
+            $bestCount = count($history);
         }
 
         if ($bestCount < 3) {
@@ -175,6 +171,13 @@ class KioskController extends Controller
                 'foto'  => $vehicle->vehicle_photo ?? null,
             ],
         ]);
+    }
+
+    public function resetPlat()
+    {
+        Cache::forget('plat_history_KIOSK-PLAT');
+        Cache::forget('plat_last_seen_KIOSK-PLAT');
+        return response()->json(['status' => 'ok']);
     }
 
     public function konfirmasiMasuk(Request $request)

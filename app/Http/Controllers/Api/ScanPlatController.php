@@ -47,9 +47,8 @@ class ScanPlatController extends Controller
 
         Cache::put('plat_history_' . $token, $history, 60);
 
-        $counts = array_count_values($history);
+        $counts    = array_count_values($history);
         arsort($counts);
-
         $best      = array_key_first($counts);
         $bestCount = $counts[$best];
 
@@ -67,7 +66,6 @@ class ScanPlatController extends Controller
             ->first();
 
         if (!$vehicle || !$vehicle->user) {
-            Cache::forget('plat_history_' . $token);
             return response()->json([
                 'status' => 'not_found',
                 'plat'   => $best,
@@ -75,31 +73,25 @@ class ScanPlatController extends Controller
             ]);
         }
 
-        $user = $vehicle->user;
-
-        // ✅ Support format lama dan baru
+        $user     = $vehicle->user;
         $facePath = $this->findFacePath($user->id);
         $hasFace  = $facePath !== null;
 
-        Cache::forget('plat_history_' . $token);
-
         return response()->json([
-            'status'          => 'found',
-            'plat'            => $best,
-            'muncul'          => $bestCount,
-            'vehicle_id'      => $vehicle->id,
-            'user_id'         => $user->id,
-            'has_face'        => $hasFace,
-            'face_photo_url'  => $hasFace
-                ? url('/api/face-photo/' . $user->id)
-                : null,
+            'status'         => 'found',
+            'plat'           => $best,
+            'muncul'         => $bestCount,
+            'vehicle_id'     => $vehicle->id,
+            'user_id'        => $user->id,
+            'has_face'       => $hasFace,
+            'face_photo_url' => $hasFace ? url('/api/face-photo/' . $user->id) : null,
             'mahasiswa' => [
                 'nama'    => $user->name,
                 'nim_nip' => $user->nim_nip ?? '-',
             ],
             'kendaraan' => [
-                'plat'   => $vehicle->plate_number,
-                'warna'  => $vehicle->color,
+                'plat'  => $vehicle->plate_number,
+                'warna' => $vehicle->color,
             ],
         ]);
     }
