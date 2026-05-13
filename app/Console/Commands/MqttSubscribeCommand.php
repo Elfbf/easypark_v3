@@ -2,57 +2,215 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ParkingRecord;
+use App\Models\Vehicle;
 use App\Services\MqttService;
-use App\Services\ParkingSlotService;
 use Illuminate\Console\Command;
 
 class MqttSubscribeCommand extends Command
 {
-    protected $signature   = 'mqtt:subscribe';
-    protected $description = 'Subscribe ke topic MQTT sensor smart parking';
+    protected $signature = 'mqtt:subscribe';
+
+    protected $description = 'MQTT Smart Parking Subscriber';
 
     public function __construct(
-        private MqttService        $mqtt,
-        //private ParkingSlotService $parkingSlot
+        private MqttService $mqtt
     ) {
         parent::__construct();
     }
 
     public function handle(): void
     {
-        $this->info('🚀 MQTT subscriber aktif — mendengarkan sensor parkir...');
-        $this->info('   Topic: ' . env('MQTT_TOPIC_PREFIX') . 'slot/+');
-        $this->info('   Tekan Ctrl+C untuk berhenti.' . PHP_EOL);
+        $this->info('🚀 MQTT Subscriber Aktif');
 
-        $this->mqtt->subscribe('slot/+', function (string $topic, string $message) {
+        $this->mqtt->subscribeMultiple([
 
-            $data   = json_decode($message, true);
-            $slotId = $data['slot_id'] ?? null;
-            $status = $data['status']  ?? null; // 'occupied' | 'available'
+            // =========================================================
+            // GATE ENTRY
+            // =========================================================
 
-            // Tampilkan di terminal
-            $this->line(sprintf(
-                '[%s] Topic: <comment>%s</comment> | Slot: <info>%s</info> | Status: <info>%s</info>',
-                now()->format('H:i:s'),
-                $topic,
-                $slotId ?? '-',
-                $status  ?? '-',
-            ));
+            'gate/entry' => function ($topic, $message) {
 
-            // Validasi payload
-            if (!$slotId || !in_array($status, ['occupied', 'available'])) {
-                $this->warn('   ⚠ Payload tidak valid, dilewati.');
-                return;
-            }
+                $this->line("\n📥 ENTRY MESSAGE:");
+                $this->line($message);
 
-            // Update ke database
-            //$success = $this->parkingSlot->updateStatusFromMqtt($data);
+                $data = json_decode($message, true);
 
-            //if ($success) {
-                $this->info('   ✔ Database diperbarui.');
-            // } else {
-            //     $this->error('   ✘ Gagal update database.');
-            // }
-        });
+                if (!$data) {
+
+                    $this->error('❌ Payload JSON tidak valid');
+
+                    return;
+                }
+
+                $plate = strtoupper(
+                    trim($data['plate_number'] ?? '')
+                );
+
+                if (!$plate) {
+
+                    $this->error('❌ Plate number kosong');
+
+                    return;
+                }
+
+                // =====================================================
+                // VALIDASI KENDARAAN
+                // =====================================================
+
+                $vehicle = Vehicle::where(
+                    'plate_number',
+                    $plate
+                )->first();
+
+                if (!$vehicle) {
+
+                    $this->mqtt->publish('gate/response', [
+                        'status'  => 'DENIED',
+                        'message' => 'Kendaraan tidak terdaftar',
+                    ]);
+
+                    $this->error("❌ Kendaraan $plate tidak terdaftar");
+
+                    return;
+                }
+
+                // =====================================================
+                // CEK MASIH PARKIR
+                // =====================================================
+
+                $active = ParkingRecord::where(
+                    'plate_number',
+                    $plate
+                )
+                ->where('status', 'parked')
+                ->first();
+
+                if ($active) {
+
+                    $this->mqtt->publish('gate/response', [
+                        'status'  => 'DENIED',
+                        'message' => 'Kendaraan masih parkir',
+                    ]);
+
+                    $this->warn("⚠ $plate masih berada di area parkir");
+
+                    return;
+                }
+
+                // =====================================================
+                // SIMPAN RECORD MASUK
+                // =====================================================
+
+                ParkingRecord::create([
+
+                    'vehicle_id'   => $vehicle->id,
+
+                    'plate_number' => $plate,
+
+                    'entry_time'   => now(),
+
+                    'status'       => 'parked',
+                ]);
+
+                // =====================================================
+                // OPEN GATE
+                // =====================================================
+
+                $this->mqtt->publish('gate/response', [
+
+                    'status'       => 'OPEN_GATE',
+
+                    'gate'         => 'ENTRY',
+
+                    'plate_number' => $plate,
+                ]);
+
+                $this->info("✅ Gerbang masuk dibuka untuk $plate");
+            },
+
+            // =========================================================
+            // GATE EXIT
+            // =========================================================
+
+            'gate/exit' => function ($topic, $message) {
+
+                $this->line("\n📤 EXIT MESSAGE:");
+                $this->line($message);
+
+                $data = json_decode($message, true);
+
+                if (!$data) {
+
+                    $this->error('❌ Payload JSON tidak valid');
+
+                    return;
+                }
+
+                $plate = strtoupper(
+                    trim($data['plate_number'] ?? '')
+                );
+
+                if (!$plate) {
+
+                    $this->error('❌ Plate number kosong');
+
+                    return;
+                }
+
+                // =====================================================
+                // CARI PARKING AKTIF
+                // =====================================================
+
+                $parking = ParkingRecord::where(
+                    'plate_number',
+                    $plate
+                )
+                ->where('status', 'parked')
+                ->latest()
+                ->first();
+
+                if (!$parking) {
+
+                    $this->mqtt->publish('gate/response', [
+
+                        'status'  => 'DENIED',
+
+                        'message' => 'Data parkir tidak ditemukan',
+                    ]);
+
+                    $this->warn("⚠ Parking aktif $plate tidak ditemukan");
+
+                    return;
+                }
+
+                // =====================================================
+                // UPDATE EXIT
+                // =====================================================
+
+                $parking->update([
+
+                    'exit_time' => now(),
+
+                    'status'    => 'completed', // ✅ sesuai ENUM di database
+                ]);
+
+                // =====================================================
+                // OPEN GATE EXIT
+                // =====================================================
+
+                $this->mqtt->publish('gate/response', [
+
+                    'status'       => 'OPEN_GATE',
+
+                    'gate'         => 'EXIT',
+
+                    'plate_number' => $plate,
+                ]);
+
+                $this->info("✅ Gerbang keluar dibuka untuk $plate");
+            },
+
+        ]);
     }
 }

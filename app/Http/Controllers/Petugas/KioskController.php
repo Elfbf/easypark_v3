@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
-use Illuminate\View\View;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
+use App\Services\MqttService;
 use App\Models\Vehicle;
 use App\Models\ParkingRecord;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class KioskController extends Controller
 {
+    public function __construct(private MqttService $mqtt) {}
+
     public function index(): View
     {
         return view('petugas.kiosk.index');
@@ -45,8 +49,7 @@ class KioskController extends Controller
             ->whereNull('exit_time')
             ->first();
 
-        $aksi = $sedangParkir ? 'keluar' : 'masuk';
-
+        $aksi    = $sedangParkir ? 'keluar' : 'masuk';
         $vehicle = Vehicle::with('user')
             ->where('plate_number', $best)
             ->where('is_active', true)
@@ -63,14 +66,8 @@ class KioskController extends Controller
             ]);
         }
 
-        $user = $vehicle->user;
-
-        $files    = Storage::disk('private')->files('faces');
-        $facePath = collect($files)->first(fn($f) =>
-            basename($f) === $user->id . '.jpg' ||
-            str_starts_with(basename($f), $user->id . '_')
-        );
-        $hasFace  = $facePath !== null;
+        $user    = $vehicle->user;
+        $hasFace = $this->checkFaceExists($user->id);
 
         return response()->json([
             'status'    => 'found',
@@ -125,8 +122,7 @@ class KioskController extends Controller
             ->whereNull('exit_time')
             ->first();
 
-        $aksi = $sedangParkir ? 'keluar' : 'masuk';
-
+        $aksi    = $sedangParkir ? 'keluar' : 'masuk';
         $vehicle = Vehicle::with('user')
             ->where('plate_number', $best)
             ->where('is_active', true)
@@ -143,14 +139,8 @@ class KioskController extends Controller
             ]);
         }
 
-        $user = $vehicle->user;
-
-        $files    = Storage::disk('private')->files('faces');
-        $facePath = collect($files)->first(fn($f) =>
-            basename($f) === $user->id . '.jpg' ||
-            str_starts_with(basename($f), $user->id . '_')
-        );
-        $hasFace  = $facePath !== null;
+        $user    = $vehicle->user;
+        $hasFace = $this->checkFaceExists($user->id);
 
         return response()->json([
             'status'    => 'found',
@@ -180,6 +170,10 @@ class KioskController extends Controller
         return response()->json(['status' => 'ok']);
     }
 
+    // =========================================================================
+    // KONFIRMASI MASUK
+    // =========================================================================
+
     public function konfirmasiMasuk(Request $request)
     {
         $request->validate([
@@ -194,24 +188,31 @@ class KioskController extends Controller
             ->where('is_active', true)
             ->first();
 
+        // ─── Simpan record masuk ──────────────────────────────────────────────
         $record = ParkingRecord::create([
             'vehicle_id'   => $vehicle?->id,
             'plate_number' => $plat,
-            'face_photo'   => null,
             'entry_time'   => now(),
             'exit_time'    => null,
             'status'       => 'parked',
         ]);
 
+        // ─── Publish MQTT → buka gerbang masuk ───────────────────────────────
+        $this->mqtt->publish('gate/response', [
+            'status'       => 'OPEN_GATE',
+            'gate'         => 'ENTRY',
+            'plate_number' => $plat,
+            'record_id'    => $record->id,
+        ]);
+
         Cache::forget('plat_history_KIOSK-PLAT');
 
-        // ── Set flag: kiosk baru saja konfirmasi ──────────────
         Cache::put('kiosk_just_confirmed', [
             'aksi'         => 'masuk',
             'plate_number' => $plat,
             'record_id'    => $record->id,
             'at'           => now()->toISOString(),
-        ], now()->addSeconds(30)); // flag hidup 30 detik supaya landing.user sempat baca
+        ], now()->addSeconds(30));
 
         return response()->json([
             'status'       => 'success',
@@ -222,25 +223,79 @@ class KioskController extends Controller
         ]);
     }
 
+    // =========================================================================
+    // KONFIRMASI KELUAR
+    // =========================================================================
+
     public function konfirmasiKeluar(Request $request)
     {
         $request->validate([
-            'record_id' => 'required|integer',
+            'record_id'    => 'nullable|integer',
+            'plate_number' => 'nullable|string|max:20',
         ]);
 
-        $record = ParkingRecord::where('id', $request->record_id)
-            ->where('status', 'parked')
-            ->whereNull('exit_time')
-            ->firstOrFail();
+        $record = null;
 
+        // ── Cari by record_id dulu ────────────────────────────────────────────
+        if ($request->filled('record_id')) {
+
+            $record = ParkingRecord::where('id', $request->record_id)
+                ->where('status', 'parked')
+                ->whereNull('exit_time')
+                ->first();
+
+            Log::info('[Kiosk] Cari record keluar by id', [
+                'record_id' => $request->record_id,
+                'found'     => $record ? 'ya' : 'tidak',
+            ]);
+        }
+
+        // ── Fallback: cari by plate_number jika record_id tidak ketemu ─────────
+        if (!$record && $request->filled('plate_number')) {
+
+            $plat   = strtoupper(trim($request->plate_number));
+            $record = ParkingRecord::where('plate_number', $plat)
+                ->where('status', 'parked')
+                ->whereNull('exit_time')
+                ->latest('entry_time')
+                ->first();
+
+            Log::info('[Kiosk] Fallback cari record keluar by plate', [
+                'plate_number' => $plat,
+                'found'        => $record ? 'ya' : 'tidak',
+            ]);
+        }
+
+        // ── Tidak ketemu sama sekali ───────────────────────────────────────────
+        if (!$record) {
+
+            Log::warning('[Kiosk] Record parkir aktif tidak ditemukan saat keluar', [
+                'record_id'    => $request->record_id,
+                'plate_number' => $request->plate_number,
+            ]);
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Data parkir aktif tidak ditemukan. Mungkin sudah dicatat keluar sebelumnya.',
+            ], 404);
+        }
+
+        // ── Update record keluar ───────────────────────────────────────────────
         $record->update([
             'exit_time' => now(),
-            'status'    => 'completed',
+            'status'    => 'completed', // ✅ sesuai ENUM di database
+        ]);
+
+        // ── Publish MQTT → buka gerbang keluar ────────────────────────────────
+        $this->mqtt->publish('gate/response', [
+            'status'       => 'OPEN_GATE',
+            'gate'         => 'EXIT',
+            'plate_number' => $record->plate_number,
+            'record_id'    => $record->id,
         ]);
 
         Cache::forget('plat_history_KIOSK-PLAT');
 
-        // ── Set flag: kiosk baru saja konfirmasi ──────────────
         Cache::put('kiosk_just_confirmed', [
             'aksi'         => 'keluar',
             'plate_number' => $record->plate_number,
@@ -255,5 +310,19 @@ class KioskController extends Controller
             'plate_number' => $record->plate_number,
             'exit_time'    => $record->exit_time,
         ]);
+    }
+
+    // =========================================================================
+    // HELPER
+    // =========================================================================
+
+    private function checkFaceExists(int $userId): bool
+    {
+        $files = Storage::disk('private')->files('faces');
+        return collect($files)->contains(
+            fn($f) =>
+            basename($f) === $userId . '.jpg' ||
+                str_starts_with(basename($f), $userId . '_')
+        );
     }
 }

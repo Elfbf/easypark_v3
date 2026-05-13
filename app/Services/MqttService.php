@@ -7,151 +7,190 @@ use PhpMqtt\Client\Facades\MQTT;
 
 class MqttService
 {
-    protected string $topicPrefix;
+    protected string $prefix;
 
     public function __construct()
     {
-        $this->topicPrefix = env('MQTT_TOPIC_PREFIX', 'easypark/parking/');
+        $this->prefix = env(
+            'MQTT_TOPIC_PREFIX',
+            'easypark/parking/'
+        );
     }
 
-    // -------------------------------------------------------------------------
+    // =========================================================
     // PUBLISH
-    // -------------------------------------------------------------------------
+    // =========================================================
 
-    /**
-     * Publish pesan ke topic MQTT.
-     *
-     * Contoh:
-     *   $mqtt->publish('slot/A1', ['status' => 'occupied']);
-     *   → topic: easypark/parking/slot/A1
-     */
-    public function publish(string $topic, array $payload, int $qos = 1, bool $retain = false): bool
-    {
+    public function publish(
+        string $topic,
+        array $payload,
+        int $qos = 1,
+        bool $retain = false
+    ): bool {
+
         try {
+
             $mqtt = MQTT::connection();
 
+            $fullTopic = $this->prefix . $topic;
+
             $mqtt->publish(
-                topic:              $this->topicPrefix . $topic,
-                message:            json_encode($payload),
-                qualityOfService:   $qos,
-                retain:             $retain
+
+                topic: $fullTopic,
+
+                message: json_encode($payload),
+
+                qualityOfService: $qos,
+
+                retain: $retain
             );
+
+            // ✅ FIX: flush outgoing buffer dulu sebelum disconnect
+            // agar pesan benar-benar terkirim ke broker
+            $mqtt->loop(false, true);
 
             $mqtt->disconnect();
 
-            Log::info('[MQTT] Publish berhasil', [
-                'topic'   => $this->topicPrefix . $topic,
+            Log::info('[MQTT] Publish Success', [
+
+                'topic'   => $fullTopic,
+
                 'payload' => $payload,
             ]);
 
             return true;
 
         } catch (\Throwable $e) {
-            Log::error('[MQTT] Publish gagal', [
-                'topic'   => $this->topicPrefix . $topic,
-                'payload' => $payload,
-                'error'   => $e->getMessage(),
+
+            Log::error('[MQTT] Publish Error', [
+
+                'topic' => $topic,
+
+                'error' => $e->getMessage(),
             ]);
 
             return false;
         }
     }
 
-    // -------------------------------------------------------------------------
-    // SUBSCRIBE
-    // -------------------------------------------------------------------------
+    // =========================================================
+    // SUBSCRIBE SINGLE
+    // =========================================================
 
-    /**
-     * Subscribe ke satu topic dan jalankan callback saat ada pesan masuk.
-     * Blocking — cocok dipakai di dalam Artisan command.
-     *
-     * Contoh:
-     *   $mqtt->subscribe('slot/+', function (string $topic, string $message) {
-     *       $data = json_decode($message, true);
-     *       // proses data sensor...
-     *   });
-     */
-    public function subscribe(string $topic, callable $callback): void
-    {
+    public function subscribe(
+        string $topic,
+        callable $callback
+    ): void {
+
         try {
+
             $mqtt = MQTT::connection();
 
+            $fullTopic = $this->prefix . $topic;
+
             $mqtt->subscribe(
-                topicFilter:        $this->topicPrefix . $topic,
-                callback:           function (string $topic, string $message) use ($callback) {
-                    Log::debug('[MQTT] Pesan diterima', [
+
+                topicFilter: $fullTopic,
+
+                callback: function (
+                    string $topic,
+                    string $message
+                ) use ($callback) {
+
+                    Log::info('[MQTT] Message Received', [
+
                         'topic'   => $topic,
+
                         'message' => $message,
                     ]);
 
                     $callback($topic, $message);
                 },
-                qualityOfService:   1
+
+                qualityOfService: 1
             );
 
-            // Loop blocking — terus berjalan sampai command dihentikan
-            $mqtt->loop(allowSleep: true);
+            Log::info('[MQTT] Subscribe Active', [
+
+                'topic' => $fullTopic,
+            ]);
+
+            $mqtt->loop(true);
 
         } catch (\Throwable $e) {
-            Log::error('[MQTT] Subscribe gagal', [
-                'topic' => $this->topicPrefix . $topic,
+
+            Log::error('[MQTT] Subscribe Error', [
+
+                'topic' => $topic,
+
                 'error' => $e->getMessage(),
             ]);
         }
     }
 
-    // -------------------------------------------------------------------------
-    // SUBSCRIBE BANYAK TOPIC SEKALIGUS
-    // -------------------------------------------------------------------------
+    // =========================================================
+    // SUBSCRIBE MULTIPLE
+    // =========================================================
 
-    /**
-     * Subscribe ke beberapa topic sekaligus dalam satu koneksi.
-     *
-     * Contoh:
-     *   $mqtt->subscribeMultiple([
-     *       'slot/+'   => fn($t, $m) => ...,
-     *       'gate/+'   => fn($t, $m) => ...,
-     *   ]);
-     */
-    public function subscribeMultiple(array $topicsWithCallbacks): void
-    {
+    public function subscribeMultiple(
+        array $topics
+    ): void {
+
         try {
+
             $mqtt = MQTT::connection();
 
-            foreach ($topicsWithCallbacks as $topic => $callback) {
+            foreach ($topics as $topic => $callback) {
+
+                $fullTopic = $this->prefix . $topic;
+
                 $mqtt->subscribe(
-                    topicFilter:        $this->topicPrefix . $topic,
-                    callback:           function (string $topic, string $message) use ($callback) {
-                        Log::debug('[MQTT] Pesan diterima', [
+
+                    topicFilter: $fullTopic,
+
+                    callback: function (
+                        string $topic,
+                        string $message
+                    ) use ($callback) {
+
+                        Log::info('[MQTT] Message Received', [
+
                             'topic'   => $topic,
+
                             'message' => $message,
                         ]);
 
                         $callback($topic, $message);
                     },
-                    qualityOfService:   1
+
+                    qualityOfService: 1
                 );
+
+                Log::info('[MQTT] Subscribe Added', [
+
+                    'topic' => $fullTopic,
+                ]);
             }
 
-            $mqtt->loop(allowSleep: true);
+            Log::info('[MQTT] Waiting Messages...');
+
+            $mqtt->loop(true);
 
         } catch (\Throwable $e) {
-            Log::error('[MQTT] Subscribe multiple gagal', [
+
+            Log::error('[MQTT] Subscribe Multiple Error', [
+
                 'error' => $e->getMessage(),
             ]);
         }
     }
 
-    // -------------------------------------------------------------------------
+    // =========================================================
     // HELPER
-    // -------------------------------------------------------------------------
+    // =========================================================
 
-    /**
-     * Ambil full topic dengan prefix.
-     * Berguna kalau perlu tau topic lengkap di luar service ini.
-     */
-    public function topic(string $suffix): string
+    public function topic(string $topic): string
     {
-        return $this->topicPrefix . $suffix;
+        return $this->prefix . $topic;
     }
 }
