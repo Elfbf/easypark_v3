@@ -428,6 +428,7 @@ let autoReset    = null;
 let autoSubmitTimer = null;
 let autoSubmitCount = 3;
 let faceTimeout  = null;
+let isConfirming = false;
 
 // Reason yang akan dikirim ke server saat officer confirm
 // agar bisa di-log (opsional)
@@ -683,12 +684,11 @@ function handleFaceResult(isMatch){
     clearFaceTimeout();
     faceVerified = isMatch;
 
-    if(isMatch){
-        // Langsung ke konfirmasi normal dengan banner hijau
-        showKonfirm(foundData, true);
+   if(isMatch){
+        // Keduanya cocok → langsung proses tanpa konfirmasi manual
+        confirmAction();
         return;
     }
-
     // Tidak cocok
     faceRetry++;
     updateFaceRetryBar();
@@ -782,8 +782,8 @@ function goOfficer(plat, aksi, type, reason, data=null){
 
 // ── Confirm action ─────────────────────────────────────────────
 function confirmAction(){
-    if(!foundData) return;
-    const aksi = foundData.aksi??'masuk';
+    if(!foundData || isConfirming) return;
+    isConfirming = true;    const aksi = foundData.aksi??'masuk';
     showLoading(
         aksi==='masuk'?'Mencatat masuk...':'Mencatat keluar...',
         'Mohon tunggu sebentar'
@@ -855,7 +855,7 @@ function resetKiosk(){
     clearAutoSubmit();
     clearFaceTimeout();
     if(autoReset){clearInterval(autoReset);autoReset=null;}
-    foundData=null; faceVerified=null; faceRetry=0; plateRetry=0; officerReason='';
+ foundData=null; faceVerified=null; faceRetry=0; plateRetry=0; officerReason=''; isConfirming=false;
 
     const inp=document.getElementById('plateInput');
     inp.value=''; inp.className='plate-input';
