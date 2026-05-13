@@ -35,26 +35,6 @@
                display:flex;flex-direction:column;gap:10px;pointer-events:none;">
     </div>
 
-    {{-- ── Flash session → toast ── --}}
-    @if(session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('success', '{{ session('success') }}'));
-        </script>
-    @endif
-    @if(session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('error', '{{ session('error') }}'));
-        </script>
-    @endif
-    @if(session('warning'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('warning', '{{ session('warning') }}'));
-        </script>
-    @endif
-
     {{-- ── Tabel Role ── --}}
     <div class="card">
         <div class="card-header">

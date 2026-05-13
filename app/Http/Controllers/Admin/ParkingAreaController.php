@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
 use App\Models\ParkingArea;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ParkingAreaController extends Controller
@@ -41,23 +39,12 @@ class ParkingAreaController extends Controller
 
         try {
 
-            $parkingArea = ParkingArea::create([
+            ParkingArea::create([
                 'name'        => $request->name,
                 'code'        => strtoupper($request->code),
                 'description' => $request->description,
                 'capacity'    => $request->capacity,
                 'is_active'   => true,
-            ]);
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Parking Area',
-                'activity' => 'create_parking_area',
-                'description' => 'Menambahkan area parkir ' . $parkingArea->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
             ]);
 
             return back()->with(
@@ -95,17 +82,6 @@ class ParkingAreaController extends Controller
                 'is_active'   => $request->boolean('is_active'),
             ]);
 
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Parking Area',
-                'activity' => 'update_parking_area',
-                'description' => 'Memperbarui area parkir ' . $parkingArea->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
-
             return back()->with(
                 'success',
                 'Area parkir berhasil diperbarui.'
@@ -125,27 +101,7 @@ class ParkingAreaController extends Controller
     {
         try {
 
-            if ($parkingArea->parkingSlots()->count() > 0) {
-                return back()->with(
-                    'error',
-                    'Area parkir tidak bisa dihapus karena masih memiliki slot parkir.'
-                );
-            }
-
-            $parkingAreaName = $parkingArea->name;
-
             $parkingArea->delete();
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Parking Area',
-                'activity' => 'delete_parking_area',
-                'description' => 'Menghapus area parkir ' . $parkingAreaName,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
 
             return back()->with(
                 'success',

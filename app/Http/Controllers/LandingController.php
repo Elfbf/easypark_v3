@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ActivityLog;
 use App\Models\ParkingArea;
-use App\Models\ParkingRecord;
-use App\Models\ParkingSlot;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -15,17 +11,6 @@ class LandingController extends Controller
     public function index(): View
     {
         $activeUsers = \App\Models\User::where('is_active', true)->count();
-
-        ActivityLog::create([
-            'user_id'     => Auth::id(),
-            'module'      => 'Landing Page',
-            'activity'    => 'view_landing_page',
-            'description' => 'Mengakses halaman landing page',
-            'ip_address'  => request()->ip(),
-            'user_agent'  => request()->userAgent(),
-            'url'         => request()->url(),
-            'method'      => request()->method(),
-        ]);
 
         return view('landing.index', compact('activeUsers'));
     }
@@ -57,17 +42,6 @@ class LandingController extends Controller
         if ($mobil) $recommendations->push($mobil);
         if ($motor) $recommendations->push($motor);
 
-        ActivityLog::create([
-            'user_id'     => Auth::id(),
-            'module'      => 'User Page',
-            'activity'    => 'view_user_page',
-            'description' => 'Mengakses halaman user',
-            'ip_address'  => request()->ip(),
-            'user_agent'  => request()->userAgent(),
-            'url'         => request()->url(),
-            'method'      => request()->method(),
-        ]);
-
         return view('landing.user', compact('recommendations'));
     }
 
@@ -82,6 +56,7 @@ class LandingController extends Controller
 
         if ($flag && $flag['aksi'] === 'masuk') {
             Cache::forget('kiosk_just_confirmed');
+
             return response()->json([
                 'triggered' => true,
                 'aksi'      => $flag['aksi'],
@@ -94,7 +69,9 @@ class LandingController extends Controller
             Cache::forget('kiosk_just_confirmed');
         }
 
-        return response()->json(['triggered' => false]);
+        return response()->json([
+            'triggered' => false
+        ]);
     }
 
     public function cekSlot(): View
@@ -124,34 +101,12 @@ class LandingController extends Controller
         if ($mobil) $recommendations->push($mobil);
         if ($motor) $recommendations->push($motor);
 
-        ActivityLog::create([
-            'user_id'     => Auth::id(),
-            'module'      => 'User Page',
-            'activity'    => 'view_cek_slot',
-            'description' => 'Mengakses halaman cek slot parkir',
-            'ip_address'  => request()->ip(),
-            'user_agent'  => request()->userAgent(),
-            'url'         => request()->url(),
-            'method'      => request()->method(),
-        ]);
-
         return view('landing.cek-slot', compact('recommendations'));
     }
 
     public function info(): View
     {
         $areas = ParkingArea::where('is_active', true)->get();
-
-        ActivityLog::create([
-            'user_id'     => Auth::id(),
-            'module'      => 'User Page',
-            'activity'    => 'view_info',
-            'description' => 'Mengakses halaman info parkir',
-            'ip_address'  => request()->ip(),
-            'user_agent'  => request()->userAgent(),
-            'url'         => request()->url(),
-            'method'      => request()->method(),
-        ]);
 
         return view('landing.info', compact('areas'));
     }

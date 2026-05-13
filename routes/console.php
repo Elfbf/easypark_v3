@@ -24,3 +24,10 @@ Artisan::command('inspire', function () {
 // Nonaktifkan user yang tidak login selama 1 bulan
 Schedule::command('users:deactivate-inactive')
     ->everyMinute();
+
+// MQTT subscriber — dijaga Supervisor di production, cukup dijalankan manual di local
+// php artisan mqtt:subscribe
+Schedule::command('mqtt:subscribe')
+    ->everyMinute()
+    ->withoutOverlapping()   // pastikan tidak jalan dobel
+    ->runInBackground();     // tidak block scheduler lain

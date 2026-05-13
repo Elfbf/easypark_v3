@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             ],
 
             // PETUGAS
-            [+
+            [
                 'role' => 'petugas',
                 'name' => 'Petugas Parkir',
                 'email' => 'petugas@easypark.com',

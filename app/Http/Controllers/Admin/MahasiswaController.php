@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\StudyProgram;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
@@ -35,7 +33,7 @@ class MahasiswaController extends Controller
             ->paginate(5)
             ->withQueryString();
 
-        $departments = Department::orderBy('name')->get();
+        $departments  = Department::orderBy('name')->get();
         $studyPrograms = StudyProgram::orderBy('name')->get();
 
         return view('admin.mahasiswa.index', compact(
@@ -71,7 +69,7 @@ class MahasiswaController extends Controller
                 $photoPath = $request->file('photo')->store('photos/mahasiswa', 'public');
             }
 
-            $user = User::create([
+            User::create([
                 'role_id'          => $role->id,
                 'name'             => $request->name,
                 'nim_nip'          => $request->nim_nip,
@@ -87,18 +85,8 @@ class MahasiswaController extends Controller
                 'photo'            => $photoPath,
             ]);
 
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Mahasiswa',
-                'activity' => 'create_mahasiswa',
-                'description' => 'Menambahkan mahasiswa ' . $user->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
-
             return back()->with('success', 'Data mahasiswa berhasil ditambahkan.');
+
         } catch (QueryException $e) {
             Log::error('Mahasiswa store failed: ' . $e->getMessage());
 
@@ -138,28 +126,16 @@ class MahasiswaController extends Controller
             ];
 
             if ($request->hasFile('photo')) {
-
                 if ($mahasiswa->photo) {
                     Storage::disk('public')->delete($mahasiswa->photo);
                 }
-
                 $data['photo'] = $request->file('photo')->store('photos/mahasiswa', 'public');
             }
 
             $mahasiswa->update($data);
 
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Mahasiswa',
-                'activity' => 'update_mahasiswa',
-                'description' => 'Memperbarui mahasiswa ' . $mahasiswa->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
-
             return back()->with('success', 'Data mahasiswa berhasil diperbarui.');
+
         } catch (QueryException $e) {
             Log::error('Mahasiswa update failed: ' . $e->getMessage());
 
@@ -181,22 +157,10 @@ class MahasiswaController extends Controller
                 Storage::disk('public')->delete($mahasiswa->photo);
             }
 
-            $mahasiswaName = $mahasiswa->name;
-
             $mahasiswa->delete();
 
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Mahasiswa',
-                'activity' => 'delete_mahasiswa',
-                'description' => 'Menghapus mahasiswa ' . $mahasiswaName,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
-
             return back()->with('success', 'Data mahasiswa berhasil dihapus.');
+
         } catch (QueryException $e) {
             Log::error('Mahasiswa delete failed: ' . $e->getMessage());
 

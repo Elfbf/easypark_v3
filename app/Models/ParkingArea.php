@@ -17,8 +17,4 @@ class ParkingArea extends Model
         'is_active',
     ];
 
-    public function parkingSlots()
-    {
-        return $this->hasMany(ParkingSlot::class);
-    }
 }

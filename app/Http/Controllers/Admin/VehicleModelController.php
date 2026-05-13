@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
 use App\Models\VehicleBrand;
 use App\Models\VehicleModel;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class VehicleModelController extends Controller
@@ -27,7 +25,6 @@ class VehicleModelController extends Controller
 
         $vehicleBrands = VehicleBrand::all();
 
-        // Tambahkan ini
         $existingModelsJson = $vehicleModels->getCollection()
             ->map(fn($m) => [
                 'id'               => $m->id,
@@ -39,7 +36,7 @@ class VehicleModelController extends Controller
             'vehicleModels',
             'vehicleBrands',
             'search',
-            'existingModelsJson' // Tambahkan ini
+            'existingModelsJson'
         ));
     }
 
@@ -52,26 +49,16 @@ class VehicleModelController extends Controller
 
         try {
 
-            $vehicleModel = VehicleModel::create([
+            VehicleModel::create([
                 'vehicle_brand_id' => $request->vehicle_brand_id,
                 'name'             => $request->name,
-            ]);
-
-            ActivityLog::create([
-                'user_id'    => Auth::id(),
-                'module'     => 'Vehicle Model',
-                'activity'   => 'create_vehicle_model',
-                'description' => 'Menambahkan model kendaraan ' . $vehicleModel->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url'        => request()->url(),
-                'method'     => request()->method(),
             ]);
 
             return back()->with(
                 'success',
                 'Model kendaraan berhasil ditambahkan.'
             );
+
         } catch (QueryException $e) {
 
             Log::error('VehicleModel store failed: ' . $e->getMessage());
@@ -96,21 +83,11 @@ class VehicleModelController extends Controller
                 'name'             => $request->name,
             ]);
 
-            ActivityLog::create([
-                'user_id'    => Auth::id(),
-                'module'     => 'Vehicle Model',
-                'activity'   => 'update_vehicle_model',
-                'description' => 'Memperbarui model kendaraan ' . $vehicleModel->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url'        => request()->url(),
-                'method'     => request()->method(),
-            ]);
-
             return back()->with(
                 'success',
                 'Model kendaraan berhasil diperbarui.'
             );
+
         } catch (QueryException $e) {
 
             Log::error('VehicleModel update failed: ' . $e->getMessage());
@@ -132,25 +109,13 @@ class VehicleModelController extends Controller
                 );
             }
 
-            $vehicleModelName = $vehicleModel->name;
-
             $vehicleModel->delete();
-
-            ActivityLog::create([
-                'user_id'    => Auth::id(),
-                'module'     => 'Vehicle Model',
-                'activity'   => 'delete_vehicle_model',
-                'description' => 'Menghapus model kendaraan ' . $vehicleModelName,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url'        => request()->url(),
-                'method'     => request()->method(),
-            ]);
 
             return back()->with(
                 'success',
                 'Model kendaraan berhasil dihapus.'
             );
+
         } catch (QueryException $e) {
 
             Log::error('VehicleModel delete failed: ' . $e->getMessage());

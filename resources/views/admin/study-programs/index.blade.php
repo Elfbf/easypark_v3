@@ -35,25 +35,6 @@
                display:flex;flex-direction:column;gap:10px;pointer-events:none;">
     </div>
 
-    @if (session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('success', '{{ session('success') }}'));
-        </script>
-    @endif
-    @if (session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('error', '{{ session('error') }}'));
-        </script>
-    @endif
-    @if (session('warning'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('warning', '{{ session('warning') }}'));
-        </script>
-    @endif
-
     {{-- ── Tabel Program Studi ── --}}
     <div class="card">
         <div class="card-header">

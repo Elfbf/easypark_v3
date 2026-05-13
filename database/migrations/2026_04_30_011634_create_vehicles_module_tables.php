@@ -37,53 +37,29 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('parking_slots', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('parking_area_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('vehicle_type_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('slot_code');
-            $table->enum('status', ['available', 'occupied', 'maintenance'])->default('available');
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-
-            $table->unique(['parking_area_id', 'slot_code']);
-        });
-
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('vehicle_type_id')->constrained()->cascadeOnDelete();
             $table->foreignId('vehicle_brand_id')->constrained()->cascadeOnDelete();
             $table->foreignId('vehicle_model_id')->nullable()->constrained()->nullOnDelete();
-
             $table->string('plate_number')->unique();
             $table->string('color')->nullable();
-
             $table->string('vehicle_photo')->nullable();
             $table->string('stnk_photo')->nullable();
-
             $table->boolean('is_parked')->default(false);
             $table->timestamp('parked_at')->nullable();
-
             $table->boolean('is_active')->default(true);
-
             $table->timestamps();
         });
 
         Schema::create('parking_records', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('vehicle_id')->nullable()->constrained()->nullOnDelete();
-
             $table->string('plate_number');
-            $table->string('face_photo')->nullable();
-
             $table->timestamp('entry_time');
             $table->timestamp('exit_time')->nullable();
-
             $table->enum('status', ['parked', 'completed'])->default('parked');
-
             $table->timestamps();
         });
     }

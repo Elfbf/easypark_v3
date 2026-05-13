@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
 use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class VehicleTypeController extends Controller
@@ -34,19 +32,8 @@ class VehicleTypeController extends Controller
 
         try {
 
-            $vehicleType = VehicleType::create([
+            VehicleType::create([
                 'name' => strtolower($request->name)
-            ]);
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Vehicle Type',
-                'activity' => 'create_vehicle_type',
-                'description' => 'Menambahkan tipe kendaraan ' . $vehicleType->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
             ]);
 
             return back()->with('success', 'Tipe kendaraan berhasil ditambahkan.');
@@ -73,17 +60,6 @@ class VehicleTypeController extends Controller
                 'name' => strtolower($request->name)
             ]);
 
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Vehicle Type',
-                'activity' => 'update_vehicle_type',
-                'description' => 'Memperbarui tipe kendaraan ' . $vehicleType->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
-
             return back()->with('success', 'Tipe kendaraan berhasil diperbarui.');
 
         } catch (QueryException $e) {
@@ -107,20 +83,7 @@ class VehicleTypeController extends Controller
                 );
             }
 
-            $vehicleTypeName = $vehicleType->name;
-
             $vehicleType->delete();
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Vehicle Type',
-                'activity' => 'delete_vehicle_type',
-                'description' => 'Menghapus tipe kendaraan ' . $vehicleTypeName,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
 
             return back()->with('success', 'Tipe kendaraan berhasil dihapus.');
 

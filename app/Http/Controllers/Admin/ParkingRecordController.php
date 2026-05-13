@@ -20,8 +20,8 @@ class ParkingRecordController extends Controller
         $dateTo   = $request->query('date_to');
 
         return ParkingRecord::with(['vehicle.type', 'vehicle.brand', 'vehicle.model'])
-            ->when($search, fn ($q) => $q->where('plate_number', 'like', "%{$search}%"))
-            ->when($status, fn ($q) => $q->where('status', $status))
+            ->when($search,   fn ($q) => $q->where('plate_number', 'like', "%{$search}%"))
+            ->when($status,   fn ($q) => $q->where('status', $status))
             ->when($dateFrom, fn ($q) => $q->whereDate('entry_time', '>=', $dateFrom))
             ->when($dateTo,   fn ($q) => $q->whereDate('entry_time', '<=', $dateTo))
             ->latest('entry_time');
@@ -82,7 +82,6 @@ class ParkingRecordController extends Controller
     {
         $request->validate([
             'plate_number' => 'required|string',
-            'face_photo'   => 'nullable|string',
         ]);
 
         $vehicle = Vehicle::where('plate_number', $request->plate_number)->first();
@@ -90,7 +89,6 @@ class ParkingRecordController extends Controller
         $record = ParkingRecord::create([
             'vehicle_id'   => $vehicle?->id,
             'plate_number' => strtoupper($request->plate_number),
-            'face_photo'   => $request->face_photo,
             'entry_time'   => now(),
             'status'       => 'parked',
         ]);

@@ -201,17 +201,6 @@
                 <span>Area Parkir</span>
             </a>
 
-            <a href="{{ route('admin.parking-slots.index') }}"
-                class="sb-item {{ request()->routeIs('admin.parking-slots.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M7 9h10" />
-                    <path d="M7 13h6" />
-                    <circle cx="17" cy="13" r="1" fill="currentColor" />
-                </svg>
-                <span>Slot Parkir</span>
-            </a>
-
             <a href="{{ route('admin.parking-records.index') }}"
                 class="sb-item {{ request()->routeIs('admin.parking-records.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -261,17 +250,6 @@
                     <line x1="8" y1="13" x2="14" y2="13" />
                 </svg>
                 <span>Area Parkir</span>
-            </a>
-
-            <a href="{{ route('petugas.parking-slots.index') }}"
-                class="sb-item {{ request()->routeIs('petugas.parking-slots.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M7 9h10" />
-                    <path d="M7 13h6" />
-                    <circle cx="17" cy="13" r="1" fill="currentColor" />
-                </svg>
-                <span>Slot Parkir</span>
             </a>
 
             <a href="{{ route('petugas.parking-records.index') }}"

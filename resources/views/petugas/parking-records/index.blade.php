@@ -130,7 +130,6 @@
                     <tr>
                         <th style="padding:14px 16px 14px 24px;width:60px;">#</th>
                         <th style="padding:14px 16px;">Plat Nomor</th>
-                        <th style="padding:14px 16px;">Foto Wajah</th>
                         <th style="padding:14px 16px;width:160px;">Waktu Masuk</th>
                         <th style="padding:14px 16px;width:160px;">Waktu Keluar</th>
                         <th style="padding:14px 16px;width:100px;">Durasi</th>
@@ -140,6 +139,18 @@
                 </thead>
                 <tbody>
                     @foreach ($parkingRecords as $index => $record)
+                        @php
+                            $end    = $record->exit_time ?? now();
+                            $start  = $record->entry_time;
+                            if ($start) {
+                                $diff    = $start->diff($end);
+                                $hours   = $diff->days * 24 + $diff->h;
+                                $minutes = $diff->i;
+                                $durasi  = $hours > 0 ? "{$hours}j {$minutes}m" : "{$minutes}m";
+                            } else {
+                                $durasi = '-';
+                            }
+                        @endphp
                         <tr>
 
                             {{-- No --}}
@@ -186,37 +197,6 @@
                                 </div>
                             </td>
 
-                            {{-- Foto Wajah --}}
-                            <td style="padding:14px 16px;">
-                                @if ($record->face_photo)
-                                    <button
-                                        onclick="openPhotoModal('{{ $record->face_photo }}', '{{ $record->plate_number }}')"
-                                        style="width:38px;height:38px;border-radius:10px;
-                                               background:#F5F7FC;border:1.5px solid #D4D9E8;
-                                               display:flex;align-items:center;justify-content:center;
-                                               cursor:pointer;transition:border-color .2s,background .2s;"
-                                        onmouseover="this.style.borderColor='#3B6FD4';this.style.background='#E8F0FB'"
-                                        onmouseout="this.style.borderColor='#D4D9E8';this.style.background='#F5F7FC'"
-                                        title="Lihat foto wajah">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="#4A5272" stroke-width="2"
-                                            style="width:16px;height:16px;">
-                                            <circle cx="12" cy="8" r="4" />
-                                            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                                        </svg>
-                                    </button>
-                                @else
-                                    <span style="display:inline-flex;align-items:center;justify-content:center;
-                                                 width:38px;height:38px;border-radius:10px;
-                                                 background:#F5F7FC;border:1.5px solid #EBEEF5;">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="#D4D9E8" stroke-width="2"
-                                            style="width:16px;height:16px;">
-                                            <circle cx="12" cy="8" r="4" />
-                                            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                                        </svg>
-                                    </span>
-                                @endif
-                            </td>
-
                             {{-- Waktu Masuk --}}
                             <td style="padding:14px 16px;">
                                 <div style="font-size:13px;font-weight:600;color:#181D35;">
@@ -243,18 +223,6 @@
 
                             {{-- Durasi --}}
                             <td style="padding:14px 16px;">
-                                @php
-                                    $end    = $record->exit_time ?? now();
-                                    $start  = $record->entry_time;
-                                    if ($start) {
-                                        $diff    = $start->diff($end);
-                                        $hours   = $diff->days * 24 + $diff->h;
-                                        $minutes = $diff->i;
-                                        $durasi  = $hours > 0 ? "{$hours}j {$minutes}m" : "{$minutes}m";
-                                    } else {
-                                        $durasi = '-';
-                                    }
-                                @endphp
                                 <span style="display:inline-flex;align-items:center;gap:4px;
                                              font-size:12.5px;font-weight:600;
                                              color:{{ $record->status === 'parked' ? '#027A48' : '#181D35' }};">
@@ -301,8 +269,7 @@
                                         '{{ $record->status }}',
                                         '{{ ucfirst($record->vehicle?->type?->name ?? '') }}',
                                         '{{ ucfirst($record->vehicle?->brand?->name ?? '') }}',
-                                        '{{ ucfirst($record->vehicle?->model?->name ?? '') }}',
-                                        '{{ $record->face_photo ?? '' }}'
+                                        '{{ ucfirst($record->vehicle?->model?->name ?? '') }}'
                                     )"
                                     style="width:32px;height:32px;border-radius:8px;">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -424,13 +391,6 @@
                 </div>
             </div>
 
-            <div id="detailPhotoWrap" style="display:none;margin-bottom:20px;text-align:center;">
-                <img id="detailPhoto" src="" alt="Foto Wajah"
-                    style="width:90px;height:90px;border-radius:50%;object-fit:cover;
-                           border:3px solid #C0D3F5;box-shadow:0 4px 16px rgba(26,75,173,.12);">
-                <div style="font-size:11.5px;color:#8A93AE;margin-top:8px;">Foto Wajah Pengemudi</div>
-            </div>
-
             <div style="display:flex;flex-direction:column;
                         border:1.5px solid #EBEEF5;border-radius:14px;overflow:hidden;">
                 <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #EBEEF5;">
@@ -463,27 +423,6 @@
                 <button type="button" onclick="closeDetailModal()" class="btn-outline"
                     style="width:100%;justify-content:center;">Tutup</button>
             </div>
-        </div>
-    </div>
-
-    {{-- ══ MODAL — Foto Wajah ══ --}}
-    <div id="modalPhoto"
-        style="display:none;position:fixed;inset:0;z-index:210;
-               background:rgba(7,28,82,.6);backdrop-filter:blur(6px);
-               align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:20px;padding:24px;
-                    max-width:360px;width:calc(100% - 32px);
-                    box-shadow:0 24px 64px rgba(7,28,82,.25);text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;
-                        color:#181D35;margin-bottom:4px;">Foto Wajah</div>
-            <div style="font-size:12px;color:#8A93AE;margin-bottom:16px;" id="photoModalPlate"></div>
-            <img id="photoModalImg" src="" alt="Foto Wajah"
-                style="width:200px;height:200px;border-radius:50%;object-fit:cover;
-                       border:4px solid #C0D3F5;box-shadow:0 8px 32px rgba(26,75,173,.15);
-                       margin:0 auto 20px;display:block;">
-            <button onclick="closePhotoModal()" class="btn-outline" style="width:100%;justify-content:center;">
-                Tutup
-            </button>
         </div>
     </div>
 
@@ -551,7 +490,7 @@
         // ═══════════════════════════════
         // MODAL DETAIL
         // ═══════════════════════════════
-        function openDetailModal(plate, entry, exit, duration, status, type, brand, model, photo) {
+        function openDetailModal(plate, entry, exit, duration, status, type, brand, model) {
             document.getElementById('detailPlate').textContent    = plate.toUpperCase();
             document.getElementById('detailEntry').textContent    = entry;
             document.getElementById('detailExit').textContent     = exit === '-' ? '—' : exit;
@@ -575,37 +514,18 @@
                     Selesai</span>`;
             }
 
-            const photoWrap = document.getElementById('detailPhotoWrap');
-            const photoImg  = document.getElementById('detailPhoto');
-            if (photo) { photoImg.src = photo; photoWrap.style.display = 'block'; }
-            else        { photoWrap.style.display = 'none'; }
-
             document.getElementById('modalDetail').style.display = 'flex';
         }
 
         function closeDetailModal() { document.getElementById('modalDetail').style.display = 'none'; }
 
-        // ═══════════════════════════════
-        // MODAL FOTO
-        // ═══════════════════════════════
-        function openPhotoModal(photoUrl, plate) {
-            document.getElementById('photoModalImg').src          = photoUrl;
-            document.getElementById('photoModalPlate').textContent = plate.toUpperCase();
-            document.getElementById('modalPhoto').style.display   = 'flex';
-        }
-
-        function closePhotoModal() { document.getElementById('modalPhoto').style.display = 'none'; }
-
         // ── Backdrop & Escape ──
-        ['modalDetail', 'modalPhoto'].forEach(id => {
-            document.getElementById(id).addEventListener('click', function (e) {
-                if (e.target === this) this.style.display = 'none';
-            });
+        document.getElementById('modalDetail').addEventListener('click', function (e) {
+            if (e.target === this) this.style.display = 'none';
         });
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape')
-                ['modalDetail', 'modalPhoto'].forEach(id =>
-                    document.getElementById(id).style.display = 'none');
+                document.getElementById('modalDetail').style.display = 'none';
         });
     </script>
 @endpush

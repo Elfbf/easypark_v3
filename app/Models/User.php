@@ -24,7 +24,6 @@ class User extends Authenticatable
         'address',
         'photo',
         'face_photo',
-        'face_embedding',
         'is_active',
         'last_login_at',
         'password',
@@ -33,17 +32,16 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'face_embedding',
     ];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'birth_date' => 'date',
-            'last_login_at' => 'datetime',
-            'is_active' => 'boolean',
-            'password' => 'hashed',
+            'birth_date'        => 'date',
+            'last_login_at'     => 'datetime',
+            'is_active'         => 'boolean',
+            'password'          => 'hashed',
         ];
     }
 
@@ -72,32 +70,27 @@ class User extends Authenticatable
         return $this->hasMany(ParkingRecord::class);
     }
 
-    public function activityLogs()
-    {
-        return $this->hasMany(ActivityLog::class);
-    }
-
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->role?->name === 'admin';
     }
 
-    public function isPetugas()
+    public function isPetugas(): bool
     {
         return $this->role?->name === 'petugas';
     }
 
-    public function isMahasiswa()
+    public function isMahasiswa(): bool
     {
         return $this->role?->name === 'mahasiswa';
     }
 
-    public function hasFaceData()
+    public function hasFacePhoto(): bool
     {
-        return !empty($this->face_embedding);
+        return !empty($this->face_photo);
     }
 
-    public function hasVehicle()
+    public function hasVehicle(): bool
     {
         return $this->vehicles()->exists();
     }

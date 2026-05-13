@@ -33,9 +33,7 @@ return new class extends Migration
         // USERS
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('role_id')->constrained()->cascadeOnDelete();
-
             $table->string('name');
             $table->string('email')->unique();
             $table->string('phone')->nullable();
@@ -50,9 +48,6 @@ return new class extends Migration
             // Foto wajah utama
             $table->string('face_photo')->nullable();
 
-            // Vector AI embedding
-            $table->longText('face_embedding')->nullable();
-
             // Relasi kampus
             $table->foreignId('department_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('study_program_id')->nullable()->constrained()->nullOnDelete();
@@ -60,10 +55,8 @@ return new class extends Migration
             // Status
             $table->boolean('is_active')->default(true);
             $table->timestamp('last_login_at')->nullable();
-
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-
             $table->rememberToken();
             $table->timestamps();
         });

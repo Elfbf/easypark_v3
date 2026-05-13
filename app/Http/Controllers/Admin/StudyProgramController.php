@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
 use App\Models\Department;
 use App\Models\StudyProgram;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class StudyProgramController extends Controller
@@ -43,20 +41,9 @@ class StudyProgramController extends Controller
 
         try {
 
-            $studyProgram = StudyProgram::create([
+            StudyProgram::create([
                 'department_id' => $request->department_id,
                 'name' => $request->name,
-            ]);
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Study Program',
-                'activity' => 'create_study_program',
-                'description' => 'Menambahkan program studi ' . $studyProgram->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
             ]);
 
             return back()->with('success', 'Program studi berhasil ditambahkan.');
@@ -85,17 +72,6 @@ class StudyProgramController extends Controller
                 'name' => $request->name,
             ]);
 
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Study Program',
-                'activity' => 'update_study_program',
-                'description' => 'Memperbarui program studi ' . $studyProgram->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
-
             return back()->with('success', 'Program studi berhasil diperbarui.');
 
         } catch (QueryException $e) {
@@ -112,20 +88,7 @@ class StudyProgramController extends Controller
     {
         try {
 
-            $studyProgramName = $studyProgram->name;
-
             $studyProgram->delete();
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Study Program',
-                'activity' => 'delete_study_program',
-                'description' => 'Menghapus program studi ' . $studyProgramName,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
 
             return back()->with('success', 'Program studi berhasil dihapus.');
 

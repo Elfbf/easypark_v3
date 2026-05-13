@@ -35,26 +35,7 @@
                display:flex;flex-direction:column;gap:10px;pointer-events:none;">
     </div>
 
-    @if (session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('success', '{{ session('success') }}'));
-        </script>
-    @endif
-    @if (session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('error', '{{ session('error') }}'));
-        </script>
-    @endif
-    @if (session('warning'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-                showToast('warning', '{{ session('warning') }}'));
-        </script>
-    @endif
-
-    {{-- ── Tabel Tipe Kendaraan ── --}}
+    {{-- ── Tabel Brand Kendaraan ── --}}
     <div class="card">
         <div class="card-header">
             <div>
@@ -127,7 +108,7 @@
                             <line x1="12" y1="5" x2="12" y2="19" />
                             <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
-                        Tambah <Brand>Kendaraan</Brand> 
+                        Tambah Brand Kendaraan
                     </button>
                 @endif
             </div>
@@ -136,16 +117,9 @@
                 <thead>
                     <tr>
                         <th style="padding:14px 16px 14px 24px;width:60px;">#</th>
-
-                        {{-- Nama Brand --}}
                         <th style="padding:14px 16px;">Nama Brand Kendaraan</th>
-
-                        {{-- Jumlah Kendaraan --}}
                         <th style="padding:14px 16px;width:180px;text-align:center;">Jumlah Kendaraan</th>
-
-                        {{-- Dibuat --}}
                         <th style="padding:14px 16px;width:150px;">Dibuat</th>
-
                         <th style="padding:14px 16px;width:110px;text-align:center;">Aksi</th>
                     </tr>
                 </thead>
@@ -279,7 +253,6 @@
                     dari {{ $vehicleBrands->total() }} brand kendaraan
                 </span>
 
-                {{-- Pagination --}}
                 @if ($vehicleBrands->hasPages())
                     <div style="display:flex;align-items:center;gap:6px;">
                         {{-- Prev --}}
@@ -595,7 +568,7 @@
 
         // ═══════════════════════════════
         // TOAST NOTIFICATION
-        // ══════════════════════════════
+        // ═══════════════════════════════
         function showToast(type, message) {
             const configs = {
                 success: {
@@ -652,23 +625,23 @@
         // ═══════════════════════════════
         function openModal() {
             document.getElementById('modalAdd').style.display = 'flex';
-            setTimeout(() => document.getElementById('addTypeName').focus(), 100);
+            setTimeout(() => document.getElementById('addBrandName').focus(), 100);
         }
 
         function closeModal() {
             document.getElementById('modalAdd').style.display = 'none';
-            document.getElementById('addTypeName').value = '';
+            document.getElementById('addBrandName').value = '';
             clearAddError();
         }
 
         function clearAddError() {
             document.getElementById('addError').style.display = 'none';
-            document.getElementById('addTypeName').style.borderColor = '#D4D9E8';
-            document.getElementById('addTypeName').style.boxShadow = 'none';
+            document.getElementById('addBrandName').style.borderColor = '#D4D9E8';
+            document.getElementById('addBrandName').style.boxShadow = 'none';
         }
 
         function validateAddForm() {
-            const val = document.getElementById('addTypeName').value.trim().toLowerCase();
+            const val = document.getElementById('addBrandName').value.trim().toLowerCase();
             if (!val) return true;
             const duplicate = Object.values(existingBrands).some(n => n.toLowerCase() === val);
             if (duplicate) {
@@ -679,7 +652,7 @@
         }
 
         function showAddError(msg) {
-            const input = document.getElementById('addTypeName');
+            const input = document.getElementById('addBrandName');
             input.style.borderColor = '#D92D20';
             input.style.boxShadow = '0 0 0 4px rgba(217,45,32,.10)';
             document.getElementById('addErrorText').textContent = msg;
@@ -733,8 +706,8 @@
         // MODAL HAPUS
         // ═══════════════════════════════
         function confirmDelete(id, name) {
-            document.getElementById('deleteTypeName').textContent = name;
-            document.getElementById('deleteForm').action = '/admin/vehicle-types/' + id;
+            document.getElementById('deleteBrandName').textContent = name;
+            document.getElementById('deleteForm').action = '/admin/vehicle-brands/' + id;
             document.getElementById('modalDelete').style.display = 'flex';
         }
 

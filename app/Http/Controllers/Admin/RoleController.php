@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -35,19 +33,8 @@ class RoleController extends Controller
 
         try {
 
-            $role = Role::create([
+            Role::create([
                 'name' => Str::lower($request->name)
-            ]);
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Role',
-                'activity' => 'create_role',
-                'description' => 'Menambahkan role ' . $role->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
             ]);
 
             return back()->with('success', 'Role berhasil ditambahkan.');
@@ -74,17 +61,6 @@ class RoleController extends Controller
                 'name' => Str::lower($request->name)
             ]);
 
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Role',
-                'activity' => 'update_role',
-                'description' => 'Memperbarui role ' . $role->name,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
-
             return back()->with('success', 'Role berhasil diperbarui.');
 
         } catch (QueryException $e) {
@@ -108,20 +84,7 @@ class RoleController extends Controller
                 );
             }
 
-            $roleName = $role->name;
-
             $role->delete();
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'module' => 'Role',
-                'activity' => 'delete_role',
-                'description' => 'Menghapus role ' . $roleName,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'url' => request()->url(),
-                'method' => request()->method(),
-            ]);
 
             return back()->with('success', 'Role berhasil dihapus.');
 
